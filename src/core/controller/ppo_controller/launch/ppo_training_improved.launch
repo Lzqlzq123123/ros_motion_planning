@@ -1,0 +1,116 @@
+<!--
+  PPO训练启动文件 - 改进版本，基于navbot_ppo最佳实践
+  整合环境管理器和PPO代理
+-->
+<launch>
+  <!-- 参数设置 -->
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>
+  <arg name="world_name" default="warehouse"/>
+  <arg name="gui" default="true"/>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="verbose" default="false"/>
+  
+  <!-- 训练参数 -->
+  <arg name="training_mode" default="true"/>
+  <arg name="model_path" default="$(find ppo_controller)/models/ppo_navigation_model.zip"/>
+  <arg name="config_path" default="$(find ppo_controller)/config/ppo_config.json"/>
+  <arg name="tensorboard_dir" default="$(find ppo_controller)/logs/tensorboard"/>
+  <arg name="max_episodes" default="1000"/>
+  
+  <!-- ROS参数 -->
+  <rosparam file="$(find ppo_controller)/config/ppo_params.yaml" command="load"/>
+  
+  <!-- Gazebo仿真环境 -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_$(arg world_name).world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="verbose" value="$(arg verbose)"/>
+  </include>
+
+  <!-- TurtleBot3机器人模型 -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+  <!-- 生成机器人 -->
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"
+        args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+
+  <!-- 机器人状态发布器 -->
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <param name="tf_prefix" value="" />
+  </node>
+
+  <!-- AMCL定位 -->
+  <include file="$(find turtlebot3_navigation)/launch/amcl.launch">
+    <arg name="scan_topic" value="scan"/>
+    <arg name="initial_pose_x" value="$(arg x_pos)"/>
+    <arg name="initial_pose_y" value="$(arg y_pos)"/>
+    <arg name="initial_pose_a" value="0.0"/>
+  </include>
+
+  <!-- 地图服务器 -->
+  <node name="map_server" pkg="map_server" type="map_server" 
+        args="$(find turtlebot3_navigation)/maps/map.yaml">
+    <param name="frame_id" value="map"/>
+  </node>
+
+  <!-- Move Base导航 -->
+  <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
+    <arg name="model" value="$(arg model)"/>
+    <arg name="cmd_vel_topic" value="/cmd_vel"/>
+    <arg name="odom_topic" value="odom"/>
+  </include>
+
+  <!-- PPO控制器插件 -->
+  <node pkg="ppo_controller" type="ppo_controller_node" name="ppo_controller" output="screen">
+    <param name="training_mode" value="$(arg training_mode)"/>
+    <param name="model_path" value="$(arg model_path)"/>
+    <remap from="cmd_vel" to="cmd_vel"/>
+    <remap from="scan" to="scan"/>
+    <remap from="odom" to="odom"/>
+  </node>
+
+  <!-- PPO训练环境管理器 -->
+  <node pkg="ppo_controller" type="ppo_training_env.py" name="ppo_training_environment" output="screen">
+    <param name="max_episodes" value="$(arg max_episodes)"/>
+    <param name="training_mode" value="$(arg training_mode)"/>
+    <remap from="map" to="map"/>
+    <remap from="move_base_simple/goal" to="move_base_simple/goal"/>
+    <remap from="initialpose" to="initialpose"/>
+  </node>
+
+  <!-- PPO代理 -->
+  <node pkg="ppo_controller" type="ppo_agent.py" name="ppo_agent" output="screen">
+    <param name="mode" value="train"/>
+    <param name="model_path" value="$(arg model_path)"/>
+    <param name="config" value="$(arg config_path)"/>
+    <param name="tensorboard_dir" value="$(arg tensorboard_dir)"/>
+    <param name="timesteps" value="100000"/>
+    <remap from="cmd_vel" to="cmd_vel"/>
+    <remap from="ppo/state" to="ppo/state"/>
+    <remap from="ppo/reward" to="ppo/reward"/>
+    <remap from="ppo/done" to="ppo/done"/>
+    <remap from="ppo/reset" to="ppo/reset"/>
+  </node>
+
+  <!-- RViz可视化 -->
+  <group if="$(arg gui)">
+    <node name="rviz" pkg="rviz" type="rviz" 
+          args="-d $(find ppo_controller)/rviz/ppo_training.rviz"/>
+  </group>
+
+  <!-- 性能监控 -->
+  <node name="rqt_plot" pkg="rqt_plot" type="rqt_plot" 
+        args="/ppo/reward/data /ppo/done/data" if="false"/>
+
+</launch>

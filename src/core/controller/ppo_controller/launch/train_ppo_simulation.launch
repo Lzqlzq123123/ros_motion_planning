@@ -1,0 +1,41 @@
+<!-- Launch file for PPO controller training in simulation -->
+<launch>
+  <!-- Training parameters -->
+  <arg name="world" default="warehouse"/>
+  <arg name="map" default="warehouse"/>
+  <arg name="training_episodes" default="500"/>
+  <arg name="timesteps" default="100000"/>
+  <arg name="model_save_path" default="$(find ppo_controller)/models/ppo_trained_model.zip"/>
+  <arg name="tensorboard_log_dir" default="$(find ppo_controller)/logs/tensorboard/"/>
+  
+  <!-- Start simulation environment -->
+  <include file="$(find sim_env)/launch/config.launch">
+    <arg name="world" value="$(arg world)"/>
+    <arg name="map" value="$(arg map)"/>
+    <arg name="robot_number" value="1"/>
+    <arg name="rviz_file" value="sim_env.rviz"/>
+  </include>
+  
+  <!-- Override local planner to use PPO in training mode -->
+  <rosparam command="load" file="$(find ppo_controller)/config/ppo_training_params.yaml"/>
+  
+  <!-- Set PPO as local planner -->
+  <param name="/move_base/base_local_planner" value="ppo_controller/PPOController"/>
+  
+  <!-- Start PPO training environment manager -->
+  <node name="ppo_training_env" pkg="ppo_controller" type="ppo_training_env.py" output="screen">
+    <param name="max_episodes" value="$(arg training_episodes)"/>
+  </node>
+  
+  <!-- Start PPO agent for training -->
+  <node name="ppo_agent_training" pkg="ppo_controller" type="ppo_agent.py" output="screen" required="false">
+    <param name="mode" value="train"/>
+    <param name="timesteps" value="$(arg timesteps)"/>
+    <param name="model_path" value="$(arg model_save_path)"/>
+    <param name="tensorboard_dir" value="$(arg tensorboard_log_dir)"/>
+  </node>
+  
+  <!-- Optional: Start TensorBoard -->
+  <node name="tensorboard" pkg="ppo_controller" type="launch_tensorboard.sh" args="$(arg tensorboard_log_dir)" output="screen" if="true"/>
+  
+</launch>

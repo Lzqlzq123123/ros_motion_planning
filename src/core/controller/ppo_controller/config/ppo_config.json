@@ -1,0 +1,33 @@
+{
+  "learning_rate": 3e-4,
+  "n_steps": 2048,
+  "batch_size": 64,
+  "n_epochs": 10,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "clip_range": 0.2,
+  "ent_coef": 0.01,
+  "vf_coef": 0.5,
+  "max_grad_norm": 0.5,
+  "tensorboard_log": "./ppo_navigation_tensorboard/",
+  "model_save_path": "./ppo_navigation_model.zip",
+  "total_timesteps": 100000,
+  "save_freq": 10000,
+  "environment": {
+    "max_episode_steps": 500,
+    "threshold_arrive": 0.2,
+    "collision_threshold": 0.2,
+    "reward_weights": {
+      "success": 120.0,
+      "collision": -100.0,
+      "timeout": -10.0,
+      "distance_factor": 500.0,
+      "step_penalty": -0.1
+    }
+  },
+  "network_architecture": {
+    "policy_layers": [256, 128, 64],
+    "value_layers": [256, 128, 64],
+    "activation": "relu"
+  }
+}

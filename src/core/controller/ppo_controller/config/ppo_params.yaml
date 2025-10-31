@@ -1,0 +1,75 @@
+# PPO训练参数配置
+ppo_controller:
+  # 环境参数
+  environment:
+    max_episode_steps: 500
+    threshold_arrive: 0.2
+    collision_threshold: 0.2
+    observation_timeout: 3.0
+    reset_timeout: 15.0
+    
+  # 奖励系统
+  rewards:
+    success: 120.0
+    collision: -100.0
+    timeout: -10.0
+    distance_factor: 500.0
+    step_penalty: -0.1
+    
+  # 训练参数
+  training:
+    learning_rate: 0.0003
+    n_steps: 2048
+    batch_size: 64
+    n_epochs: 10
+    gamma: 0.99
+    gae_lambda: 0.95
+    clip_range: 0.2
+    ent_coef: 0.01
+    vf_coef: 0.5
+    max_grad_norm: 0.5
+    
+  # 网络架构
+  network:
+    policy_layers: [256, 128, 64]
+    value_layers: [256, 128, 64]
+    activation: "relu"
+    
+  # 日志和保存
+  logging:
+    tensorboard_log: "./ppo_navigation_tensorboard/"
+    model_save_path: "./ppo_navigation_model.zip"
+    save_freq: 10000
+    log_freq: 100
+
+# 环境管理器参数
+training_environment:
+  # 仿真环境边界
+  environment_bounds:
+    x_min: -4.0
+    x_max: 4.0
+    y_min: -4.0
+    y_max: 4.0
+    
+  # 已知障碍物区域
+  obstacle_areas:
+    - {x_min: -1.0, x_max: 1.0, y_min: -1.0, y_max: 1.0}
+    
+  # 训练区域定义
+  training_areas:
+    - name: "full_map"
+      start_area: [-8, -6, 8, 6]
+      goal_area: [-8, -6, 8, 6]
+    - name: "left_right"
+      start_area: [-5, -3, 0, 3]
+      goal_area: [0, -3, 5, 3]
+    - name: "up_down"
+      start_area: [-3, -5, 3, 0]
+      goal_area: [-3, 0, 3, 5]
+      
+  # 安全检查参数
+  safety:
+    robot_radius: 0.2
+    safety_margin: 0.3
+    min_goal_distance: 1.0
+    max_reset_attempts: 100

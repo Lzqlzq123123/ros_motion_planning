@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+    <name>ppo_controller</name>
+    <version>1.0.0</version>
+    <description>
+        This package provides an implementation of a PPO (Proximal Policy Optimization) 
+        based local robot navigation controller. It uses stable-baselines3 for reinforcement 
+        learning and integrates with ROS navigation stack. The controller learns to navigate 
+        using laser scan data and can be trained in simulation or real environments.
+        Training metrics are logged to TensorBoard for monitoring.
+    </description>
+    
+    <author>Assistant</author>
+    <maintainer email="assistant@example.com">Assistant</maintainer>
+    <license>MIT</license>
+    <url>https://github.com/ai-winter/ros_motion_planning</url>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <depend>angles</depend>
+    <depend>base_local_planner</depend>
+    <depend>controller</depend>
+    <depend>costmap_2d</depend>
+    <depend>dynamic_reconfigure</depend>
+    <depend>eigen</depend>
+    <depend>geometry_msgs</depend>
+    <depend>nav_core</depend>
+    <depend>nav_msgs</depend>
+    <depend>pluginlib</depend>
+    <depend>sensor_msgs</depend>
+    <depend>roscpp</depend>
+    <depend>rospy</depend>
+    <depend>std_msgs</depend>
+    <depend>tf2</depend>
+    <depend>tf2_geometry_msgs</depend>
+    <depend>tf2_ros</depend>
+
+    <!-- Python dependencies for PPO agent -->
+    <exec_depend>python3-numpy</exec_depend>
+    <exec_depend>python3-scipy</exec_depend>
+    <exec_depend>python3-matplotlib</exec_depend>
+
+    <export>
+        <nav_core plugin="${prefix}/ppo_controller_plugin.xml" />
+    </export>
+
+</package>

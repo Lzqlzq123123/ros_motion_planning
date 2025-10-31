@@ -1,0 +1,15 @@
+<!-- Launch file for PPO controller evaluation -->
+<launch>
+  <!-- Arguments -->
+  <arg name="model_path" default="$(find ppo_controller)/models/ppo_navigation_model.zip"/>
+  <arg name="episodes" default="10"/>
+  <arg name="config_path" default="$(find ppo_controller)/scripts/ppo_config.json"/>
+  
+  <!-- Launch evaluation script -->
+  <node name="ppo_evaluation" pkg="ppo_controller" type="evaluate_ppo.py" output="screen">
+    <param name="model_path" value="$(arg model_path)"/>
+    <param name="episodes" value="$(arg episodes)"/>
+    <param name="config_path" value="$(arg config_path)"/>
+  </node>
+        
+</launch>

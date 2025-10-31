@@ -88,6 +88,10 @@
 
         <param name="base_local_planner" value="static_controller/StaticController" if="$(eval arg('local_planner')=='static')" />
 
+        <!-- PPO -->
+        <param name="base_local_planner" value="ppo_controller/PPOController" if="$(eval arg('local_planner')=='ppo')" />
+        <rosparam file="$(find sim_env)/config/controller/ppo_controller_params.yaml" command="load" if="$(eval arg('local_planner')=='ppo')" />
+
         <!-- ORCA -->
         <param name="base_local_planner" value="orca_controller/ORCAController" if="$(eval arg('local_planner')=='orca')" />
         <param name="ORCAController/agent_number" value="$(arg agent_number)" if="$(eval arg('local_planner')=='orca')" />

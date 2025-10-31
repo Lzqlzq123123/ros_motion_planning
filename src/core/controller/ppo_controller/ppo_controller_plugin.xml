@@ -1,0 +1,9 @@
+<library path="lib/libppo_controller">
+  <class name="ppo_controller/PPOController" type="rmp::controller::PPOController" base_class_type="nav_core::BaseLocalPlanner">
+    <description>
+      A reinforcement learning based local planner using PPO (Proximal Policy Optimization) algorithm.
+      The controller learns to navigate using laser scan data and can be trained in simulation or real environments.
+      Integrates with stable-baselines3 for training and TensorBoard for monitoring.
+    </description>
+  </class>
+</library>

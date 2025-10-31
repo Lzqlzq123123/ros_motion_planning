@@ -1,0 +1,44 @@
+PPOController:
+  # Training mode enabled
+  training_mode: true
+  
+  # Velocity limits (more conservative for training safety)
+  max_linear_vel: 0.6
+  max_angular_vel: 0.8
+  min_linear_vel: -0.3
+  min_angular_vel: -0.8
+  
+  # Goal tolerance
+  goal_tolerance: 0.3
+  
+  # Safety parameters (more strict for training)
+  obstacle_threshold: 0.6
+  
+  # Laser scan parameters
+  laser_scan_size: 360
+  
+  # PPO agent parameters
+  model_save_path: "$(find ppo_controller)/models/ppo_training_model.zip"
+  tensorboard_log_dir: "$(find ppo_controller)/logs/tensorboard/"
+  ppo_script_path: "$(find ppo_controller)/scripts/ppo_agent.py"
+  
+  # Reward function weights (tuned for training)
+  reward_goal_weight: 20.0
+  reward_collision_weight: -15.0
+  reward_smooth_weight: -0.05
+  reward_progress_weight: 2.0
+  
+  # Control parameters  
+  max_v: 0.6
+  min_v: -0.3
+  max_v_inc: 0.3
+  max_w: 0.8
+  min_w: -0.8
+  max_w_inc: 0.5
+  
+  # Controller base parameters
+  goal_dist_tol: 0.3
+  rotate_tol: 0.3
+  lookahead_time: 1.5
+  min_lookahead_dist: 0.3
+  max_lookahead_dist: 2.0
