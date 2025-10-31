@@ -20,7 +20,7 @@ import os
 import json
 import time
 
-from geometry_msgs.msg import Twist, PoseStamped
+from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Float32MultiArray, Float32, Bool
@@ -47,14 +47,16 @@ class ROSNavigationEnv(gym.Env):
             high=np.array([0.8, 1.0]), 
             dtype=np.float32
         )
-        
-        # Observation space: [laser_scan(360), pose(3), goal(3), velocity(2)]
+
+        # Observation space mirrors PPOTrainingEnvironment output: [scan(360), last_action(2), extras]
         self.laser_dim = 360
-        self.pose_dim = 3  # x, y, theta
-        self.goal_dim = 3  # relative dx, dy, dtheta
-        self.vel_dim = 2   # linear, angular
-        obs_dim = self.laser_dim + self.pose_dim + self.goal_dim + self.vel_dim
-        
+        self.action_history_dim = 2
+        self.plan_point_count = rospy.get_param('~plan_point_count', 5)
+        self.plan_feature_dim = self.plan_point_count * 2
+        self.base_extra_dim = 4  # distance + yaw info
+        self.extra_dim = self.base_extra_dim + self.plan_feature_dim
+        obs_dim = self.laser_dim + self.action_history_dim + self.extra_dim
+
         self.observation_space = spaces.Box(
             low=-np.inf, 
             high=np.inf, 
@@ -63,7 +65,7 @@ class ROSNavigationEnv(gym.Env):
         )
         
         # ROS Publishers and Subscribers
-        self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+        self.cmd_pub = rospy.Publisher('/ppo/cmd_vel', Twist, queue_size=1)
         self.state_sub = rospy.Subscriber('/ppo/state', Float32MultiArray, self.state_callback)
         self.reward_sub = rospy.Subscriber('/ppo/reward', Float32, self.reward_callback)
         self.done_sub = rospy.Subscriber('/ppo/done', Bool, self.done_callback)
@@ -130,24 +132,19 @@ class ROSNavigationEnv(gym.Env):
         cmd.linear.x = float(action[0])
         cmd.angular.z = float(action[1])
         self.cmd_pub.publish(cmd)
-        
-        # 等待状态更新，使用更合理的超时和更新检测
-        old_state = self.current_state.copy()
-        timeout = rospy.Time.now() + rospy.Duration(3.0)  # 增加超时时间
+        print("Published action:", action)
+        # 等待状态更新，使用 rospy.wait_for_message
         state_updated = False
-        
-        # 更好的状态更新检测
-        while rospy.Time.now() < timeout and not rospy.is_shutdown():
-            rospy.sleep(0.02)  # 50Hz更新率
-            
-            # 检查状态是否有显著变化
-            state_diff = np.linalg.norm(self.current_state - old_state)
-            if state_diff > 0.001:  # 状态变化阈值
-                state_updated = True
-                break
-        
-        if not state_updated:
-            rospy.logwarn(f"State update timeout at step {self.step_count}, state_diff: {np.linalg.norm(self.current_state - old_state):.6f}")
+        try:
+            # 等待下一个状态消息，设置超时
+            state_msg = rospy.wait_for_message('/ppo/state', Float32MultiArray, timeout=3.0)
+            # 注意：wait_for_message会阻塞，所以回调函数state_callback可能不会被这个线程调用
+            # 但它会返回消息，我们可以直接用它来更新状态
+            self.current_state = np.array(state_msg.data, dtype=np.float32)
+            state_updated = True
+        except rospy.ROSException:
+            state_updated = False
+            rospy.logwarn(f"State update timeout at step {self.step_count} (wait_for_message)")
         
         self.step_count += 1
         self.episode_reward += self.current_reward
@@ -345,33 +342,25 @@ class PPONavigationAgent:
             log_dir=self.config['tensorboard_log']
         )
         
-        try:
-            rospy.loginfo(f"Starting PPO training for {total_timesteps} timesteps")
-            
-            self.model.learn(
-                total_timesteps=total_timesteps,
-                callback=tensorboard_callback,
-                tb_log_name="PPO_navigation"
-            )
-            
-            # Save the model
-            self.model.save(self.config['model_save_path'])
-            rospy.loginfo(f"Model saved to {self.config['model_save_path']}")
-            
-        except Exception as e:
-            rospy.logerr(f"Training failed: {e}")
-        finally:
-            self.is_training = False
+ 
+        rospy.loginfo(f"Starting PPO training for {total_timesteps} timesteps")
+        
+        self.model.learn(
+            total_timesteps=total_timesteps,
+            callback=tensorboard_callback,
+            tb_log_name="PPO_navigation"
+        )
+        # Save the model
+        self.model.save(self.config['model_save_path'])
+        rospy.loginfo(f"Model saved to {self.config['model_save_path']}")
     
     def load_model(self, model_path):
         """Load a pre-trained model"""
-        try:
-            self.model = PPO.load(model_path, env=self.env)
-            rospy.loginfo(f"Model loaded from {model_path}")
-            return True
-        except Exception as e:
-            rospy.logerr(f"Failed to load model: {e}")
-            return False
+
+        self.model = PPO.load(model_path, env=self.env)
+        rospy.loginfo(f"Model loaded from {model_path}")
+        return True
+
     
     def predict(self, observation):
         """Get action prediction from the model"""

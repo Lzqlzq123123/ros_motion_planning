@@ -1,0 +1,74 @@
+<launch>
+  <arg name="model" default="burger" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="x_pos" default="-0.7"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>
+  <arg name="gui" default="false" doc="Show Gazebo GUI (set to true for debugging)"/>
+  <arg name="headless" default="false" doc="Run Gazebo in headless mode (for training)"/>
+  <!-- 新增第二辆车初始位置参数 -->
+  <arg name="x_pos_tb2" default="0.5"/>
+  <arg name="y_pos_tb2" default="0.5"/>
+  <arg name="z_pos_tb2" default="0.0"/>
+
+
+  <!-- Align map and world frames: use map origin from pgm_map_creator/maps/map.yaml -->
+  <!-- map origin: [-3, -3, 0] (x, y, yaw) -->
+  <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" args="0 0 0 0 0 0 map odom 100"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_stage_4.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="debug" value="false"/>
+  </include>  
+
+
+  <!-- 第一辆车URDF参数（保持全局robot_description） -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+  <!-- 第二辆车独立URDF参数，在tb2命名空间下 -->
+  <group ns="tb2">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_burger_tb2.urdf.xacro" />
+  </group>
+
+  <!-- 原训练用小车，保持不变，使用默认全局话题 -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3_burger -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+
+  <!-- 第二辆规则控制小车，使用tb2命名空间下的robot_description -->
+  <node name="spawn_tb2" pkg="gazebo_ros" type="spawn_model" args="-urdf -model tb2 -x $(arg x_pos_tb2) -y $(arg y_pos_tb2) -z $(arg z_pos_tb2) -param tb2/robot_description -robot_namespace /tb2" />
+
+  <!-- 规则控制节点：简单避障（前方距离不足则原地转向） -->
+  <node name="tb2_rule_controller" pkg="ppo" type="rule_bot.py" output="screen" ns="tb2">
+    <param name="forward_speed" value="0.2"/>
+    <param name="turn_speed" value="0.8"/>
+    <param name="obstacle_distance" value="0.6"/>
+  </node>
+
+  <!-- p3d 插件已移至URDF文件中 -->
+
+  <!-- <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_stage_4_house.launch"/> -->
+
+  <group ns="tb3_0">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro" />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="tb3_0" />
+    </node>
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model tb3_0 -x -2.0 -y -0.5 -z 0.0 -Y 1.57079632679 -param robot_description" />
+  </group>
+
+  <group ns="tb3_1">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro" />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="tb3_1" />
+    </node>
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model tb3_1 -x -2.0 -y 2.5 -z 0.0 -Y 1.57079632679 -param robot_description" />
+  </group>
+</launch>

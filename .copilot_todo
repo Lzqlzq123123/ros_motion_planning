@@ -1,0 +1,5 @@
+- [x] Review existing ros_motion_planning architecture and relevant packages
+- [x] Understand PPO controller integration and current reset workflow
+- [x] Investigate map_server reset issues after PPO environment reset
+- [x] Outline compatibility strategy blending classical planner with PPO
+- [ ] Summarize findings and next steps for integration
