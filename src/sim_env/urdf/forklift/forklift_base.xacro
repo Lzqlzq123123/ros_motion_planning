@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- 定义参数 用于轮子的尺寸和缩放比例 -->
+  <xacro:property name="wheel_mesh_scale" value="0.3"/>
+  <xacro:property name="wheel_radius_origin" value="0.3"/>
+  <xacro:property name="wheel_length_origin" value="0.2"/>
+
+  <xacro:macro name="box_inertial" params="x y z mass">
+    <inertial>
+      <mass value="${mass}" />
+      <inertia
+        ixx="${(mass / 12) * (y*y + z*z)}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(mass / 12) * (x*x + z*z)}"
+        iyz="0.0"
+        izz="${(mass / 12) * (x*x + y*y)}" />
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="cylinder_inertial" params="radius length mass">
+    <inertial>
+      <mass value="${mass}" />
+      <inertia
+        ixx="${(mass / 12) * (3 * radius * radius + length * length)}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(mass / 12) * (3 * radius * radius + length * length)}"
+        iyz="0.0"
+        izz="${(mass / 2) * radius * radius}" />
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="forklift_base" params="parent_link">
+    <xacro:property name="PI" value="3.1415926835897931"/>
+
+    <link name="front_axle">
+      <visual>
+        <origin xyz="-0.3 0 0.22" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://sim_env/meshes/fork/forklift_base2.dae" scale="${wheel_mesh_scale} ${wheel_mesh_scale} ${wheel_mesh_scale}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="-0.3 0 0.22" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.6 0.4 0.3"/>
+        </geometry>
+      </collision>
+      <xacro:box_inertial x="0.6" y="0.4" z="0.3" mass="0.2" />
+    </link>
+
+    <joint name="front_joint_odom" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <parent link="${parent_link}" />
+      <child link="front_axle" />
+    </joint>
+
+    <!-- Rear Left Wheel - 被动轮，直接连接到 front_axle -->
+    <link name="rear_left_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${PI/2}"/>
+        <geometry>
+          <mesh filename="package://sim_env/meshes/fork/wheel.dae" scale="${wheel_mesh_scale} ${wheel_mesh_scale} ${wheel_mesh_scale}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+         <cylinder radius="${wheel_radius_origin * wheel_mesh_scale}"
+          length="${wheel_length_origin * wheel_mesh_scale}"/>
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
+                                length="${wheel_length_origin * wheel_mesh_scale}"
+                                mass="0.1" />
+    </link>
+    <joint name="rear_left_wheel_joint" type="continuous">
+      <parent link="front_axle"/>
+      <child  link="rear_left_wheel_link"/>
+      <origin xyz="-0.6 0.18 0.08" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- Rear Right Wheel - 被动轮，直接连接到 front_axle -->
+    <link name="rear_right_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 -${PI/2}"/>
+        <geometry>
+          <mesh filename="package://sim_env/meshes/fork/wheel.dae" scale="${wheel_mesh_scale} ${wheel_mesh_scale} ${wheel_mesh_scale}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius_origin * wheel_mesh_scale}"
+          length="${wheel_length_origin * wheel_mesh_scale}"/>
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
+                                length="${wheel_length_origin * wheel_mesh_scale}"
+                                mass="0.1" />
+    </link>
+    <joint name="rear_right_wheel_joint" type="continuous">
+      <parent link="front_axle"/>
+      <child link="rear_right_wheel_link"/>
+      <origin xyz="-0.6 -0.18 0.08" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- Front Left Wheel (前轮驱动) - 必须是 continuous 才能转动 -->
+    <link name="front_left_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${PI/2}"/>
+        <geometry>
+          <mesh filename="package://sim_env/meshes/fork/wheel.dae" scale="${wheel_mesh_scale} ${wheel_mesh_scale} ${wheel_mesh_scale}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius_origin * wheel_mesh_scale}"
+          length="${wheel_length_origin * wheel_mesh_scale}"/>
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
+                                length="${wheel_length_origin * wheel_mesh_scale}"
+                                mass="0.05" />
+    </link>
+    <joint name="front_left_wheel_joint" type="continuous">
+      <parent link="front_axle"/>
+      <child link="front_left_wheel_link"/>
+      <origin xyz="-0.10 0.18 0.08" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- Front Right Wheel (前轮驱动) - 必须是 continuous 才能转动 -->
+    <link name="front_right_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 -${PI/2}"/>
+        <geometry>
+          <mesh filename="package://sim_env/meshes/fork/wheel.dae" scale="${wheel_mesh_scale} ${wheel_mesh_scale} ${wheel_mesh_scale}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius_origin * wheel_mesh_scale}"
+          length="${wheel_length_origin * wheel_mesh_scale}"/>
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
+                                length="${wheel_length_origin * wheel_mesh_scale}"
+                                mass="0.05" />
+    </link>
+    <joint name="front_right_wheel_joint" type="continuous">
+      <parent link="front_axle"/>
+      <child link="front_right_wheel_link"/>
+      <origin xyz="-0.10 -0.18 0.08" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+</robot>

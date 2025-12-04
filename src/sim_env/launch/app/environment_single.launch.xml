@@ -26,6 +26,11 @@
   <arg name="robot_z" />
   <arg name="robot_yaw" />
 
+  <!-- forklift parameters -->
+  <arg name="wheelbase" default="0.5" />
+  <arg name="speed_limit" default="2" /> 
+  <arg name="steering_angle_limit" default="1.3" />
+
   <!-- multi -->
   <group ns="$(arg robot_namespace)" if="$(arg start_ns)">
     <param name="tf_prefix" value="$(arg robot_namespace)" />
@@ -41,6 +46,9 @@
     <node pkg="sim_env" name="tf_map2odom_node" type="tf_map2odom.py" output="screen">
       <param name="~odom_frame_id" value="$(arg robot_namespace)/odom" />
     </node>
+
+    <!-- Ground truth odom publisher (odom -> base_footprint) -->
+    <node pkg="sim_env" name="ground_truth_odom_publisher" type="ground_truth_odom_publisher.py" output="screen" />
 
     <!-- AMCL -->
     <!-- <include file="$(find sim_env)/launch/include/location/amcl.launch.xml">
@@ -74,13 +82,13 @@
       args="-urdf -x $(arg robot_x) -y $(arg robot_y) -z $(arg robot_z) -Y $(arg robot_yaw) -model $(arg robot) -param robot_description" />
 
     <!-- AMCL -->
-    <include file="$(find sim_env)/launch/include/location/amcl.launch.xml">
+    <!-- <include file="$(find sim_env)/launch/include/location/amcl.launch.xml">
       <arg name="robot_namespace" value="$(arg robot_namespace)" />
       <arg name="start_ns" value="$(arg start_ns)" />
       <arg name="robot_x" value="$(arg robot_x)" />
       <arg name="robot_y" value="$(arg robot_y)" />
       <arg name="robot_z" value="$(arg robot_z)" />
-    </include>
+    </include> -->
 
     <!-- MoveBase-->
     <include file="$(find sim_env)/launch/include/navigation/move_base.launch.xml">
@@ -90,5 +98,14 @@
       <arg name="global_planner" value="$(arg global_planner)" />
       <arg name="local_planner" value="$(arg local_planner)" />
     </include>
+
+    <!-- Transform from map to odom -->
+    <node pkg="sim_env" name="tf_map2odom_node" type="tf_map2odom.py" output="screen">
+      <param name="~odom_frame_id" value="odom" />
+    </node>
+
+    <!-- Ground truth odom publisher (odom -> base_footprint) -->
+    <!-- <node pkg="sim_env" name="ground_truth_odom_publisher" type="ground_truth_odom_publisher.py" output="screen" /> -->
+
   </group>
 </launch>

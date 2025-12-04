@@ -14,6 +14,18 @@
 """
 import xml.etree.ElementTree as ET
 from plugins import ObstacleGenerator, PedGenerator, RobotGenerator, MapsGenerator, XMLGenerator
+import sys
+
+def _check_ros_environment():
+    try:
+        __import__("rospy")  # attempt to import to assert ROS python packages are on PYTHONPATH
+        return True
+    except Exception:
+        return False
+
+if not _check_ros_environment():
+    print("Error: rospy not available. Make sure you've sourced /opt/ros/noetic/setup.bash before running this script.")
+    sys.exit(2)
 
 
 class MainGenerator(XMLGenerator):
@@ -58,4 +70,8 @@ class MainGenerator(XMLGenerator):
 
 # dynamic generator
 main_gen = MainGenerator(PedGenerator(), RobotGenerator(), ObstacleGenerator(), MapsGenerator())
-main_gen.writeMainLaunch(main_gen.root_path + "sim_env/launch/main.launch")
+try:
+    main_gen.writeMainLaunch(main_gen.root_path + "sim_env/launch/main.launch")
+except Exception as e:
+    print(f"Error: Failed to write launch file: {e}")
+    sys.exit(1)

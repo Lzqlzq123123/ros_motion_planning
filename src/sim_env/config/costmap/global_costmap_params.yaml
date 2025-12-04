@@ -4,7 +4,7 @@ global_costmap:
 
   update_frequency: 1.0
   publish_frequency: 1.0
-  transform_tolerance: 0.5
+  transform_tolerance: 2.0
   cost_scaling_factor: 2.0
   inflation_radius: 0.8
 

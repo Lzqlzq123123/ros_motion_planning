@@ -20,9 +20,12 @@
 
   <!-- some other parameters -->
   <arg name="debug" default="false" />
-  <arg name="gui" default="true" />
+  <arg name="gui" default="false" />
   <arg name="headless" default="false" />
   <arg name="rviz_file" default="" />
+
+  <!-- Set Gazebo model path -->
+  <env name="GAZEBO_MODEL_PATH" value="$(find sim_env)/models:$(optenv GAZEBO_MODEL_PATH)" />
 
   <!-- start Gazebo with a specific world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch" unless="$(eval arg('world') == '')">
@@ -38,7 +41,8 @@
   <node name="map_server" pkg="map_server" type="map_server" args="$(find sim_env)/maps/$(arg map)/$(arg map).yaml"
     unless="$(eval arg('map') == '')" />
 
-  <!-- spawn multi robots with specific pose, and add robot control and state publisher. -->
+  <!-- spawn multi 
+  s with specific pose, and add robot control and state publisher. -->
   <include file="$(find sim_env)/launch/include/robots/start_robots.launch.xml" />
 
   <!-- open rviz for visualization -->

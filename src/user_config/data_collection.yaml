@@ -1,0 +1,26 @@
+data_root: "/data/lzq/datasets/nav_diffusion"
+
+episode_max_steps: 150
+episode_timeout_sec: 120.0
+record_rate_hz: 10       # 数据记录频率
+
+# 目标生成模式：random(随机)/record_existing(监听现有目标)
+goal_mode: "record_existing"
+
+topics:
+  prefix: ""                      # 你现在的 rostopic list 都是 /xxx，这里保持空即可
+  cmd_vel: "/cmd_vel"
+  rgb_image: "/camera/rgb/image_raw"
+  map: "/map"
+  ground_truth: "/ground_truth/state"
+  goal_pub: "/move_base/goal"
+
+frames:
+  map: "map"
+  base: "base_footprint"
+  camera: "camera_link"
+
+image:
+  width: 96     # 先用小一点的分辨率便于存储和训练
+  height: 96
+  encoding: "bgr8"

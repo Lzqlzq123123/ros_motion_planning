@@ -10,3 +10,6 @@ oscillation_timeout: 10.0
 oscillation_distance: 0.2
 
 conservative_reset_dist: 3.0
+
+# TF transform tolerance
+transform_tolerance: 2.0
