@@ -34,8 +34,21 @@
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(find sim_env)/urdf/$(arg robot)/$(arg robot).xacro" />
 
     <!-- Gazebo -->
-    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-      args="-urdf -x $(arg robot_x) -y $(arg robot_y) -z $(arg robot_z) -Y $(arg robot_yaw) -model $(arg robot_namespace) -param robot_description" />
+    <!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+      args="-urdf -x $(arg robot_x) -y $(arg robot_y) -z $(arg robot_z) -Y $(arg robot_yaw) -model $(arg robot_namespace) -param robot_description" /> -->
+    <node name="urdf_spawner"
+      pkg="gazebo_ros"
+      type="spawn_model"
+      respawn="false"
+      output="screen"
+      launch-prefix="bash -c 'sleep 5; $0 $@'"
+      args="-urdf
+            -x $(arg robot_x)
+            -y $(arg robot_y)
+            -z $(arg robot_z)
+            -Y $(arg robot_yaw)
+            -model $(arg robot_namespace)
+            -param robot_description" />
 
     <!-- Transform from map to odom -->
     <node pkg="sim_env" name="tf_map2odom_node" type="tf_map2odom.py" output="screen">
@@ -70,8 +83,21 @@
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(find sim_env)/urdf/$(arg robot)/$(arg robot).xacro" />
 
     <!-- Gazebo -->
-    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-      args="-urdf -x $(arg robot_x) -y $(arg robot_y) -z $(arg robot_z) -Y $(arg robot_yaw) -model $(arg robot) -param robot_description" />
+    <!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+      args="-urdf -x $(arg robot_x) -y $(arg robot_y) -z $(arg robot_z) -Y $(arg robot_yaw) -model $(arg robot) -param robot_description" /> -->
+    <node name="urdf_spawner"
+      pkg="gazebo_ros"
+      type="spawn_model"
+      respawn="false"
+      output="screen"
+      launch-prefix="bash -c 'sleep 5; $0 $@'"
+      args="-urdf
+            -x $(arg robot_x)
+            -y $(arg robot_y)
+            -z $(arg robot_z)
+            -Y $(arg robot_yaw)
+            -model $(arg robot)
+            -param robot_description" />
 
     <!-- AMCL -->
     <include file="$(find sim_env)/launch/include/location/amcl.launch.xml">
