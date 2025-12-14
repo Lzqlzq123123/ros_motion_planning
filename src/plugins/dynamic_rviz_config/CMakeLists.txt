@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 project(dynamic_rviz_config)
 find_package(catkin REQUIRED COMPONENTS
   rospy
