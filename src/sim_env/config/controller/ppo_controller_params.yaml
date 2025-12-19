@@ -1,0 +1,5 @@
+# PPO Controller Parameters
+PPOController:
+  model_path: "" # Path to the trained ONNX/PT model
+  obs_dim: 0
+  action_dim: 0

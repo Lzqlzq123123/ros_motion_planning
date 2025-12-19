@@ -68,8 +68,8 @@ class NavDataCollector(object):
         prefix = topics.get("prefix", "")
         self.topic_cmd = prefix + topics.get("cmd_vel", "/cmd_vel")
         self.topic_img = prefix + topics.get("rgb_image", "/camera/rgb/image_raw")
-        self.topic_map = prefix + topics.get("map", "/map")
-        self.topic_goal = topics.get("goal_pub", "/move_base/goal")
+        self.topic_map = topics.get("map", "/map") # Map is usually global
+        self.topic_goal = prefix + topics.get("goal_pub", "/move_base/goal")
         self.topic_ground_truth = prefix + topics.get("ground_truth", "/ground_truth/state")
 
 

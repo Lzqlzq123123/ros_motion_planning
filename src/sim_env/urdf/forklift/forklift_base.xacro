@@ -47,7 +47,7 @@
           <box size="0.6 0.4 0.3"/>
         </geometry>
       </collision>
-      <xacro:box_inertial x="0.6" y="0.4" z="0.3" mass="0.2" />
+      <xacro:box_inertial x="0.6" y="0.4" z="0.3" mass="0.5" />
     </link>
 
     <joint name="front_joint_odom" type="fixed">
@@ -73,7 +73,7 @@
       </collision>
       <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
                                 length="${wheel_length_origin * wheel_mesh_scale}"
-                                mass="0.1" />
+                                mass="0.75" />
     </link>
     <joint name="rear_left_wheel_joint" type="continuous">
       <parent link="front_axle"/>
@@ -99,7 +99,7 @@
       </collision>
       <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
                                 length="${wheel_length_origin * wheel_mesh_scale}"
-                                mass="0.1" />
+                                mass="0.75" />
     </link>
     <joint name="rear_right_wheel_joint" type="continuous">
       <parent link="front_axle"/>
@@ -125,7 +125,7 @@
       </collision>
       <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
                                 length="${wheel_length_origin * wheel_mesh_scale}"
-                                mass="0.05" />
+                                mass="0.5" />
     </link>
     <joint name="front_left_wheel_joint" type="continuous">
       <parent link="front_axle"/>
@@ -151,7 +151,7 @@
       </collision>
       <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
                                 length="${wheel_length_origin * wheel_mesh_scale}"
-                                mass="0.05" />
+                                mass="0.5" />
     </link>
     <joint name="front_right_wheel_joint" type="continuous">
       <parent link="front_axle"/>

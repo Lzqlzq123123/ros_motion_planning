@@ -1,0 +1,7 @@
+<library path="lib/libppo_controller">
+  <class name="ppo_controller/PPOController" type="ppo_controller::PPOController" base_class_type="nav_core::BaseLocalPlanner">
+    <description>
+      A local planner that uses PPO (Proximal Policy Optimization) for navigation.
+    </description>
+  </class>
+</library>

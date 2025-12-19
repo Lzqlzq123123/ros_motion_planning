@@ -12,11 +12,11 @@
 
  <gazebo reference="front_left_wheel_link">
     <mu1>0.5</mu1>
-    <mu2>0.4</mu2>
+    <mu2>0.5</mu2>
     <kp>500000.0</kp>
     <kd>10.0</kd>
     <minDepth>0.001</minDepth>
-    <maxVel>3.0</maxVel>
+    <maxVel>1.0</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
@@ -27,7 +27,7 @@
     <kp>500000.0</kp>
     <kd>10.0</kd>
     <minDepth>0.001</minDepth>
-    <maxVel>3.0</maxVel>
+    <maxVel>1.0</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
@@ -44,7 +44,7 @@
   </gazebo>
 
   <gazebo reference="rear_right_wheel_link">
-    <mu1>0</mu1>
+   <mu1>0</mu1>
     <mu2>0</mu2>
     <kp>500000.0</kp>
     <kd>10.0</kd>
@@ -198,16 +198,16 @@
       <rightRearJoint>rear_right_wheel_joint</rightRearJoint>
       <wheelSeparation>0.36</wheelSeparation> <!-- 左右轮距离 -->
       <wheelDiameter>0.18</wheelDiameter>   <!-- 轮子直径 -->
-      <torque>2000</torque>                 <!-- 扭矩 -->
+      <torque>500</torque>                 <!-- 扭矩 -->
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
       <robotBaseFrame>base_footprint</robotBaseFrame>
       <broadcastTF>true</broadcastTF>
       <rosDebugLevel>na</rosDebugLevel>
-      <covariance_x>0</covariance_x>
-      <covariance_y>0</covariance_y>
-      <covariance_yaw>0</covariance_yaw>
+      <covariance_x>0.001</covariance_x>
+      <covariance_y>0.001</covariance_y>
+      <covariance_yaw>0.01</covariance_yaw>
     </plugin>
   </gazebo>
 

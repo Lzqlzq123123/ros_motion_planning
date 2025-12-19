@@ -1,4 +1,4 @@
-data_root: "/data/lzq/datasets/nav_diffusion"
+data_root: "/data/lzq/datasets/adv_diffusion"
 
 episode_max_steps: 150
 episode_timeout_sec: 120.0
@@ -8,7 +8,7 @@ record_rate_hz: 10       # 数据记录频率
 goal_mode: "record_existing"
 
 topics:
-  prefix: ""                      # 你现在的 rostopic list 都是 /xxx，这里保持空即可
+  prefix: "/robot2"                      # 机器人命名空间前缀，修改可采集不同机器人数据
   cmd_vel: "/cmd_vel"
   rgb_image: "/camera/rgb/image_raw"
   map: "/map"
