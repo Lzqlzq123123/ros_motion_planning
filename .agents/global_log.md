@@ -68,3 +68,9 @@
 - **Line Stats**: +318, -1
 - **Errors**: 初次缺少catkin_make命令；安装catkin后运行catkin_make -DCATKIN_WHITELIST_PACKAGES="" 成功编译
 - **Context**: 插件通过~/<name>/service_name与goal_image_name参数配置服务名及目标图像，makePlan调用/nomad/make_plan并返回nav_msgs/Path供局部规划器消费；等待服务超时5秒并以持久连接方式复用客户端
+
+## TASK-002
+- **Changes**: /data/lzq/visualnav-transformer/deployment/src/nomad_plan_service.py:1-322 -> 新建NoMaD规划ROS服务节点，订阅相机并暴露/nomad/make_plan接口
+- **Line Stats**: +322, -0
+- **Errors**: 依赖rospy、torch等运行时未在当前环境验证；未实际跑通服务调用
+- **Context**: 节点参数支持config_path、weights_path、goal_image_dir、goal_image_map与camera_topic；服务按请求goal_image_name解析目标图并运行扩散推理输出nav_msgs/Path，路径与输入frame一致并包含中间朝向
