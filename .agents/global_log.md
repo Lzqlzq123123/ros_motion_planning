@@ -65,6 +65,6 @@
 
 ## TASK-001
 - **Changes**: src/core/path_planner/nomad_planner/src/nomad_planner.cpp:1-182 -> 新增NoMaD全局规划器插件实现，封装ROS服务调用; src/core/path_planner/nomad_planner/include/nomad_planner/nomad_planner.h:1-49 -> 定义插件接口与参数; src/core/path_planner/nomad_planner/CMakeLists.txt:1-49 -> 配置库构建与安装; src/core/path_planner/nomad_planner/package.xml:1-31 -> 声明catkin依赖与插件导出; src/core/path_planner/nomad_planner/nomad_planner_plugin.xml:1-7 -> 注册nav_core插件
-- **Line Stats**: +318, -0
-- **Errors**: 环境缺少catkin_make命令，未能完成本地编译验证
+- **Line Stats**: +318, -1
+- **Errors**: 初次缺少catkin_make命令；安装catkin后运行catkin_make -DCATKIN_WHITELIST_PACKAGES="" 成功编译
 - **Context**: 插件通过~/<name>/service_name与goal_image_name参数配置服务名及目标图像，makePlan调用/nomad/make_plan并返回nav_msgs/Path供局部规划器消费；等待服务超时5秒并以持久连接方式复用客户端

@@ -26,7 +26,7 @@ public:
   bool makePlan(const geometry_msgs::PoseStamped& start,
                 const geometry_msgs::PoseStamped& goal,
                 double tolerance,
-                std::vector<geometry_msgs::PoseStamped>& plan) override;
+                std::vector<geometry_msgs::PoseStamped>& plan);
 
 private:
   bool ensureClientConnection();
