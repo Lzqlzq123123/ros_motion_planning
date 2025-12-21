@@ -1,0 +1,7 @@
+<library path="lib/libnomad_planner">
+  <class name="nomad_planner/NoMaDPlanner" type="nomad_planner::NoMaDPlanner" base_class_type="nav_core::BaseGlobalPlanner">
+    <description>
+      Global planner plugin that delegates path generation to the NoMaD diffusion model service.
+    </description>
+  </class>
+</library>
