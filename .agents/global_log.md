@@ -74,3 +74,9 @@
 - **Line Stats**: +322, -0
 - **Errors**: 依赖rospy、torch等运行时未在当前环境验证；未实际跑通服务调用
 - **Context**: 节点参数支持config_path、weights_path、goal_image_dir、goal_image_map与camera_topic；服务按请求goal_image_name解析目标图并运行扩散推理输出nav_msgs/Path，路径与输入frame一致并包含中间朝向
+
+## TASK-002
+- **Changes**: /data/lzq/visualnav-transformer/deployment/src/nomad_plan_service.py:1-330 -> 新增模型目录参数，支持通过model_name选择配置并归一化相对路径; /data/lzq/visualnav-transformer/deployment/config/models.yaml:1-16 -> 更新nomad权重路径至train/logs/nomad/49.pth
+- **Line Stats**: +54, -7
+- **Errors**: 未对cv2/torch依赖进行静态检查；需在部署环境验证模型目录路径是否存在
+- **Context**: 新增参数models_catalog_path与model_name，若未显式传入config/weights则从catalog解析，并默认指向0.jpg；路径归一化基于catalog所在目录与VISUALNAV_ROOT，便于在move_base launch中仅指定model_name=nomad
