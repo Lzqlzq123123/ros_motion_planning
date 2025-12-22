@@ -111,6 +111,30 @@ This repository provides the implementation of common **Motion Planning** algori
     rosrun sim_env goal_publisher.py
     ```
 
+## NoMaD Diffusion Planner Integration
+
+The diffusion-based global planner now runs as an external Python process. Start it manually before launching `./main.sh`:
+
+1. Configure defaults in [visualnav-transformer/deployment/config/nomad_service_params.yaml](visualnav-transformer/deployment/config/nomad_service_params.yaml) or point the node to a custom YAML file via `~params_file` when launching the service.
+2. Source the catkin workspace and activate the inference environment:
+
+    ```bash
+    cd /data/lzq/ros_motion_planning
+    source devel/setup.bash
+    conda activate nomad_train
+    ```
+
+3. Ensure a ROS master is running (`roscore` or the stack started by `./main.sh`), then launch the planner service from the VisualNav workspace:
+
+    ```bash
+    cd /data/lzq/visualnav-transformer
+    python deployment/src/nomad_plan_service.py
+    ```
+
+4. Once the log prints `Ready on /nomad/make_plan`, run the usual simulator workflow (`./scripts/main.sh`) and send navigation goals from RViz. The C++ plugin will call `/nomad/make_plan` whenever a plan is required.
+
+> Tip: Override any parameter by editing the YAML or pushing values with `rosparam set /nomad_plan_service/<param> <value>` before launching the node.
+
 ## 1. <span id="1">Document
 
 The overall file structure is shown below.

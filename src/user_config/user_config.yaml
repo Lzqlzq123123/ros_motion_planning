@@ -15,7 +15,7 @@ robots_config:
     robot1_rl_goal_max_dist: "5.0"
 
   - robot2_type: "forklift"
-    robot2_global_planner: "astar"
+    robot2_global_planner: "diffusion"
     robot2_local_planner: "pid"
     robot2_x_pos: "0.0"
     robot2_y_pos: "0.0"

@@ -9,6 +9,7 @@ Panels:
         - /Robot21/Image21
         - /Robot21/LaserScan21
         - /Robot21/Path1
+        - /Path1
       Splitter Ratio: 0.5
     Tree Height: 212
   - Class: rviz/Tool Properties
@@ -89,8 +90,6 @@ Visualization Manager:
           Value: true
         robot2/base_footprint:
           Value: true
-        robot2/base_link:
-          Value: true
         robot2/base_scan:
           Value: true
         robot2/camera_depth_frame:
@@ -103,17 +102,19 @@ Visualization Manager:
           Value: true
         robot2/camera_rgb_optical_frame:
           Value: true
-        robot2/caster_back_left_link:
+        robot2/front_axle:
           Value: true
-        robot2/caster_back_right_link:
+        robot2/front_left_wheel_link:
+          Value: true
+        robot2/front_right_wheel_link:
           Value: true
         robot2/imu_link:
           Value: true
         robot2/odom:
           Value: true
-        robot2/wheel_left_link:
+        robot2/rear_left_wheel_link:
           Value: true
-        robot2/wheel_right_link:
+        robot2/rear_right_wheel_link:
           Value: true
       Marker Alpha: 1
       Marker Scale: 1
@@ -147,7 +148,7 @@ Visualization Manager:
                   {}
           robot2/odom:
             robot2/base_footprint:
-              robot2/base_link:
+              robot2/front_axle:
                 robot2/base_scan:
                   {}
                 robot2/camera_link:
@@ -157,15 +158,15 @@ Visualization Manager:
                   robot2/camera_rgb_frame:
                     robot2/camera_rgb_optical_frame:
                       {}
-                robot2/caster_back_left_link:
+                robot2/front_left_wheel_link:
                   {}
-                robot2/caster_back_right_link:
+                robot2/front_right_wheel_link:
                   {}
                 robot2/imu_link:
                   {}
-                robot2/wheel_left_link:
+                robot2/rear_left_wheel_link:
                   {}
-                robot2/wheel_right_link:
+                robot2/rear_right_wheel_link:
                   {}
       Update Interval: 0
       Value: true
@@ -328,11 +329,6 @@ Visualization Manager:
               Alpha: 1
               Show Axes: false
               Show Trail: false
-            base_link:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
             base_scan:
               Alpha: 1
               Show Axes: false
@@ -359,12 +355,17 @@ Visualization Manager:
               Alpha: 1
               Show Axes: false
               Show Trail: false
-            caster_back_left_link:
+            front_axle:
               Alpha: 1
               Show Axes: false
               Show Trail: false
               Value: true
-            caster_back_right_link:
+            front_left_wheel_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            front_right_wheel_link:
               Alpha: 1
               Show Axes: false
               Show Trail: false
@@ -373,12 +374,12 @@ Visualization Manager:
               Alpha: 1
               Show Axes: false
               Show Trail: false
-            wheel_left_link:
+            rear_left_wheel_link:
               Alpha: 1
               Show Axes: false
               Show Trail: false
               Value: true
-            wheel_right_link:
+            rear_right_wheel_link:
               Alpha: 1
               Show Axes: false
               Show Trail: false
@@ -479,6 +480,30 @@ Visualization Manager:
           Value: true
       Enabled: true
       Name: Robot2
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /robot2/move_base/PathPlanner/plan
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -514,7 +539,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 15.065176963806152
+      Distance: 20.100238800048828
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -522,17 +547,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: -3.4814350605010986
+        Y: -1.2475697994232178
+        Z: 0.34268444776535034
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1853978633880615
+      Pitch: 1.3747966289520264
       Target Frame: <Fixed Frame>
-      Yaw: 1.0153980255126953
+      Yaw: 1.4803975820541382
     Saved: ~
 Window Geometry:
   Displays:
@@ -548,5 +573,5 @@ Window Geometry:
   Tool Properties:
     collapsed: false
   Width: 1470
-  X: 2960
-  Y: 317
+  X: 908
+  Y: 289

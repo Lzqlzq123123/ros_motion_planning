@@ -1,0 +1,42 @@
+[
+  {
+    "id": "TASK-101",
+    "title": "撰写NoMaD解耦架构设计",
+    "type": "design",
+    "description": "整理分离NoMaD推理进程与move_base的架构说明，明确ROS接口、环境隔离和数据流",
+    "test_command": "设计文档完成并评审",
+    "context_needed": ["现有Nomad集成", "move_base流程"]
+  },
+  {
+    "id": "TASK-102",
+    "title": "实现全局规划代理插件",
+    "type": "implementation",
+    "description": "在ros_motion_planning中实现只调用/nomad/make_plan服务的nav_core全局规划器，去除对Torch/cv_bridge的直接依赖",
+    "test_command": "catkin build sim_env",
+    "context_needed": ["nav_core接口", "ROS服务调用"]
+  },
+  {
+    "id": "TASK-103",
+    "title": "封装Nomad推理服务启动",
+    "type": "implementation",
+    "description": "整理在独立conda环境运行nomad_plan_service.py的脚本/指引，并确保服务能在不依赖catkin包的情况下启动",
+    "test_command": "conda run -n nomad_train python deployment/src/nomad_plan_service.py --help",
+    "context_needed": ["NoMaD推理流程", "部署脚本"]
+  },
+  {
+    "id": "TASK-104",
+    "title": "更新move_base集成配置",
+    "type": "implementation",
+    "description": "调整ros_motion_planning的move_base.launch，改为依赖远程Nomad服务并提供必要参数，确保局部规划链路复用",
+    "test_command": "roslaunch sim_env move_base.launch",
+    "context_needed": ["launch文件结构", "move_base参数"]
+  },
+  {
+    "id": "TASK-105",
+    "title": "编写联调指导文档",
+    "type": "documentation",
+    "description": "撰写从启动conda环境到验证局部规划控制的操作手册，覆盖常见问题与排查步骤",
+    "test_command": "文档自检",
+    "context_needed": ["整体流程", "常见错误"]
+  }
+]

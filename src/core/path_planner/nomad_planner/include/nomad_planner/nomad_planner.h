@@ -30,6 +30,9 @@ public:
 
 private:
   bool ensureClientConnection();
+  bool callService(const geometry_msgs::PoseStamped& start,
+                   const geometry_msgs::PoseStamped& goal,
+                   nav_msgs::Path& path);
   bool validatePoseFrames(const geometry_msgs::PoseStamped& start,
                           const geometry_msgs::PoseStamped& goal) const;
   void translatePathToPlan(const nav_msgs::Path& path,
@@ -43,6 +46,9 @@ private:
   std::string service_name_;
   std::string goal_image_name_;
   double connect_timeout_sec_;
+  double request_timeout_sec_;
+  int retry_count_;
+  bool log_plan_summary_;
 };
 }
 

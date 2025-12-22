@@ -22,6 +22,13 @@
     <arg name="robot" default="turtlebot3_waffle" />
     <!-- global path planner name -->
     <arg name="global_planner" default="astar" />
+    <!-- NoMaD planner launch options -->
+    <arg name="nomad_service_name" default="/nomad/make_plan" />
+    <arg name="nomad_goal_image" default="" />
+    <arg name="nomad_connect_timeout" default="5.0" />
+    <arg name="nomad_request_timeout" default="3.0" />
+    <arg name="nomad_retry_count" default="1" />
+    <arg name="nomad_log_plan_summary" default="false" />
     <!-- local planner name -->
     <arg name="local_planner" default="dwa" />
 
@@ -29,8 +36,15 @@
     <!-- launch-prefix="xterm -e gdb -ex run - -args" -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" unless="$(eval arg('local_planner') == 'ppo')">
         <!-- global planner plugin -->
-        <param name="base_global_planner" value="path_planner/PathPlanner" />
-        <param name="PathPlanner/planner_name" value="$(arg global_planner)" />
+        <param name="base_global_planner" value="nomad_planner/NoMaDPlanner" if="$(eval arg('global_planner')=='diffusion')" />
+        <param name="base_global_planner" value="path_planner/PathPlanner" unless="$(eval arg('global_planner')=='diffusion')" />
+        <param name="PathPlanner/planner_name" value="$(arg global_planner)" unless="$(eval arg('global_planner')=='diffusion')" />
+        <param name="NoMaDPlanner/service_name" value="$(arg nomad_service_name)" if="$(eval arg('global_planner')=='diffusion')" />
+        <param name="NoMaDPlanner/connect_timeout" value="$(arg nomad_connect_timeout)" if="$(eval arg('global_planner')=='diffusion')" />
+        <param name="NoMaDPlanner/request_timeout" value="$(arg nomad_request_timeout)" if="$(eval arg('global_planner')=='diffusion')" />
+        <param name="NoMaDPlanner/retry_count" value="$(arg nomad_retry_count)" if="$(eval arg('global_planner')=='diffusion')" />
+        <param name="NoMaDPlanner/log_plan_summary" value="$(arg nomad_log_plan_summary)" if="$(eval arg('global_planner')=='diffusion')" />
+        <param name="NoMaDPlanner/goal_image_name" value="$(arg nomad_goal_image)" if="$(eval arg('global_planner')=='diffusion' and len(arg('nomad_goal_image'))>0)" />
 
         <!-- graph search -->
         <rosparam file="$(find sim_env)/config/planner/common_planner_params.yaml" command="load" />

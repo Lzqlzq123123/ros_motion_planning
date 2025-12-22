@@ -2,12 +2,20 @@
 
 #include <pluginlib/class_list_macros.h>
 #include <ros/duration.h>
+#include <ros/time.h>
+#include <algorithm>
 #include <stdexcept>
 #include <utility>
 
 namespace nomad_planner
 {
-NoMaDPlanner::NoMaDPlanner() : initialized_(false), costmap_ros_(nullptr), connect_timeout_sec_(5.0)
+NoMaDPlanner::NoMaDPlanner()
+  : initialized_(false)
+  , costmap_ros_(nullptr)
+  , connect_timeout_sec_(5.0)
+  , request_timeout_sec_(3.0)
+  , retry_count_(1)
+  , log_plan_summary_(false)
 {
 }
 
@@ -38,6 +46,12 @@ void NoMaDPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* costma
   nh_.param<std::string>("service_name", service_name_, std::string("/nomad/make_plan"));
   nh_.param<std::string>("goal_image_name", goal_image_name_, std::string(""));
   nh_.param("connect_timeout", connect_timeout_sec_, 5.0);
+  nh_.param("request_timeout", request_timeout_sec_, 3.0);
+  nh_.param("retry_count", retry_count_, 1);
+  nh_.param("log_plan_summary", log_plan_summary_, false);
+
+  retry_count_ = std::max(1, retry_count_);
+  request_timeout_sec_ = std::max(0.1, request_timeout_sec_);
 
   if (!ensureClientConnection())
   {
@@ -79,24 +93,13 @@ bool NoMaDPlanner::makePlan(const geometry_msgs::PoseStamped& start,
     return false;
   }
 
-  nomad_planner_msgs::MakePlan srv;
-  srv.request.start = start;
-  srv.request.goal = goal;
-  srv.request.goal_image_name = goal_image_name_;
-
-  if (!nomad_client_.call(srv))
+  nav_msgs::Path path;
+  if (!callService(start, goal, path))
   {
-    ROS_ERROR_NAMED("nomad_planner", "Failed to call NoMaD make_plan service: %s", service_name_.c_str());
     return false;
   }
 
-  if (!srv.response.success)
-  {
-    ROS_WARN_NAMED("nomad_planner", "NoMaD planning failed: %s", srv.response.message.c_str());
-    return false;
-  }
-
-  translatePathToPlan(srv.response.plan, plan);
+  translatePathToPlan(path, plan);
 
   if (plan.empty())
   {
@@ -148,6 +151,71 @@ bool NoMaDPlanner::validatePoseFrames(const geometry_msgs::PoseStamped& start,
   }
 
   return true;
+}
+
+bool NoMaDPlanner::callService(const geometry_msgs::PoseStamped& start,
+                               const geometry_msgs::PoseStamped& goal,
+                               nav_msgs::Path& path)
+{
+  ros::WallTime begin = ros::WallTime::now();
+
+  nomad_planner_msgs::MakePlan srv;
+  srv.request.start = start;
+  srv.request.goal = goal;
+  srv.request.goal_image_name = goal_image_name_;
+
+  for (int attempt = 0; attempt < retry_count_; ++attempt)
+  {
+    if (!nomad_client_.call(srv))
+    {
+      ROS_WARN_NAMED("nomad_planner",
+                     "NoMaD make_plan service call failed on attempt %d/%d",
+                     attempt + 1,
+                     retry_count_);
+
+      if (!ensureClientConnection())
+      {
+        return false;
+      }
+
+      continue;
+    }
+
+    if (!srv.response.success)
+    {
+      ROS_WARN_NAMED("nomad_planner",
+                     "NoMaD planning failed: %s",
+                     srv.response.message.c_str());
+      return false;
+    }
+
+    path = srv.response.plan;
+
+    const ros::WallDuration elapsed = ros::WallTime::now() - begin;
+    if (elapsed.toSec() > request_timeout_sec_)
+    {
+      ROS_WARN_NAMED("nomad_planner",
+                     "NoMaD planning exceeded request timeout %.2fs (actual %.2fs)",
+                     request_timeout_sec_,
+                     elapsed.toSec());
+    }
+
+    if (log_plan_summary_)
+    {
+      const std::size_t pose_count = path.poses.size();
+      ROS_INFO_NAMED("nomad_planner",
+                     "Received plan with %zu poses in %.3fs",
+                     pose_count,
+                     elapsed.toSec());
+    }
+
+    return true;
+  }
+
+  ROS_ERROR_NAMED("nomad_planner",
+                  "NoMaD make_plan service failed after %d attempt(s).",
+                  retry_count_);
+  return false;
 }
 
 void NoMaDPlanner::translatePathToPlan(const nav_msgs::Path& path,

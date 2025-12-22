@@ -1,0 +1,9 @@
+# Request
+geometry_msgs/PoseStamped start
+geometry_msgs/PoseStamped goal
+string goal_image_name
+---
+# Response
+nav_msgs/Path plan
+bool success
+string message
