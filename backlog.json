@@ -38,5 +38,13 @@
     "description": "撰写从启动conda环境到验证局部规划控制的操作手册，覆盖常见问题与排查步骤",
     "test_command": "文档自检",
     "context_needed": ["整体流程", "常见错误"]
+  },
+  {
+    "id": "TASK-201",
+    "title": "修改RL训练目标生成逻辑",
+    "type": "refactor",
+    "description": "将随机距离生成目标改为从配置文件读取预定义目标点列表。1. 修改forklift_ppo.yaml添加goals列表; 2. 修改ros_gazebo_env.py从列表中随机选择目标。",
+    "test_command": "python src/rl_training/envs/ros_gazebo_env.py",
+    "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/rl_training/envs/ros_gazebo_env.py"]
   }
 ]

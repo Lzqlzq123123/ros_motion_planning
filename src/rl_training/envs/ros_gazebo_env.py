@@ -124,14 +124,11 @@ class RosGazeboEnv(VecEnv):
             rospy.logerr(f"Service call failed: {e}")
             
         # Generate New Goal
-        min_dist = self.env_cfg.get('goal_min_dist')
-        max_dist = self.env_cfg.get('goal_max_dist')
-        
-        goal_dist = np.random.uniform(min_dist, max_dist)
-        goal_angle = np.random.uniform(-3.14, 3.14)
-        goal_x = state.pose.position.x + goal_dist * math.cos(goal_angle)
-        goal_y = state.pose.position.y + goal_dist * math.sin(goal_angle)
-        
+        goals = self.env_cfg.get('goals')
+
+        # 从配置的列表中随机选择一个目标点
+        goal_idx = np.random.randint(0, len(goals))
+        goal_x, goal_y = goals[goal_idx]
         robot.reset(goal_x, goal_y, init_x, init_y)
 
 class RobotAgent:
@@ -221,7 +218,8 @@ class RobotAgent:
         msg.angular.z = np.clip(action[1], clip_low[1], clip_high[1])
         
         if self.env_cfg.get('reward_debug', False):
-             print(f"Robot {self.id} Raw Action: [{action[0]:.2f}, {action[1]:.2f}] -> Clipped: [{msg.linear.x:.2f}, {msg.angular.z:.2f}]")
+             print("--- Action Debug ---")
+             print(f"[set_action] Robot {self.id} Raw Action: [{action[0]:.2f}, {action[1]:.2f}] -> Clipped: [{msg.linear.x:.2f}, {msg.angular.z:.2f}]")
 
         self.cmd_vel_pub.publish(msg)
 
@@ -269,11 +267,13 @@ class RobotAgent:
             
             displacement_projection = dx_move * unit_x + dy_move * unit_y
             displacement_reward = displacement_projection * distance_scale
+            print(f"[compute_reward_and_done] Robot {self.id} Displacement Projection: {displacement_projection}")
             reward += displacement_reward
 
         # 1. Displacement / Progress Reward
         dist_reward_scale = r_cfg.get('dist_reward_scale')
         progress = self.prev_dist_to_goal - dist_to_goal
+        print(f"[compute_reward_and_done] self.prev_dist_to_goal {self.prev_dist_to_goal} Progress: {progress}  Dist to Goal: {dist_to_goal}")
         progress_reward = progress * dist_reward_scale
         reward += progress_reward
         
@@ -293,6 +293,7 @@ class RobotAgent:
         
         # 5. Collision
         min_scan = np.min(self.scan)
+        print(f"[compute_reward_and_done] Min Scan: {min_scan}")
         collision_dist = t_cfg.get('min_collision_range')
         collision_reward = 0.0
         
@@ -353,17 +354,19 @@ class RobotAgent:
         
         if self.env_cfg.get('reward_debug', False):
             print("--- Reward Debug ---")
-            print(f"Robot {self.id} Reward: {reward:.4f} | "
-                  f"Disp: {displacement_reward:.4f} | "
-                  f"Prog: {progress_reward:.4f} | "
-                  f"Step: {step_cost:.4f} | "
-                  f"Smooth: {smoothness_reward:.4f} | "
-                  f"Head: {heading_penalty:.4f} | "
-                  f"Coll: {collision_reward:.4f} | "
-                  f"MinReward: {min_range_reward:.4f} | "
-                  f"Goal: {current_goal_reward:.4f} | "
-                  f"Pose: {pose_reward:.4f} | "
-                  f"Done: {done}") 
+            print(
+                f"Robot {self.id} Total Reward: {reward:.4f}\n"
+                f"  Disp: {displacement_reward:.4f}\n"
+                f"  Prog: {progress_reward:.4f}\n"
+                f"  Step: {step_cost:.4f}\n"
+                f"  Smooth: {smoothness_reward:.4f}\n"
+                f"  Head: {heading_penalty:.4f}\n"
+                f"  Coll: {collision_reward:.4f}\n"
+                f"  MinDistReward: {min_range_reward:.4f}\n"
+                f"  Goal: {current_goal_reward:.4f}\n"
+                f"  Pose: {pose_reward:.4f}\n"
+                f"  Done: {done}"
+            )
         
         return reward, done
 
