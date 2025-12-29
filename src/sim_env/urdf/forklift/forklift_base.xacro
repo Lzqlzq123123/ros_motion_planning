@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- 定义参数 用于轮子的尺寸和缩放比例 -->
-  <xacro:property name="wheel_mesh_scale" value="0.3"/>
+  <xacro:property name="wheel_mesh_scale" value="0.1"/>
   <xacro:property name="wheel_radius_origin" value="0.3"/>
   <xacro:property name="wheel_length_origin" value="0.2"/>
 
@@ -36,18 +36,18 @@
 
     <link name="front_axle">
       <visual>
-        <origin xyz="-0.3 0 0.22" rpy="0 0 0"/>
+        <origin xyz="-0.1 0 0.0733" rpy="0 0 0"/>
         <geometry>
           <mesh filename="package://sim_env/meshes/fork/forklift_base2.dae" scale="${wheel_mesh_scale} ${wheel_mesh_scale} ${wheel_mesh_scale}"/>
         </geometry>
       </visual>
       <collision>
-        <origin xyz="-0.3 0 0.22" rpy="0 0 0"/>
+        <origin xyz="-0.1 0 0.0733" rpy="0 0 0"/>
         <geometry>
-          <box size="0.6 0.4 0.3"/>
+          <box size="0.2667 0.1333 0.1"/>
         </geometry>
       </collision>
-      <xacro:box_inertial x="0.6" y="0.4" z="0.3" mass="0.5" />
+      <xacro:box_inertial x="0.2667" y="0.1333" z="0.1" mass="0.0185" />
     </link>
 
     <joint name="front_joint_odom" type="fixed">
@@ -72,13 +72,13 @@
         </geometry>
       </collision>
       <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
-                                length="${wheel_length_origin * wheel_mesh_scale}"
-                                mass="0.75" />
+                length="${wheel_length_origin * wheel_mesh_scale}"
+                mass="0.0278" />
     </link>
     <joint name="rear_left_wheel_joint" type="continuous">
       <parent link="front_axle"/>
       <child  link="rear_left_wheel_link"/>
-      <origin xyz="-0.6 0.18 0.08" rpy="0 0 0"/>
+      <origin xyz="-0.2 0.06 0.0267" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
     </joint>
 
@@ -98,13 +98,13 @@
         </geometry>
       </collision>
       <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
-                                length="${wheel_length_origin * wheel_mesh_scale}"
-                                mass="0.75" />
+                length="${wheel_length_origin * wheel_mesh_scale}"
+                mass="0.0278" />
     </link>
     <joint name="rear_right_wheel_joint" type="continuous">
       <parent link="front_axle"/>
       <child link="rear_right_wheel_link"/>
-      <origin xyz="-0.6 -0.18 0.08" rpy="0 0 0"/>
+      <origin xyz="-0.2 -0.06 0.0267" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
     </joint>
 
@@ -124,13 +124,13 @@
         </geometry>
       </collision>
       <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
-                                length="${wheel_length_origin * wheel_mesh_scale}"
-                                mass="0.5" />
+                length="${wheel_length_origin * wheel_mesh_scale}"
+                mass="0.0185" />
     </link>
     <joint name="front_left_wheel_joint" type="continuous">
       <parent link="front_axle"/>
       <child link="front_left_wheel_link"/>
-      <origin xyz="-0.10 0.18 0.08" rpy="0 0 0"/>
+      <origin xyz="-0.0333 0.06 0.0267" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
     </joint>
 
@@ -150,13 +150,13 @@
         </geometry>
       </collision>
       <xacro:cylinder_inertial radius="${wheel_radius_origin * wheel_mesh_scale}"
-                                length="${wheel_length_origin * wheel_mesh_scale}"
-                                mass="0.5" />
+                length="${wheel_length_origin * wheel_mesh_scale}"
+                mass="0.0185" />
     </link>
     <joint name="front_right_wheel_joint" type="continuous">
       <parent link="front_axle"/>
       <child link="front_right_wheel_link"/>
-      <origin xyz="-0.10 -0.18 0.08" rpy="0 0 0"/>
+      <origin xyz="-0.0333 -0.06 0.0267" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
     </joint>
   </xacro:macro>

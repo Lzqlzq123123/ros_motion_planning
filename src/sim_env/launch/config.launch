@@ -23,6 +23,7 @@
   <arg name="gui" default="false" />
   <arg name="headless" default="false" />
   <arg name="rviz_file" default="" />
+  <arg name="show_rviz" default="true" />
 
   <!-- Set Gazebo model path -->
   <env name="GAZEBO_MODEL_PATH" value="$(find sim_env)/models:$(optenv GAZEBO_MODEL_PATH)" />
@@ -47,7 +48,7 @@
 
   <!-- open rviz for visualization -->
   <node pkg="dynamic_rviz_config" type="rviz_generate.py" name="rosapp_rviz" args="$(arg robot_number)" output="screen"
-    if="$(eval arg('rviz_file') == '')" />
+    if="$(eval arg('show_rviz') and arg('rviz_file') == '')" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find sim_env)/rviz/$(arg rviz_file)"
-    unless="$(eval arg('rviz_file') == '')" />
+    if="$(eval arg('show_rviz') and arg('rviz_file') != '')" />
 </launch>

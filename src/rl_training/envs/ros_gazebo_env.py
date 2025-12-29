@@ -39,10 +39,25 @@ class RosGazeboEnv(VecEnv):
         
         # Initialize Robots
         self.robots = []
-        init_poses = env_cfg.get('init_poses', {})
+        self.init_poses = env_cfg.get('init_poses', {})
         for i, name in enumerate(self.agent_names):
-            init_pos = init_poses.get(name, [0.0, 0.0, 0.0])
+            init_pos = self.init_poses.get(name, [0.0, 0.0, 0.0])
             self.robots.append(RobotAgent(name, i, name, env_cfg, init_pos))
+
+        # Track robot1 init pose for interference goal reference
+        self.robot1_init = self.init_poses.get(self.agent_names[0], [0.0, 0.0, 0.0]) if self.agent_names else [0.0, 0.0, 0.0]
+
+        # Optional interference robot (e.g., robot2) control
+        opponent_cfg = env_cfg.get('opponent', {})
+        self.opponent_enabled = opponent_cfg.get('enabled', False)
+        self.opponent_name = opponent_cfg.get('model_name', 'robot2')
+        self.opponent_goal_topic = opponent_cfg.get('goal_topic', f"/{self.opponent_name}/move_base_simple/goal")
+        self.opponent_frame_id = opponent_cfg.get('frame_id', 'map')
+        self.opponent_goal_offset = opponent_cfg.get('goal_offset', 0.3)
+        self.opponent_init_pose = self.init_poses.get(self.opponent_name, opponent_cfg.get('init_pose', [0.0, 0.0, 0.0]))
+        self.opponent_goal_pub = None
+        if self.opponent_enabled:
+            self.opponent_goal_pub = rospy.Publisher(self.opponent_goal_topic, PoseStamped, queue_size=1)
             
         # Buffers
         self.obs_buf = torch.zeros((self.num_envs, self.num_obs), device=device)
@@ -67,7 +82,7 @@ class RosGazeboEnv(VecEnv):
         for i, robot in enumerate(self.robots):
             robot.set_action(actions_np[i])
             
-        rospy.sleep(0.01) 
+        rospy.sleep(0.1) 
         
         obs = self.get_observations()
         
@@ -130,6 +145,58 @@ class RosGazeboEnv(VecEnv):
         goal_idx = np.random.randint(0, len(goals))
         goal_x, goal_y = goals[goal_idx]
         robot.reset(goal_x, goal_y, init_x, init_y)
+
+        # Also reset and command the interference robot (e.g., robot2)
+        if self.opponent_enabled and robot.model_name == self.agent_names[0]:
+            self.reset_interference_robot()
+
+    def reset_interference_robot(self):
+        if not self.opponent_enabled:
+            return
+
+        # Reset opponent pose in Gazebo
+        state = ModelState()
+        state.model_name = self.opponent_name
+        state.pose.position.x = self.opponent_init_pose[0]
+        state.pose.position.y = self.opponent_init_pose[1]
+        state.pose.position.z = 0.0
+        q = tf.transformations.quaternion_from_euler(0, 0, self.opponent_init_pose[2])
+        state.pose.orientation.x = q[0]
+        state.pose.orientation.y = q[1]
+        state.pose.orientation.z = q[2]
+        state.pose.orientation.w = q[3]
+
+        try:
+            self.set_model_state_srv(state)
+        except rospy.ServiceException as e:
+            rospy.logerr(f"[reset_interference_robot] Service call failed: {e}")
+
+        # Send goal for opponent: robot1 initial pose as its destination
+        goal_x = self.robot1_init[0]
+        goal_y = self.robot1_init[1]
+        self.publish_interference_goal(goal_x, goal_y)
+
+    def publish_interference_goal(self, goal_x, goal_y):
+        """Send goal to opponent with a small offset to avoid full footprint overlap at the target."""
+        if not self.opponent_enabled or self.opponent_goal_pub is None:
+            return
+
+        # Slightly offset the goal (fixed 0.2 m in Y of map frame) so the target cell is not exactly the same
+        # as robot1's footprint center. This reduces immediate collision cost that can make planning fail.
+        offset = self.opponent_goal_offset
+        msg = PoseStamped()
+        msg.header.frame_id = self.opponent_frame_id
+        msg.header.stamp = rospy.Time.now()
+        msg.pose.position.x = goal_x - offset
+        msg.pose.position.y = goal_y - offset
+        msg.pose.position.z = 0.0
+        msg.pose.orientation.w = 1.0
+
+        self.opponent_goal_pub.publish(msg)
+
+    def close(self):
+        """Placeholder for API compatibility with rsl_rl runner eval scripts."""
+        pass
 
 class RobotAgent:
     def __init__(self, namespace, id, model_name, env_cfg, init_pos):
@@ -234,6 +301,10 @@ class RobotAgent:
         t_cfg = self.term_cfg
 
         # State
+        # If odom not received yet, skip reward/termination to avoid None access
+        if self.odom is None:
+            return reward, done
+
         px = self.odom.pose.pose.position.x
         py = self.odom.pose.pose.position.y
         pz = self.odom.pose.pose.position.z
@@ -267,13 +338,13 @@ class RobotAgent:
             
             displacement_projection = dx_move * unit_x + dy_move * unit_y
             displacement_reward = displacement_projection * distance_scale
-            print(f"[compute_reward_and_done] Robot {self.id} Displacement Projection: {displacement_projection}")
+           # print(f"[compute_reward_and_done] Robot {self.id} Displacement Projection: {displacement_projection}")
             reward += displacement_reward
 
         # 1. Displacement / Progress Reward
         dist_reward_scale = r_cfg.get('dist_reward_scale')
         progress = self.prev_dist_to_goal - dist_to_goal
-        print(f"[compute_reward_and_done] self.prev_dist_to_goal {self.prev_dist_to_goal} Progress: {progress}  Dist to Goal: {dist_to_goal}")
+        #print(f"[compute_reward_and_done] self.prev_dist_to_goal {self.prev_dist_to_goal} Progress: {progress}  Dist to Goal: {dist_to_goal}")
         progress_reward = progress * dist_reward_scale
         reward += progress_reward
         
@@ -293,7 +364,7 @@ class RobotAgent:
         
         # 5. Collision
         min_scan = np.min(self.scan)
-        print(f"[compute_reward_and_done] Min Scan: {min_scan}")
+        #print(f"[compute_reward_and_done] Min Scan: {min_scan}")
         collision_dist = t_cfg.get('min_collision_range')
         collision_reward = 0.0
         
@@ -365,7 +436,9 @@ class RobotAgent:
                 f"  MinDistReward: {min_range_reward:.4f}\n"
                 f"  Goal: {current_goal_reward:.4f}\n"
                 f"  Pose: {pose_reward:.4f}\n"
-                f"  Done: {done}"
+                f"  Done: {done}\n"
+                f"  Min Scan: {min_scan:.4f}\n"
+                f"-------------------"
             )
         
         return reward, done

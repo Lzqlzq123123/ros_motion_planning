@@ -146,3 +146,17 @@
 - **Line Stats**: +42, -120
 - **Errors**: 无
 - **Context**: 清理错误技术路线产生的冗余脚本与 launch 文件，明确 NoMaD 仅通过命令行手动启动，并在 README 中描述从激活环境到运行 Python 服务的完整流程
+
+## UPDATE-2025-12-27A
+- **Changes**: src/rl_training/envs/ros_gazebo_env.py -> 在 PPO 环境重置时同步重置 robot2，并自动向其 goal 话题发布以 robot1 初始位置为终点的 PoseStamped；src/rl_training/config/forklift_ppo.yaml -> 新增 opponent 配置块以启用干扰机器人（model_name/goal_topic/frame_id）。
+- **Line Stats**: +74, -0
+- **Errors**: 未在真实 Gazebo+move_base 环境验证 robot2 自动导航链路，需要确保 robot2 move_base_simple/goal 订阅可用且控制器运行。
+- **Context**: 便于在 PPO 训练 robot1 时使用 robot2 作为动态干扰体，自动随每次 robot1 reset 重置并下发目标，无需手动在 RViz 设置 goal。
+
+## UPDATE-2025-12-29A
+- **Changes**:
+  - ros_gazebo_env.py: 对 robot2 发布的对抗目标增加固定 0.2m Y 方向偏移（map 帧）。目的：目标点不与 robot1 质心完全重合，避免 costmap 判定“当前位置即目标/碰撞”而直接返回 GOAL Reached 或无法规划。
+  - pid_controller.cpp: 在 setPlan 中不再依赖目标是否变化，始终重置 `goal_x_/goal_y_/goal_theta_`、`goal_reached_` 以及积分项。目的：跨 episode/多次 reset 时即便目标坐标相同，也会重新进入跟踪，不再出现首个自动目标需要手动“激活”才能执行的情况。
+- **Line Stats**: +32, -18（Python+CPP 总计）
+- **Errors/Notes**: Python 改动无需编译；PID 改动需重新编译 catkin 后重启 move_base。偏移量可按需要调节（0.2m→0.3m）以适配场景。
+- **Context/Impact**: 针对对抗场景（robot2 追撞 robot1）出现的“规划已完成但车不动/需手动下发一次 goal”问题。现在每次 reset 下发的自动目标都会被视为新目标并执行；同时减少因 footprint 重叠导致的规划失败。

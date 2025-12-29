@@ -132,17 +132,14 @@ bool PIDController::setPlan(const std::vector<geometry_msgs::PoseStamped>& orig_
   global_plan_.clear();
   global_plan_ = orig_global_plan;
 
-  // receive a plan for a new goal
-  if (goal_x_ != global_plan_.back().pose.position.x || goal_y_ != global_plan_.back().pose.position.y)
-  {
-    goal_x_ = global_plan_.back().pose.position.x;
-    goal_y_ = global_plan_.back().pose.position.y;
-    goal_theta_ = getYawAngle(global_plan_.back());
-    goal_reached_ = false;
+  // Always reset goal state on a new plan to avoid lingering "goal reached" when the target repeats across episodes.
+  goal_x_ = global_plan_.back().pose.position.x;
+  goal_y_ = global_plan_.back().pose.position.y;
+  goal_theta_ = getYawAngle(global_plan_.back());
+  goal_reached_ = false;
 
-    e_v_ = i_v_ = 0.0;
-    e_w_ = i_w_ = 0.0;
-  }
+  e_v_ = i_v_ = 0.0;
+  e_w_ = i_w_ = 0.0;
 
   return true;
 }

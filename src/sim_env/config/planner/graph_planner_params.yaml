@@ -2,7 +2,7 @@ PathPlanner:
   hybrid_astar:
     # motion model
     # 2 ---- DUBIN
-    # 3 ---- REEDS_SHEPP
+    # 3 ---- REEDS_SHEPP (requires Reeds-Shepp support in compiled library)
     motion_model: 2
     # tolerance distance to goal [m]
     goal_tolerance: 0.2
@@ -23,11 +23,11 @@ PathPlanner:
     # Minimum turning radius
     minimum_turning_radius: 0.3
     # penalty to apply if motion is non-straight, must be => 1
-    non_straight_penalty: 1.20
+    non_straight_penalty: 1.50
     # penalty to apply if motion is changing directions, must be >= 0
-    change_penalty: 0.05
+    change_penalty: 0.40
     # penalty to apply if motion is reversing, must be => 1
-    reverse_penalty: 2.1
+    reverse_penalty: 2.5
     # penalty to prefer later maneuvers before earlier along the path
     retrospective_penalty: 0.025
     # size of the dubin/reeds-sheep distance window to cache [meters]
