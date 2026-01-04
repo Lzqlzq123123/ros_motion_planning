@@ -2,9 +2,9 @@
 
 ## 项目概述
 - 项目名称: ros_motion_planning
-- 当前任务: 集成 NoMaD 模型作为全局规划算法
+- 当前任务: 修复 RL 训练中机器人原地打转问题（动作归一化）
 - 创建时间: 2025-12-21
-- 更新时间: 2025-12-21
+- 更新时间: 2026-01-04
 
 ## 系统架构分析
 - 当前实现了基于 move_base 的传统规划和基于 rsl_rl 的 gazebo 强化学习
@@ -166,3 +166,9 @@
 - **Line Stats**: +45, -0
 - **Errors**: 无
 - **Context**: 修复了 `eval_trained_policy.py` 运行时，由于缺少 `init_poses` 配置，导致所有机器人被重置到 (0,0) 原点并发生碰撞的问题。现在评估脚本会复用 `user_config.yaml` 中的初始位置配置，与训练脚本 `train_new.py` 行为一致。
+
+## UPDATE-2026-01-04B
+- **Analysis**: 用户反馈训练时机器人“一直在打转”。经查 `ros_gazebo_env.py` 直接对动作进行 `np.clip` 而未进行缩放（Scaling）。PPO 策略通常输出范围 [-1, 1] 的值，若直接 clip 到 [-0.5, 0.5]，会导致大于 0.5 的动作梯度消失，且初始探索效率极低。
+- **Plan**: 
+  1. 在 `forklift_ppo.yaml` 中添加 `action_scale` 参数（如 `[0.5, 0.5]`）。
+  2. 修改 `ros_gazebo_env.py`，在 clip 之前先将动作乘以 scale。

@@ -16,11 +16,12 @@ env:
     frame_id: map  # goal is published in map frame; init pose来自user_config.yaml
     goal_offset: 0.3  # 对抗目标goal偏移（米），避免与robot1质心完全重合costmap导致规划失败
   
-  # Action Clipping
-  action_clip_low: [0.0, -0.5]  # [v_min, w_min]
-  action_clip_high: [1.0, 0.5]  # [v_max, w_max]
+  # Action Scaling & Clipping
+  action_scale: [0.5, 0.5]       # Scale PPO output [-1, 1] to physical units
+  action_clip_low: [-0.5, -0.5]  # [v_min, w_min]
+  action_clip_high: [0.5, 0.5]  # [v_max, w_max]
   
-  reward_debug: true # 打印 reward 分解用于调试
+  reward_debug: false # 打印 reward 分解用于调试
 
   reward:
     type: displacement

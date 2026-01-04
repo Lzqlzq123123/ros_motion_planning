@@ -277,16 +277,20 @@ class RobotAgent:
         self.prev_action = self.current_action
         self.current_action = action
 
+        # Apply scaling (PPO output is typically [-1, 1])
+        scale = self.env_cfg.get('action_scale')
+        scaled_action = action * np.array(scale)
+
         clip_low = self.env_cfg.get('action_clip_low')
         clip_high = self.env_cfg.get('action_clip_high')
         
         msg = Twist()
-        msg.linear.x = np.clip(action[0], clip_low[0], clip_high[0]) 
-        msg.angular.z = np.clip(action[1], clip_low[1], clip_high[1])
+        msg.linear.x = np.clip(scaled_action[0], clip_low[0], clip_high[0])
+        msg.angular.z = np.clip(scaled_action[1], clip_low[1], clip_high[1])
         
         if self.env_cfg.get('reward_debug', False):
              print("--- Action Debug ---")
-             print(f"[set_action] Robot {self.id} Raw Action: [{action[0]:.2f}, {action[1]:.2f}] -> Clipped: [{msg.linear.x:.2f}, {msg.angular.z:.2f}]")
+             print(f"[set_action] Raw: [{action[0]:.2f}, {action[1]:.2f}] -> Scaled: [{scaled_action[0]:.2f}, {scaled_action[1]:.2f}] -> Clipped: [{msg.linear.x:.2f}, {msg.angular.z:.2f}]")
 
         self.cmd_vel_pub.publish(msg)
 

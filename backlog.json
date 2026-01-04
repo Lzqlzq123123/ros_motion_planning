@@ -54,5 +54,13 @@
     "description": "在forklift_ppo.yaml中添加init_poses配置，防止ros_gazebo_env.py将所有机器人重置到原点导致碰撞。参考user_config.yaml中的坐标。",
     "test_command": "python src/rl_training/eval_trained_policy.py ...",
     "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/user_config/user_config.yaml"]
+  },
+  {
+    "id": "TASK-203",
+    "title": "修复RL训练动作归一化问题",
+    "type": "bugfix",
+    "description": "用户反馈训练时机器人原地打转。原因是ros_gazebo_env.py直接clip动作而未缩放。需在forklift_ppo.yaml添加action_scale，并在env中应用缩放。",
+    "test_command": "python src/rl_training/train_new.py ...",
+    "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/rl_training/envs/ros_gazebo_env.py"]
   }
 ]
