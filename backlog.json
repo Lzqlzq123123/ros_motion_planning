@@ -46,5 +46,13 @@
     "description": "将随机距离生成目标改为从配置文件读取预定义目标点列表。1. 修改forklift_ppo.yaml添加goals列表; 2. 修改ros_gazebo_env.py从列表中随机选择目标。",
     "test_command": "python src/rl_training/envs/ros_gazebo_env.py",
     "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/rl_training/envs/ros_gazebo_env.py"]
+  },
+  {
+    "id": "TASK-202",
+    "title": "修复RL评估时机器人初始位置重叠",
+    "type": "bugfix",
+    "description": "在forklift_ppo.yaml中添加init_poses配置，防止ros_gazebo_env.py将所有机器人重置到原点导致碰撞。参考user_config.yaml中的坐标。",
+    "test_command": "python src/rl_training/eval_trained_policy.py ...",
+    "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/user_config/user_config.yaml"]
   }
 ]

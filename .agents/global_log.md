@@ -32,11 +32,11 @@
 - 输出：
   - 导航动作（速度命令或路径点）
 - 推理流程：
-  1. 加载 NoMaD 模型检查点
-  2. 读取目标图像
-  3. 获取当前相机观察
-  4. 使用模型预测导航动作
-  5. 转换为 ROS 路径消息
+  - 1. 加载 NoMaD 模型检查点
+  - 2. 读取目标图像
+  - 3. 获取当前相机观察
+  - 4. 使用模型预测导航动作
+  - 5. 转换为 ROS 路径消息
 
 ### 集成方案
 - 创建一个 Python ROS 节点作为全局规划器
@@ -67,7 +67,7 @@
 - **Changes**: src/core/path_planner/nomad_planner/src/nomad_planner.cpp:1-182 -> 新增NoMaD全局规划器插件实现，封装ROS服务调用; src/core/path_planner/nomad_planner/include/nomad_planner/nomad_planner.h:1-49 -> 定义插件接口与参数; src/core/path_planner/nomad_planner/CMakeLists.txt:1-49 -> 配置库构建与安装; src/core/path_planner/nomad_planner/package.xml:1-31 -> 声明catkin依赖与插件导出; src/core/path_planner/nomad_planner/nomad_planner_plugin.xml:1-7 -> 注册nav_core插件
 - **Line Stats**: +318, -1
 - **Errors**: 初次缺少catkin_make命令；安装catkin后运行catkin_make -DCATKIN_WHITELIST_PACKAGES="" 成功编译
-- **Context**: 插件通过~/<name>/service_name与goal_image_name参数配置服务名及目标图像，makePlan调用/nomad/make_plan并返回nav_msgs/Path供局部规划器消费；等待服务超时5秒并以持久连接方式复用客户端
+- **Context**: 插件通过~/[name]/service_name与goal_image_name参数配置服务名及目标图像，makePlan调用/nomad/make_plan并返回nav_msgs/Path供局部规划器消费；等待服务超时5秒并以持久连接方式复用客户端
 
 ## TASK-002
 - **Changes**: /data/lzq/visualnav-transformer/deployment/src/nomad_plan_service.py:1-322 -> 新建NoMaD规划ROS服务节点，订阅相机并暴露/nomad/make_plan接口
@@ -160,3 +160,9 @@
 - **Line Stats**: +32, -18（Python+CPP 总计）
 - **Errors/Notes**: Python 改动无需编译；PID 改动需重新编译 catkin 后重启 move_base。偏移量可按需要调节（0.2m→0.3m）以适配场景。
 - **Context/Impact**: 针对对抗场景（robot2 追撞 robot1）出现的“规划已完成但车不动/需手动下发一次 goal”问题。现在每次 reset 下发的自动目标都会被视为新目标并执行；同时减少因 footprint 重叠导致的规划失败。
+
+## TASK-202
+- **Changes**: src/rl_training/eval_trained_policy.py:1-96 -> 引入 `get_user_config_init_poses` 函数，从 `src/user_config/user_config.yaml` 读取机器人初始位置，并注入到 `env_cfg` 中。
+- **Line Stats**: +45, -0
+- **Errors**: 无
+- **Context**: 修复了 `eval_trained_policy.py` 运行时，由于缺少 `init_poses` 配置，导致所有机器人被重置到 (0,0) 原点并发生碰撞的问题。现在评估脚本会复用 `user_config.yaml` 中的初始位置配置，与训练脚本 `train_new.py` 行为一致。

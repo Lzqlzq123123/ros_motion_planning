@@ -26,6 +26,45 @@ def load_yaml(path: str) -> Dict[str, Any]:
         return yaml.safe_load(f)
 
 
+def get_user_config_init_poses():
+    # Path to user_config.yaml relative to this script
+    # src/rl_training/eval_trained_policy.py -> src/user_config/user_config.yaml
+    config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'user_config/user_config.yaml')
+    
+    if not os.path.exists(config_path):
+        print(f"Warning: user_config.yaml not found at {config_path}")
+        return {}
+        
+    try:
+        with open(config_path, 'r') as f:
+            config = yaml.safe_load(f)
+            
+        init_poses = {}
+        if 'robots_config' in config:
+            for robot_conf in config['robots_config']:
+                # Find keys like robot1_x_pos
+                keys = list(robot_conf.keys())
+                if not keys:
+                    continue
+                
+                # Extract ID
+                import re
+                match = re.match(r'robot(\d+)_', keys[0])
+                if match:
+                    robot_id = match.group(1)
+                    name = f"robot{robot_id}"
+                    
+                    x = float(robot_conf.get(f'{name}_x_pos', 0.0))
+                    y = float(robot_conf.get(f'{name}_y_pos', 0.0))
+                    yaw = float(robot_conf.get(f'{name}_yaw', 0.0))
+                    
+                    init_poses[name] = [x, y, yaw]
+        return init_poses
+    except Exception as e:
+        print(f"Error parsing user_config.yaml: {e}")
+        return {}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True, help="Training config yaml used for train_new.py")
@@ -39,6 +78,12 @@ def main():
     cfg = load_yaml(args.config)
     env_cfg = cfg["env"]
     runner_cfg = cfg["runner"]
+
+    # Inject init poses from user_config.yaml
+    init_poses = get_user_config_init_poses()
+    if init_poses:
+        print(f"Loaded init poses from user_config: {init_poses}")
+        env_cfg['init_poses'] = init_poses
 
     device = args.device
     env = RosGazeboEnv(env_cfg, device=device)
