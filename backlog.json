@@ -1,26 +1,10 @@
 [
   {
-    "id": "TASK-205",
-    "title": "Refactor Reward Function",
+    "id": "TASK-208",
+    "title": "Simplify Reward Logic & Fix Scales",
     "type": "Refactor",
-    "description": "Refactor reward function to fix reward farming while maintaining guidance:\n1. **Milestone Reward**: Change `at_goal_pos` reward to be ONE-TIME only (triggered upon first entry).\n2. **Terminal Reward**: Grant remaining reward only on full success (pos+yaw+stop).\n3. **Cleanup**: Remove redundant `displacement_reward` (keep `progress_reward`).",
+    "description": "Simplify reward function based on user feedback: 1. Set action_penalty_scale to 0. 2. Remove complex pose/goal logic (pose_gate_radius, stay_steps), keep only one-time terminal goal reward. 3. Reduce heading penalty scale to avoid domination.",
     "test_command": "python3 src/rl_training/train_new.py --config src/rl_training/config/forklift_ppo.yaml",
-    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py", "src/rl_training/config/forklift_ppo.yaml"]
-  },
-  {
-    "id": "TASK-206",
-    "title": "Fix LaserScan Initialization",
-    "type": "Bugfix",
-    "description": "Initialize self.scan with large values (e.g., 10.0 or 100.0) instead of zeros to prevent false collision detection (reward penalty) before the first scan callback is received.",
-    "test_command": "Verify code initialization logic",
-    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py"]
-  },
-  {
-    "id": "TASK-207",
-    "title": "Add Distance Penalty",
-    "type": "Feature",
-    "description": "Add an absolute distance penalty term to the reward function so that being far from the goal incurs a continuous penalty.",
-    "test_command": "Check reward calculation logic",
     "context_needed": ["src/rl_training/envs/ros_gazebo_env.py", "src/rl_training/config/forklift_ppo.yaml"]
   }
 ]

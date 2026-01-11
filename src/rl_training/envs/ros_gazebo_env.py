@@ -278,8 +278,6 @@ class RobotAgent:
         
         self.current_action = np.zeros(2)
         self.prev_action = np.zeros(2)
-        self.success_steps = 0
-        self.has_reached_goal_pos = False
 
     def scan_cb(self, msg):
         with self.lock:
@@ -405,7 +403,7 @@ class RobotAgent:
         # progress_reward = progress * dist_reward_scale
         # reward += progress_reward
 
-        dist_penalty_scale = r_cfg.get('dist_penalty_scale', 0.0)
+        dist_penalty_scale = r_cfg.get('dist_penalty_scale')
         dist_penalty = dist_to_goal * dist_penalty_scale
         reward += dist_penalty
         
@@ -421,7 +419,7 @@ class RobotAgent:
 
         # 3.1 Action Magnitude Penalty (Prevent saturation)
         # Penalize large raw actions to keep them within reasonable range [-1, 1]
-        action_penalty = np.sum(np.square(self.current_action)) * r_cfg.get('action_penalty_scale', -0.01)
+        action_penalty = np.sum(np.square(self.current_action)) * r_cfg.get('action_penalty_scale')
         reward += action_penalty
         
         # 4. Heading Penalty
@@ -449,44 +447,22 @@ class RobotAgent:
              reward += min_range_reward
 
         # 7. Goal & Success
-        # Success Check
+        # Simplified: Reach goal position -> Done + Reward
         at_goal_pos = dist_to_goal < t_cfg.get('success_pos')
-        at_goal_yaw = abs(yaw_err_to_target) < t_cfg.get('success_yaw')
-        stopped = abs(lin_vel) < t_cfg.get('success_lin_vel_th') and abs(ang_vel) < t_cfg.get('success_ang_vel_th')
         
         goal_reward = r_cfg.get('goal_reward')
         current_goal_reward = 0.0
         
-        # Milestone Reward: First time reaching goal position
-        if at_goal_pos and not self.has_reached_goal_pos:
-            current_goal_reward += goal_reward * 0.4
-            self.has_reached_goal_pos = True
-
-
-        # Check for full success
-        if at_goal_pos and at_goal_yaw and stopped:
-            self.success_steps += 1
-        else:
-            self.success_steps = 0
-
-        if self.success_steps >= t_cfg.get('success_stay_steps'):
+        if at_goal_pos:
             done = True
-            # Terminal Reward: Full success
-            current_goal_reward += goal_reward * 0.6
-            # print(f"Robot {self.id} completed task!")
+            current_goal_reward = goal_reward
+            # print(f"Robot {self.id} reached goal!")
         
         reward += current_goal_reward
             
-        # Pose-based reward within a gate radius
-        pose_reward = 0.0
-        if dist_to_goal < r_cfg.get('pose_gate_radius'):
-            yaw_reward_scale = r_cfg.get('yaw_reward_scale')
-            pose_reward = yaw_reward_scale * (np.exp(abs(yaw_err_to_target)) - 1.0)
-            reward += pose_reward
-            
         # Termination: Min Height
-        if pz < t_cfg.get('min_height'):
-            done = True
+        # if pz < t_cfg.get('min_height'):
+        #     done = True
             
         # Update prev
         self.prev_dist_to_goal = dist_to_goal
@@ -504,7 +480,6 @@ class RobotAgent:
                 f"  Coll: {collision_reward:.4f}\n"
                 f"  MinDistReward: {min_range_reward:.4f} min_scan: {min_scan:.4f}\n"
                 f"  Goal: {current_goal_reward:.4f}\n"
-                f"  Pose: {pose_reward:.4f}\n"
                 f"  Done: {done}\n"
                 f"-------------------"
             )
@@ -522,8 +497,6 @@ class RobotAgent:
         
         self.current_action = np.zeros(2)
         self.prev_action = np.zeros(2)
-        self.success_steps = 0
-        self.has_reached_goal_pos = False
         
         marker = Marker()
         marker.header.frame_id = "map"

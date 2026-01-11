@@ -22,23 +22,19 @@ env:
   action_clip_low: [-0.5, -0.5]  # [v_min, w_min]
   action_clip_high: [0.5, 0.5]  # [v_max, w_max]
   
-  reward_debug: true # 打印 reward 分解用于调试
+  reward_debug: false # 打印 reward 分解用于调试
 
   reward:
     type: displacement
-    smoothness_scale: -0.1      # 惩罚动作不平滑（负值）
-    action_penalty_scale: -0.01 # 惩罚大幅度动作（防止饱和）
-    heading_penalty_scale: -0.1  # 朝向偏差惩罚（负值）
+    smoothness_scale: -1      # 惩罚动作不平滑（负值）
+    action_penalty_scale: 0.0 # 惩罚大幅度动作（防止饱和）
+    heading_penalty_scale: -0.5  # 朝向偏差惩罚（负值）
     collision_penalty: -10.0     # 碰撞惩罚（负值）
-    min_range_penalty: -2.0      # 靠障碍太近惩罚（负值）
+    min_range_penalty: -1.0      # 靠障碍太近惩罚（负值）
     min_range_threshold: 0.5       # lidar 小于该距离开始惩罚
     goal_reward: 20.0            # 到终点一次性奖励（正值）
-    step_cost: -0.001             # 每步负奖励（负值）
-    dist_penalty_scale: -0.05    # 绝对距离惩罚系数（负值，reward += dist_to_goal * scale）
-
-    # 靠近终点时
-    pose_gate_radius: 0.5       # 进入该距离后开始关注目标姿态
-    yaw_reward_scale: -0.1       # 姿态奖励强度（调参用）
+    step_cost: -0.01             # 每步负奖励（负值）
+    dist_penalty_scale: -1    # 绝对距离惩罚系数（负值，reward += dist_to_goal * scale）
 
   termination:                  # 终止条件
     min_height: -1.0
@@ -50,7 +46,6 @@ env:
     success_yaw: 0.087266        # 朝向误差容差（弧度）≈5°
     success_lin_vel_th: 0.02     # 线速度阈值（m/s）
     success_ang_vel_th: 0.05     # 角速度阈值（rad/s）
-    success_stay_steps: 3        # 满足上述条件连续步数才算成功
 
 runner:
   obs_groups:
@@ -81,8 +76,8 @@ runner:
     critic_obs_normalization: true
 
   # Rollout horizon per iteration (steps = num_envs * num_steps_per_env)
-  num_steps_per_env: 1024
-  max_iterations: 1500
-  save_interval: 50
+  num_steps_per_env: 512
+  max_iterations: 500
+  save_interval: 20
   experiment_name: "forklift_ppo"
-  run_name: "run_3"
+  run_name: "run_4"

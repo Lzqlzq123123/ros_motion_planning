@@ -207,3 +207,11 @@
 - **Line Stats**: +6, -5
 - **Errors**: 无
 - **Context**: 用户要求“距离目标越远惩罚越大”，因此移除了基于差值的 Progress Reward（只关注局部改进），改为基于绝对距离的 Distance Penalty（关注全局状态）。这有助于提供持续的负反馈，引导 Agent 尽快缩短到目标的距离。
+
+## TASK-208
+- **Changes**:
+  - src/rl_training/config/forklift_ppo.yaml: `action_penalty_scale` -> 0.0, `heading_penalty_scale` -> -0.5, Removed `pose_gate_radius`, `yaw_reward_scale`, `success_stay_steps`.
+  - src/rl_training/envs/ros_gazebo_env.py: Simplified reward logic. Removed `Milestone Reward`, `pose_gate_radius` logic. `at_goal_pos` now immediately triggers `done=True` and `goal_reward`.
+- **Line Stats**: +20, -40 (Approx)
+- **Errors**: None
+- **Context**: Simplified reward function to fix oscillation and "reward farming". By removing conflicting pose/action penalties and complex multi-stage success criteria, the agent should focus on the primary objective: reaching the goal position.
