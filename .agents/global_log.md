@@ -2,9 +2,9 @@
 
 ## 项目概述
 - 项目名称: ros_motion_planning
-- 当前任务: 修复 RL 训练中机器人原地打转问题（动作归一化）
+- 当前任务: 修复 Forklift 环境中 LaserScan 初始化导致的异常奖励问题，并替换 Progress Reward 为 Distance Penalty
 - 创建时间: 2025-12-21
-- 更新时间: 2026-01-04
+- 更新时间: 2026-01-11
 
 ## 系统架构分析
 - 当前实现了基于 move_base 的传统规划和基于 rsl_rl 的 gazebo 强化学习
@@ -167,8 +167,43 @@
 - **Errors**: 无
 - **Context**: 修复了 `eval_trained_policy.py` 运行时，由于缺少 `init_poses` 配置，导致所有机器人被重置到 (0,0) 原点并发生碰撞的问题。现在评估脚本会复用 `user_config.yaml` 中的初始位置配置，与训练脚本 `train_new.py` 行为一致。
 
-## UPDATE-2026-01-04B
-- **Analysis**: 用户反馈训练时机器人“一直在打转”。经查 `ros_gazebo_env.py` 直接对动作进行 `np.clip` 而未进行缩放（Scaling）。PPO 策略通常输出范围 [-1, 1] 的值，若直接 clip 到 [-0.5, 0.5]，会导致大于 0.5 的动作梯度消失，且初始探索效率极低。
-- **Plan**: 
-  1. 在 `forklift_ppo.yaml` 中添加 `action_scale` 参数（如 `[0.5, 0.5]`）。
-  2. 修改 `ros_gazebo_env.py`，在 clip 之前先将动作乘以 scale。
+## TASK-203
+- **Changes**: src/rl_training/config/forklift_ppo.yaml:1-84 -> 新增 `action_scale: [0.5, 0.5]` 参数; src/rl_training/envs/ros_gazebo_env.py:1-476 -> 在 `set_action` 中应用缩放，将 PPO 输出 [-1, 1] 映射到物理速度。
+- **Line Stats**: +29, -10
+- **Errors**: 无
+- **Context**: 修复了训练时机器人“原地打转”的问题。原因为 PPO 输出直接被 clip 到 [-0.5, 0.5]，导致大动作被截断且梯度消失。引入缩放后，动作空间映射更合理。
+
+## TASK-204
+- **Changes**: src/rl_training/config/forklift_ppo.yaml:1-85 -> 新增 `control_dt: 0.1` 参数; src/rl_training/envs/ros_gazebo_env.py:1-480 -> 修改 `step` 和 `reset` 方法，使用 `/gazebo/pause_physics` 和 `/gazebo/unpause_physics` 服务配合 `rospy.sleep(control_dt)` 实现离散步进控制。
+- **Line Stats**: +45, -15
+- **Errors**: 无
+- **Context**: 替换了原有的 `rospy.sleep(0.1)`，通过显式控制物理引擎的暂停和恢复，确保每个训练步长的物理时间精确为 `control_dt`，解决了训练时序不稳定的问题。同时在 reset 时也加入了 unpause/pause 逻辑以确保状态正确更新。
+
+## TASK-205 (Analysis)
+- **Problem**: 当前奖励函数存在严重的 "Reward Farming" 漏洞。
+  - `at_goal_pos` 判定条件（距离 < 0.05m）会每步触发 `goal_reward * 0.5` (10.0)，即使机器人没有停下或朝向不对。这导致机器人倾向于在目标点附近震荡以刷取奖励，而不是完成任务。
+  - 存在冗余的距离奖励：`displacement_reward` (投影距离) 和 `progress_reward` (距离差值) 同时存在且系数均为 1.0，导致趋向目标的奖励权重过大。
+- **Plan**:
+  1. **Fix Goal Reward**: 将 Goal Reward 改为稀疏的 Terminal Reward。只有在 `done=True` 且满足所有成功条件（位置+朝向+静止）时才给予一次性奖励。
+  2. **Remove Redundant Reward**: 移除 `displacement_reward` (投影法)，保留 `progress_reward` (势能差法)，因为后者数学性质更好（保证总奖励 = 总距离 * scale）。
+  3. **Cleanup**: 移除 `at_goal_pos` 的每步奖励逻辑。
+
+## TASK-206 (New Issue)
+- **Problem**: 用户报告奖励值异常大（负值），怀疑是 Scan 初始化为 0 导致误报碰撞。
+- **Analysis**: 代码中 `self.scan = np.zeros(self.scan_dim)`。在 `scan_cb` 第一次回调前，`min_scan` 为 0。
+- **Impact**: `compute_reward_and_done` 中检测到 `min_scan < collision_dist` (0 < 0.18)，触发 `collision_penalty` (-10.0) 和 `min_range_penalty` (-2.0)。导致初始 steps 即使无碰撞也产生 -12.0 的 step reward。
+- **Plan**: 将 `self.scan` 初始化为 `np.full(self.scan_dim, 10.0)` 或其他安全的大数值。
+
+## TASK-206
+- **Changes**: src/rl_training/envs/ros_gazebo_env.py:265 -> `self.scan` 初始化从 `np.zeros` 改为 `np.full(..., 100.0)`
+- **Line Stats**: +2, -1
+- **Errors**: 无
+- **Context**: 修复了 LaserScan 在第一次回调前默认为 0，导致 `compute_reward_and_done` 误判为碰撞（min_scan < 0.18），从而在初始时刻给予巨大的负奖励问题。现在初始化为 100.0 (大于 max range)，确保在传感器数据到来前被视为无障碍。
+
+## TASK-207
+- **Changes**: 
+  - src/rl_training/config/forklift_ppo.yaml: 新增 `dist_penalty_scale: -0.5`，注释掉 `dist_reward_scale`。
+  - src/rl_training/envs/ros_gazebo_env.py: 移除 Progress Reward 计算，替换为 Distance Penalty (`dist_to_goal * dist_penalty_scale`)。
+- **Line Stats**: +6, -5
+- **Errors**: 无
+- **Context**: 用户要求“距离目标越远惩罚越大”，因此移除了基于差值的 Progress Reward（只关注局部改进），改为基于绝对距离的 Distance Penalty（关注全局状态）。这有助于提供持续的负反馈，引导 Agent 尽快缩短到目标的距离。

@@ -19,6 +19,14 @@ robots_config:
     robot2_z_pos: "0.0"
     robot2_yaw: "0.0"
 
+  # - robot3_type: "forklift"
+  #   robot3_global_planner: "theta_star"
+  #   robot3_local_planner: "dwa"
+  #   robot3_x_pos: "1"
+  #   robot3_y_pos: "2.0"
+  #   robot3_z_pos: "0.0"
+  #   robot3_yaw: "0.0"
+
 # * global planner
 #   * graph_planner
 #     * astar

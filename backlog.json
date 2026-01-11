@@ -1,66 +1,26 @@
 [
   {
-    "id": "TASK-101",
-    "title": "撰写NoMaD解耦架构设计",
-    "type": "design",
-    "description": "整理分离NoMaD推理进程与move_base的架构说明，明确ROS接口、环境隔离和数据流",
-    "test_command": "设计文档完成并评审",
-    "context_needed": ["现有Nomad集成", "move_base流程"]
+    "id": "TASK-205",
+    "title": "Refactor Reward Function",
+    "type": "Refactor",
+    "description": "Refactor reward function to fix reward farming while maintaining guidance:\n1. **Milestone Reward**: Change `at_goal_pos` reward to be ONE-TIME only (triggered upon first entry).\n2. **Terminal Reward**: Grant remaining reward only on full success (pos+yaw+stop).\n3. **Cleanup**: Remove redundant `displacement_reward` (keep `progress_reward`).",
+    "test_command": "python3 src/rl_training/train_new.py --config src/rl_training/config/forklift_ppo.yaml",
+    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py", "src/rl_training/config/forklift_ppo.yaml"]
   },
   {
-    "id": "TASK-102",
-    "title": "实现全局规划代理插件",
-    "type": "implementation",
-    "description": "在ros_motion_planning中实现只调用/nomad/make_plan服务的nav_core全局规划器，去除对Torch/cv_bridge的直接依赖",
-    "test_command": "catkin build sim_env",
-    "context_needed": ["nav_core接口", "ROS服务调用"]
+    "id": "TASK-206",
+    "title": "Fix LaserScan Initialization",
+    "type": "Bugfix",
+    "description": "Initialize self.scan with large values (e.g., 10.0 or 100.0) instead of zeros to prevent false collision detection (reward penalty) before the first scan callback is received.",
+    "test_command": "Verify code initialization logic",
+    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py"]
   },
   {
-    "id": "TASK-103",
-    "title": "封装Nomad推理服务启动",
-    "type": "implementation",
-    "description": "整理在独立conda环境运行nomad_plan_service.py的脚本/指引，并确保服务能在不依赖catkin包的情况下启动",
-    "test_command": "conda run -n nomad_train python deployment/src/nomad_plan_service.py --help",
-    "context_needed": ["NoMaD推理流程", "部署脚本"]
-  },
-  {
-    "id": "TASK-104",
-    "title": "更新move_base集成配置",
-    "type": "implementation",
-    "description": "调整ros_motion_planning的move_base.launch，改为依赖远程Nomad服务并提供必要参数，确保局部规划链路复用",
-    "test_command": "roslaunch sim_env move_base.launch",
-    "context_needed": ["launch文件结构", "move_base参数"]
-  },
-  {
-    "id": "TASK-105",
-    "title": "编写联调指导文档",
-    "type": "documentation",
-    "description": "撰写从启动conda环境到验证局部规划控制的操作手册，覆盖常见问题与排查步骤",
-    "test_command": "文档自检",
-    "context_needed": ["整体流程", "常见错误"]
-  },
-  {
-    "id": "TASK-201",
-    "title": "修改RL训练目标生成逻辑",
-    "type": "refactor",
-    "description": "将随机距离生成目标改为从配置文件读取预定义目标点列表。1. 修改forklift_ppo.yaml添加goals列表; 2. 修改ros_gazebo_env.py从列表中随机选择目标。",
-    "test_command": "python src/rl_training/envs/ros_gazebo_env.py",
-    "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/rl_training/envs/ros_gazebo_env.py"]
-  },
-  {
-    "id": "TASK-202",
-    "title": "修复RL评估时机器人初始位置重叠",
-    "type": "bugfix",
-    "description": "在forklift_ppo.yaml中添加init_poses配置，防止ros_gazebo_env.py将所有机器人重置到原点导致碰撞。参考user_config.yaml中的坐标。",
-    "test_command": "python src/rl_training/eval_trained_policy.py ...",
-    "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/user_config/user_config.yaml"]
-  },
-  {
-    "id": "TASK-203",
-    "title": "修复RL训练动作归一化问题",
-    "type": "bugfix",
-    "description": "用户反馈训练时机器人原地打转。原因是ros_gazebo_env.py直接clip动作而未缩放。需在forklift_ppo.yaml添加action_scale，并在env中应用缩放。",
-    "test_command": "python src/rl_training/train_new.py ...",
-    "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/rl_training/envs/ros_gazebo_env.py"]
+    "id": "TASK-207",
+    "title": "Add Distance Penalty",
+    "type": "Feature",
+    "description": "Add an absolute distance penalty term to the reward function so that being far from the goal incurs a continuous penalty.",
+    "test_command": "Check reward calculation logic",
+    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py", "src/rl_training/config/forklift_ppo.yaml"]
   }
 ]

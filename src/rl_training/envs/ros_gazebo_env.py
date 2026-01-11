@@ -10,6 +10,7 @@ from sensor_msgs.msg import LaserScan
 from visualization_msgs.msg import Marker
 from gazebo_msgs.srv import SetModelState, GetWorldProperties
 from gazebo_msgs.msg import ModelState
+from std_srvs.srv import Empty
 import threading
 import math
 
@@ -26,7 +27,8 @@ class RosGazeboEnv(VecEnv):
         self.num_obs = env_cfg.get('num_observations')
         self.num_actions = env_cfg.get('num_actions')
         self.max_episode_length = env_cfg.get('max_episode_length')
-        
+        self.control_dt = env_cfg.get('control_dt')
+
         # ROS Initialization
         if not rospy.get_node_uri():
             rospy.init_node("rl_training_node", anonymous=True)
@@ -34,8 +36,13 @@ class RosGazeboEnv(VecEnv):
         # Gazebo Services
         rospy.wait_for_service('/gazebo/set_model_state')
         rospy.wait_for_service('/gazebo/get_world_properties')
+        rospy.wait_for_service('/gazebo/pause_physics')
+        rospy.wait_for_service('/gazebo/unpause_physics')
+
         self.set_model_state_srv = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
         self.get_world_properties_srv = rospy.ServiceProxy('/gazebo/get_world_properties', GetWorldProperties)
+        self.pause_physics_srv = rospy.ServiceProxy('/gazebo/pause_physics', Empty)
+        self.unpause_physics_srv = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
         
         # Initialize Robots
         self.robots = []
@@ -79,11 +86,26 @@ class RosGazeboEnv(VecEnv):
     def step(self, actions):
         actions_np = actions.detach().cpu().numpy()
         
+        # 1. Set actions (publish cmd_vel)
         for i, robot in enumerate(self.robots):
             robot.set_action(actions_np[i])
             
-        rospy.sleep(0.1) 
+        # 2. Unpause physics to execute actions
+        try:
+            self.unpause_physics_srv()
+        except rospy.ServiceException as e:
+            rospy.logerr(f"/gazebo/unpause_physics service call failed: {e}")
+
+        # 3. Wait for control_dt
+        rospy.sleep(self.control_dt)
         
+        # 4. Pause physics to freeze state
+        try:
+            self.pause_physics_srv()
+        except rospy.ServiceException as e:
+            rospy.logerr(f"/gazebo/pause_physics service call failed: {e}")
+
+        # 5. Get observations
         obs = self.get_observations()
         
         self.rew_buf[:] = 0.0
@@ -111,8 +133,24 @@ class RosGazeboEnv(VecEnv):
         return obs, self.rew_buf, self.reset_buf, self.extras
 
     def reset(self):
+        # Unpause to allow state updates during reset
+        try:
+            self.unpause_physics_srv()
+        except rospy.ServiceException as e:
+            rospy.logerr(f"/gazebo/unpause_physics service call failed: {e}")
+
         for i in range(self.num_envs):
             self.reset_robot(i)
+        
+        # Wait for sensors to update after reset
+        rospy.sleep(self.control_dt)
+
+        # Pause again
+        try:
+            self.pause_physics_srv()
+        except rospy.ServiceException as e:
+            rospy.logerr(f"/gazebo/pause_physics service call failed: {e}")
+
         self.episode_length_buf[:] = 0
         self.reset_buf[:] = False
         return self.get_observations()
@@ -123,7 +161,7 @@ class RosGazeboEnv(VecEnv):
         
         # Reset Pose
         state = ModelState()
-        state.model_name = robot.model_name 
+        state.model_name = robot.model_name
         state.pose.position.x = init_x
         state.pose.position.y = init_y
         state.pose.position.z = 0.0
@@ -133,6 +171,14 @@ class RosGazeboEnv(VecEnv):
         state.pose.orientation.z = q[2]
         state.pose.orientation.w = q[3]
         
+        # Reset Velocity
+        state.twist.linear.x = 0.0
+        state.twist.linear.y = 0.0
+        state.twist.linear.z = 0.0
+        state.twist.angular.x = 0.0
+        state.twist.angular.y = 0.0
+        state.twist.angular.z = 0.0
+
         try:
             self.set_model_state_srv(state)
         except rospy.ServiceException as e:
@@ -143,8 +189,11 @@ class RosGazeboEnv(VecEnv):
 
         # 从配置的列表中随机选择一个目标点
         goal_idx = np.random.randint(0, len(goals))
-        goal_x, goal_y = goals[goal_idx]
-        robot.reset(goal_x, goal_y, init_x, init_y)
+        goal = goals[goal_idx]
+        goal_x = goal[0]
+        goal_y = goal[1]
+        goal_yaw = goal[2]
+        robot.reset(goal_x, goal_y, goal_yaw, init_x, init_y)
 
         # Also reset and command the interference robot (e.g., robot2)
         if self.opponent_enabled and robot.model_name == self.agent_names[0]:
@@ -211,7 +260,9 @@ class RobotAgent:
         self.cmd_vel_pub = rospy.Publisher(f"/{self.ns}/cmd_vel", Twist, queue_size=1)
         self.goal_marker_pub = rospy.Publisher(f"/{self.ns}/rl_goal_marker", Marker, queue_size=1)
         
-        self.scan = np.zeros(360)
+        self.scan_dim = 360
+        # Initialize scan with safe values (e.g. 10.0) to avoid immediate false collision detection (0.0 < threshold)
+        self.scan = np.full(self.scan_dim, 100.0)
         self.odom = None
         
         rospy.Subscriber(f"/{self.ns}/scan", LaserScan, self.scan_cb)
@@ -221,20 +272,22 @@ class RobotAgent:
         
         self.goal_x = 0.0
         self.goal_y = 0.0
+        self.goal_yaw = 0.0
         self.prev_dist_to_goal = 0.0
         self.prev_pose = np.zeros(2)
         
         self.current_action = np.zeros(2)
         self.prev_action = np.zeros(2)
         self.success_steps = 0
+        self.has_reached_goal_pos = False
 
     def scan_cb(self, msg):
         with self.lock:
             scan = np.array(msg.ranges)
-            if len(scan) > 360:
-                scan = scan[:360]
-            elif len(scan) < 360:
-                scan = np.pad(scan, (0, 360-len(scan)), 'constant')
+            if len(scan) > self.scan_dim:
+                scan = scan[:self.scan_dim]
+            elif len(scan) < self.scan_dim:
+                scan = np.pad(scan, (0, self.scan_dim-len(scan)), 'constant')
             self.scan = np.nan_to_num(scan, posinf=100.0, neginf=0.0)
 
     def odom_cb(self, msg):
@@ -243,15 +296,20 @@ class RobotAgent:
 
     def get_observation(self):
         with self.lock:
-            target_dist = 0.0
-            target_angle = 0.0
+            px = 0.0
+            py = 0.0
+            yaw = 0.0
             lin_vel = 0.0
             ang_vel = 0.0
+            target_dist = 0.0
+            target_angle = 0.0
+            yaw_err_to_target = 0.0
             
             if self.odom is not None:
                 px = self.odom.pose.pose.position.x
                 py = self.odom.pose.pose.position.y
                 yaw = self.get_yaw(self.odom.pose.pose.orientation)
+                # print("yaw:@@@@@@@@", yaw)
                 
                 lin_vel = self.odom.twist.twist.linear.x
                 ang_vel = self.odom.twist.twist.angular.z
@@ -259,13 +317,24 @@ class RobotAgent:
                 dx = self.goal_x - px
                 dy = self.goal_y - py
                 target_dist = math.sqrt(dx**2 + dy**2)
+                
                 target_angle = math.atan2(dy, dx) - yaw
                 target_angle = math.atan2(math.sin(target_angle), math.cos(target_angle))
 
+                yaw_err_to_target = self.goal_yaw - yaw
+                yaw_err_to_target = math.atan2(math.sin(yaw_err_to_target), math.cos(yaw_err_to_target))
+
+            # Pose: [x, y, yaw, vx, wz]
+            pose_vec = np.array([px, py, yaw, lin_vel, ang_vel], dtype=np.float32)
+            
+            # Extra: [dist, target_angle, yaw_err_to_target]
+            extra = np.array([target_dist, target_angle, yaw_err_to_target], dtype=np.float32)
+
             obs = np.concatenate([
-                self.scan, 
-                [target_dist, target_angle, lin_vel, ang_vel]
-            ]) 
+                pose_vec,
+                self.scan,
+                extra
+            ])
             return obs
 
     def get_yaw(self, q):
@@ -318,39 +387,27 @@ class RobotAgent:
         
         dist_to_goal = math.sqrt((self.goal_x - px)**2 + (self.goal_y - py)**2)
         
-        # Target Angle
+        # Target Angle (Relative Bearing)
         dx = self.goal_x - px
         dy = self.goal_y - py
         target_angle = math.atan2(dy, dx) - yaw
         target_angle = math.atan2(math.sin(target_angle), math.cos(target_angle)) # Normalize
 
+        # Yaw Error to Target Goal Orientation
+        yaw_err_to_target = self.goal_yaw - yaw
+        yaw_err_to_target = math.atan2(math.sin(yaw_err_to_target), math.cos(yaw_err_to_target))
+
         # --- Reward Calculation ---
         
-        # 0. Projected Displacement Reward
-        distance_scale = r_cfg.get('distance_scale')
-        displacement_reward = 0.0
-        if np.any(self.prev_pose):
-            dx_move = px - self.prev_pose[0]
-            dy_move = py - self.prev_pose[1]
-            
-            dx_target = self.goal_x - self.prev_pose[0]
-            dy_target = self.goal_y - self.prev_pose[1]
-            dist_to_target = math.sqrt(dx_target**2 + dy_target**2) + 1e-8
-            
-            unit_x = dx_target / dist_to_target
-            unit_y = dy_target / dist_to_target
-            
-            displacement_projection = dx_move * unit_x + dy_move * unit_y
-            displacement_reward = displacement_projection * distance_scale
-           # print(f"[compute_reward_and_done] Robot {self.id} Displacement Projection: {displacement_projection}")
-            reward += displacement_reward
+        # 1. Distance Penalty (Replaces Progress Reward)
+        # dist_reward_scale = r_cfg.get('dist_reward_scale')
+        # progress = self.prev_dist_to_goal - dist_to_goal
+        # progress_reward = progress * dist_reward_scale
+        # reward += progress_reward
 
-        # 1. Displacement / Progress Reward
-        dist_reward_scale = r_cfg.get('dist_reward_scale')
-        progress = self.prev_dist_to_goal - dist_to_goal
-        #print(f"[compute_reward_and_done] self.prev_dist_to_goal {self.prev_dist_to_goal} Progress: {progress}  Dist to Goal: {dist_to_goal}")
-        progress_reward = progress * dist_reward_scale
-        reward += progress_reward
+        dist_penalty_scale = r_cfg.get('dist_penalty_scale', 0.0)
+        dist_penalty = dist_to_goal * dist_penalty_scale
+        reward += dist_penalty
         
         # 2. Step Cost
         step_cost = r_cfg.get('step_cost')
@@ -361,6 +418,11 @@ class RobotAgent:
         diff = self.current_action - self.prev_action
         smoothness_reward = np.dot(diff, diff) * r_cfg.get('smoothness_scale')
         reward += smoothness_reward
+
+        # 3.1 Action Magnitude Penalty (Prevent saturation)
+        # Penalize large raw actions to keep them within reasonable range [-1, 1]
+        action_penalty = np.sum(np.square(self.current_action)) * r_cfg.get('action_penalty_scale', -0.01)
+        reward += action_penalty
         
         # 4. Heading Penalty
         heading_penalty = abs(target_angle) * r_cfg.get('heading_penalty_scale')
@@ -368,7 +430,6 @@ class RobotAgent:
         
         # 5. Collision
         min_scan = np.min(self.scan)
-        #print(f"[compute_reward_and_done] Min Scan: {min_scan}")
         collision_dist = t_cfg.get('min_collision_range')
         collision_reward = 0.0
         
@@ -390,33 +451,37 @@ class RobotAgent:
         # 7. Goal & Success
         # Success Check
         at_goal_pos = dist_to_goal < t_cfg.get('success_pos')
-        at_goal_yaw = abs(target_angle) < t_cfg.get('success_yaw')
+        at_goal_yaw = abs(yaw_err_to_target) < t_cfg.get('success_yaw')
         stopped = abs(lin_vel) < t_cfg.get('success_lin_vel_th') and abs(ang_vel) < t_cfg.get('success_ang_vel_th')
         
         goal_reward = r_cfg.get('goal_reward')
         current_goal_reward = 0.0
         
-        # Position and orientation both achieved
+        # Milestone Reward: First time reaching goal position
+        if at_goal_pos and not self.has_reached_goal_pos:
+            current_goal_reward += goal_reward * 0.4
+            self.has_reached_goal_pos = True
+
+
+        # Check for full success
         if at_goal_pos and at_goal_yaw and stopped:
-            current_goal_reward += goal_reward
             self.success_steps += 1
         else:
             self.success_steps = 0
-            
-        # Only achieved position
-        if at_goal_pos:
-            current_goal_reward += goal_reward * 0.5
-
-        reward += current_goal_reward
 
         if self.success_steps >= t_cfg.get('success_stay_steps'):
             done = True
+            # Terminal Reward: Full success
+            current_goal_reward += goal_reward * 0.6
+            # print(f"Robot {self.id} completed task!")
+        
+        reward += current_goal_reward
             
         # Pose-based reward within a gate radius
         pose_reward = 0.0
         if dist_to_goal < r_cfg.get('pose_gate_radius'):
             yaw_reward_scale = r_cfg.get('yaw_reward_scale')
-            pose_reward = yaw_reward_scale * (np.exp(abs(target_angle)) - 1.0)
+            pose_reward = yaw_reward_scale * (np.exp(abs(yaw_err_to_target)) - 1.0)
             reward += pose_reward
             
         # Termination: Min Height
@@ -431,25 +496,25 @@ class RobotAgent:
             print("--- Reward Debug ---")
             print(
                 f"Robot {self.id} Total Reward: {reward:.4f}\n"
-                f"  Disp: {displacement_reward:.4f}\n"
-                f"  Prog: {progress_reward:.4f}\n"
+                f"  DistPenalty: {dist_penalty:.4f} dist_to_goal: {dist_to_goal:.4f}\n"
                 f"  Step: {step_cost:.4f}\n"
                 f"  Smooth: {smoothness_reward:.4f}\n"
-                f"  Head: {heading_penalty:.4f}\n"
+                f"  Action: {action_penalty:.4f}\n"
+                f"  Head: {heading_penalty:.4f} target_angle: {target_angle:.4f}\n"
                 f"  Coll: {collision_reward:.4f}\n"
-                f"  MinDistReward: {min_range_reward:.4f}\n"
+                f"  MinDistReward: {min_range_reward:.4f} min_scan: {min_scan:.4f}\n"
                 f"  Goal: {current_goal_reward:.4f}\n"
                 f"  Pose: {pose_reward:.4f}\n"
                 f"  Done: {done}\n"
-                f"  Min Scan: {min_scan:.4f}\n"
                 f"-------------------"
             )
         
-        return reward, done
+        return float(reward), done
 
-    def reset(self, goal_x, goal_y, current_x, current_y):
+    def reset(self, goal_x, goal_y, goal_yaw, current_x, current_y):
         self.goal_x = goal_x
         self.goal_y = goal_y
+        self.goal_yaw = goal_yaw
         
         # Reset state variables
         self.prev_pose = np.array([current_x, current_y])
@@ -458,6 +523,7 @@ class RobotAgent:
         self.current_action = np.zeros(2)
         self.prev_action = np.zeros(2)
         self.success_steps = 0
+        self.has_reached_goal_pos = False
         
         marker = Marker()
         marker.header.frame_id = "map"

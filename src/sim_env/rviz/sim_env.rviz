@@ -13,6 +13,7 @@ Panels:
         - /Robot21/Path1
         - /Path1
         - /Map2
+        - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 212
   - Class: rviz/Tool Properties
@@ -517,6 +518,14 @@ Visualization Manager:
       Unreliable: false
       Use Timestamp: false
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /robot1/rl_goal_marker
+      Name: Marker
+      Namespaces:
+        rl_goal: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -552,7 +561,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 9.844847679138184
+      Distance: 10.477655410766602
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -570,7 +579,7 @@ Visualization Manager:
       Near Clip Distance: 0.009999999776482582
       Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
-      Yaw: 1.5303936004638672
+      Yaw: 1.5703939199447632
     Saved: ~
 Window Geometry:
   Displays:
@@ -586,5 +595,5 @@ Window Geometry:
   Tool Properties:
     collapsed: false
   Width: 1470
-  X: 908
-  Y: 178
+  X: 3674
+  Y: 62
