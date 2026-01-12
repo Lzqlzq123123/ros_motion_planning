@@ -262,7 +262,7 @@ class RobotAgent:
         
         self.scan_dim = 360
         # Initialize scan with safe values (e.g. 10.0) to avoid immediate false collision detection (0.0 < threshold)
-        self.scan = np.full(self.scan_dim, 100.0)
+        self.scan = np.full(self.scan_dim, 10.0)
         self.odom = None
         
         rospy.Subscriber(f"/{self.ns}/scan", LaserScan, self.scan_cb)

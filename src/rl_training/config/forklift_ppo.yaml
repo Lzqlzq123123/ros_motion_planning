@@ -22,14 +22,14 @@ env:
   action_clip_low: [0, 0]  # [v_min, w_min]
   action_clip_high: [1, 0.6]  # [v_max, w_max]
   
-  reward_debug: true # 打印 reward 分解用于调试
+  reward_debug: false # 打印 reward 分解用于调试
 
   reward:
     type: displacement
     smoothness_scale: -1      # 惩罚动作不平滑（负值）
     action_penalty_scale: 0.0 # 惩罚大幅度动作（防止饱和）
     heading_penalty_scale: -0.5  # 朝向偏差惩罚（负值）
-    collision_penalty: -500.0     # 碰撞惩罚（负值，大幅增加防止自杀）
+    collision_penalty: -50.0     # 碰撞惩罚（降低惩罚防止 freezing）
     min_range_penalty: -1.0      # 靠障碍太近惩罚（负值）
     min_range_threshold: 1       # lidar 小于该距离开始惩罚
     goal_reward: 200.0            # 到终点一次性奖励（正值）
@@ -68,17 +68,20 @@ runner:
     max_grad_norm: 1.0
 
   policy:
-    class_name: "ActorCritic"
+    class_name: "ActorCriticRecurrent"
     init_noise_std: 0.5
-    actor_hidden_dims: [128, 128]
-    critic_hidden_dims: [128, 128]
+    actor_hidden_dims: [256, 128]
+    critic_hidden_dims: [256, 128]
     activation: "elu"
     actor_obs_normalization: true
     critic_obs_normalization: true
+    rnn_type: 'lstm'
+    rnn_hidden_dims: [128, 128]
+    rnn_num_layers: 1
 
   # Rollout horizon per iteration (steps = num_envs * num_steps_per_env)
   num_steps_per_env: 1024
   max_iterations: 500
   save_interval: 20
   experiment_name: "forklift_ppo"
-  run_name: "run_5"
+  run_name: "run_7"
