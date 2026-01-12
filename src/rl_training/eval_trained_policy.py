@@ -103,7 +103,13 @@ def main():
         while not done:
             with torch.no_grad():
                 action = infer_fn(obs)
-            obs, reward, done, extras = env.step(action.to(env.device))
+            obs, reward, done_tensor, extras = env.step(action.to(env.device))
+            if isinstance(done_tensor, torch.Tensor):
+                 # Check if ANY environment finished (should be index 0)
+                done = done_tensor.any().item()
+            else:
+                done = bool(done_tensor)
+
             ep_rew += float(reward.item())
             ep_len += 1
         rew_hist.append(ep_rew)

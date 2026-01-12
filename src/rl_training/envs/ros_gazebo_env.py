@@ -258,7 +258,7 @@ class RobotAgent:
         self.term_cfg = env_cfg.get('termination')
         
         self.cmd_vel_pub = rospy.Publisher(f"/{self.ns}/cmd_vel", Twist, queue_size=1)
-        self.goal_marker_pub = rospy.Publisher(f"/{self.ns}/rl_goal_marker", Marker, queue_size=1)
+        self.goal_marker_pub = rospy.Publisher(f"/{self.ns}/rl_goal_marker", Marker, queue_size=1, latch=True)
         
         self.scan_dim = 360
         # Initialize scan with safe values (e.g. 10.0) to avoid immediate false collision detection (0.0 < threshold)
@@ -286,7 +286,8 @@ class RobotAgent:
                 scan = scan[:self.scan_dim]
             elif len(scan) < self.scan_dim:
                 scan = np.pad(scan, (0, self.scan_dim-len(scan)), 'constant')
-            self.scan = np.nan_to_num(scan, posinf=100.0, neginf=0.0)
+            self.scan = np.nan_to_num(scan, posinf=10.0, neginf=0.0)
+            # print("scan:@@@@@@@@", self.scan)
 
     def odom_cb(self, msg):
         with self.lock:
@@ -322,18 +323,22 @@ class RobotAgent:
                 yaw_err_to_target = self.goal_yaw - yaw
                 yaw_err_to_target = math.atan2(math.sin(yaw_err_to_target), math.cos(yaw_err_to_target))
 
-            # Pose: [x, y, yaw, vx, wz]
-            pose_vec = np.array([px, py, yaw, lin_vel, ang_vel], dtype=np.float32)
-            
-            # Extra: [dist, target_angle, yaw_err_to_target]
-            extra = np.array([target_dist, target_angle, yaw_err_to_target], dtype=np.float32)
+                # Pose: [x, y, yaw, vx, wz]
+                pose_vec = np.array([px, py, yaw, lin_vel, ang_vel], dtype=np.float32)
+                
+                # Extra: [dist, target_angle, yaw_err_to_target]
+                extra = np.array([target_dist, target_angle], dtype=np.float32)
 
-            obs = np.concatenate([
-                pose_vec,
-                self.scan,
-                extra
-            ])
-            return obs
+                obs = np.concatenate([
+                    pose_vec,
+                    self.scan / 10.0,  # normalize lidar ranges（max range 100.0）
+                    extra
+                ])
+                if self.env_cfg.get('reward_debug', False):
+                    print("--- Observation Debug ---")
+                    print('pose_vec:', pose_vec)
+                    print('extra:', extra)
+                return obs
 
     def get_yaw(self, q):
         siny_cosp = 2 * (q.w * q.z + q.x * q.y)
@@ -397,12 +402,13 @@ class RobotAgent:
 
         # --- Reward Calculation ---
         
-        # 1. Distance Penalty (Replaces Progress Reward)
-        # dist_reward_scale = r_cfg.get('dist_reward_scale')
-        # progress = self.prev_dist_to_goal - dist_to_goal
-        # progress_reward = progress * dist_reward_scale
-        # reward += progress_reward
+        # 1. Progress Reward (Dense reward for moving towards goal)
+        progress_reward_scale = r_cfg.get('progress_reward_scale')
+        progress = self.prev_dist_to_goal - dist_to_goal
+        progress_reward = progress * progress_reward_scale
+        reward += progress_reward
 
+        # 1.1 Distance Penalty (Potential field to guide globally)
         dist_penalty_scale = r_cfg.get('dist_penalty_scale')
         dist_penalty = dist_to_goal * dist_penalty_scale
         reward += dist_penalty
@@ -472,6 +478,7 @@ class RobotAgent:
             print("--- Reward Debug ---")
             print(
                 f"Robot {self.id} Total Reward: {reward:.4f}\n"
+                f"  Progress: {progress_reward:.4f} (diff: {progress:.4f})\n"
                 f"  DistPenalty: {dist_penalty:.4f} dist_to_goal: {dist_to_goal:.4f}\n"
                 f"  Step: {step_cost:.4f}\n"
                 f"  Smooth: {smoothness_reward:.4f}\n"

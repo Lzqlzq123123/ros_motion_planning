@@ -1,10 +1,34 @@
 [
   {
-    "id": "TASK-208",
-    "title": "Simplify Reward Logic & Fix Scales",
-    "type": "Refactor",
-    "description": "Simplify reward function based on user feedback: 1. Set action_penalty_scale to 0. 2. Remove complex pose/goal logic (pose_gate_radius, stay_steps), keep only one-time terminal goal reward. 3. Reduce heading penalty scale to avoid domination.",
-    "test_command": "python3 src/rl_training/train_new.py --config src/rl_training/config/forklift_ppo.yaml",
-    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py", "src/rl_training/config/forklift_ppo.yaml"]
+    "id": "TASK-209",
+    "title": "Fix Eval Script & Analyze Reward Discrepancy",
+    "type": "Bugfix",
+    "description": "1. Fix boolean check on tensor `done` in `eval_trained_policy.py` to avoid ambiguity.\n2. Explain why evaluation reward (-1200) is much lower than training (-600) (likely due to robot not moving + high distance penalty).",
+    "test_command": "python3 src/rl_training/eval_trained_policy.py --config src/rl_training/config/forklift_ppo.yaml --model src/rl_training/logs/forklift_ppo/run_4/model_360.pt",
+    "context_needed": ["src/rl_training/eval_trained_policy.py"]
+  },
+  {
+    "id": "TASK-210",
+    "title": "Tune Reward Function: Add Progress Reward",
+    "type": "Feature",
+    "description": "1. Add `progress_reward_scale` to config.\n2. Re-enable progress reward calculation in env.\n3. Increase `collision_penalty` to prevent suicide behavior (local optimum).\n4. Balance distance penalty vs progress reward.",
+    "test_command": "python3 src/rl_training/train_new.py",
+    "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/rl_training/envs/ros_gazebo_env.py"]
+  },
+  {
+    "id": "TASK-211",
+    "title": "Normalize LaserScan Observation",
+    "type": "Feature",
+    "description": "Divide LaserScan data by 100.0 (max range) in `get_observation` to normalize inputs for the policy network, while keeping physical units for reward calculation.",
+    "test_command": "python3 src/rl_training/train_new.py",
+    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py"]
+  },
+  {
+    "id": "TASK-212",
+    "title": "Fix Initial Goal Marker Publication",
+    "type": "Bugfix",
+    "description": "The goal marker is not published/visible in the first episode. This is likely due to the ROS publisher not latching the message, causing late subscribers (like RViz) to miss the initial publication. The fix is to enable `latch=True` for the `goal_marker_pub` in `RobotAgent`.",
+    "test_command": "python3 src/rl_training/train_new.py",
+    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py"]
   }
 ]

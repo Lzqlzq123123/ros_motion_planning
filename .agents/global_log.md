@@ -215,3 +215,29 @@
 - **Line Stats**: +20, -40 (Approx)
 - **Errors**: None
 - **Context**: Simplified reward function to fix oscillation and "reward farming". By removing conflicting pose/action penalties and complex multi-stage success criteria, the agent should focus on the primary objective: reaching the goal position.
+
+## TASK-209 & TASK-210
+- **Changes**:
+  - src/rl_training/eval_trained_policy.py: 修复 `done` tensor 的布尔转换逻辑，避免 eval 脚本报错。
+  - src/rl_training/config/forklift_ppo.yaml: 引入 `progress_reward_scale: 10.0`，增加 `collision_penalty` 到 -500 (防止自杀)，增加 `goal_reward` 到 200，减小 `dist_penalty_scale` (-0.2)。
+  - src/rl_training/envs/ros_gazebo_env.py: 重新实现 `progress_reward` (d_t - d_{t+1}) * scale。
+- **Line Stats**: +20, -10
+- **Errors**: None
+- **Context**: 
+  - 解决了“全是惩罚”导致机器人可能选择“自杀”（快速撞墙结束回合）或“躺平”的问题。
+  - **Progress Reward** 提供了每一步改善的即时正反馈。
+  - **High Collision Penalty** 确保撞墙永远比忍受距离惩罚更糟糕。
+  - **Balanced Dist Penalty** 提供全局势能引导，防止局部最优震荡。
+
+## TASK-211
+- **Changes**:
+  - src/rl_training/envs/ros_gazebo_env.py: 在 `get_observation` 中将 `self.scan` 除以 100.0 进行归一化。
+- **Line Stats**: +1, -1
+- **Errors**: None
+- **Context**: 将 LaserScan 观测值归一化到 [0, 1] 区间（假设最大距离为 100m），有助于 PPO 策略网络的训练收敛。
+
+## TASK-212
+- **Changes**: src/rl_training/envs/ros_gazebo_env.py: 261 -> Added `latch=True` to `goal_marker_pub`.
+- **Line Stats**: +1, -1
+- **Errors**: None
+- **Context**: Solves the issue where the first goal marker is missing in RViz by latching the message so new subscribers receive the last published goal.
