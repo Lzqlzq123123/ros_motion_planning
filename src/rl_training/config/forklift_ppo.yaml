@@ -7,7 +7,7 @@ env:
   max_episode_length: 256  # Max steps per episode
   control_dt: 0.1          # Physics duration per step (seconds)
   goals:
-    - [0, -3.0, 0]
+    #- [0, -3.0, 0]
     - [0, -2.0, 0]
 
   opponent: # 对抗车配置（robot2）
@@ -18,8 +18,8 @@ env:
     goal_offset: 0.3  # 对抗目标goal偏移（米），避免与robot1质心完全重合costmap导致规划失败
   
   # Action Scaling & Clipping
-  action_scale: [1, 1]       # Scale PPO output [-1, 1] to physical units
-  action_clip_low: [0, 0]  # [v_min, w_min]
+  action_scale: [1, 1]
+  action_clip_low: [0, -0.6]  # [v_min, w_min] - 允许负角速度（右转）
   action_clip_high: [1, 0.6]  # [v_max, w_max]
   
   reward_debug: false # 打印 reward 分解用于调试
@@ -28,14 +28,14 @@ env:
     type: displacement
     smoothness_scale: -1      # 惩罚动作不平滑（负值）
     action_penalty_scale: 0.0 # 惩罚大幅度动作（防止饱和）
-    heading_penalty_scale: -0.5  # 朝向偏差惩罚（负值）
+    heading_penalty_scale: -1  # 朝向偏差惩罚（负值）
     collision_penalty: -50.0     # 碰撞惩罚（降低惩罚防止 freezing）
-    min_range_penalty: -1.0      # 靠障碍太近惩罚（负值）
-    min_range_threshold: 1       # lidar 小于该距离开始惩罚
+    min_range_penalty: -2.0      # 靠障碍太近惩罚（负值）
+    min_range_threshold: 0.5       # lidar 小于该距离开始惩罚 （单位：米）  lidar最小0.17米
     goal_reward: 200.0            # 到终点一次性奖励（正值）
     step_cost: -0.5             # 每步负奖励（负值）
-    dist_penalty_scale: -0.2    # 绝对距离惩罚系数（负值，势能场，防止原地不动）
-    progress_reward_scale: 20.0   # 进度奖励系数（正值，奖励每步靠近目标的距离）
+    dist_penalty_scale: -0.5    # 绝对距离惩罚系数（负值）
+    progress_reward_scale: 100.0   # 进度奖励系数（正值，奖励每步靠近目标的距离）
 
   termination:                  # 终止条件
     min_height: -1.0
@@ -49,38 +49,38 @@ env:
     success_ang_vel_th: 0.05     # 角速度阈值（rad/s）
 
 runner:
-  obs_groups:
-    actor: ["policy"]
-    critic: ["privileged"]
   algorithm:
     class_name: "PPO"
     value_loss_coef: 1.0
     use_clipped_value_loss: True
     clip_param: 0.2
-    entropy_coef: 0.01
+    entropy_coef: 0.01  # 稍微增加一点熵，鼓励早期探索
     num_learning_epochs: 5
     num_mini_batches: 4
     learning_rate: 3.0e-4
-    schedule: "adaptive"
     gamma: 0.99
-    lam: 0.95
-    desired_kl: 0.01
     max_grad_norm: 1.0
+    rnd_cfg: null
+    symmetry_cfg: null
 
   policy:
-    class_name: "ActorCriticRecurrent"
-    init_noise_std: 0.5
-    actor_hidden_dims: [256, 128]
-    critic_hidden_dims: [256, 128]
-    activation: "elu"
+    class_name: "ActorCritic" # or "RecurrentActorCritic" 
+    init_noise_std: 0.6 # 增加初始探索噪声 (0.1 -> 0.6)
+    actor_hidden_dims: [256, 128, 64]
+    critic_hidden_dims: [256, 128, 64]
+    activation: "elu" 
     actor_obs_normalization: true
     critic_obs_normalization: true
-    rnn_type: 'lstm'
-    rnn_hidden_dims: [128, 128]
-    rnn_num_layers: 1
+    # rnn_type: 'lstm'
+    # rnn_hidden_dims: [128, 128]
+    # rnn_num_layers: 1
+
+  obs_groups:
+    actor: ["policy"]
+    critic: ["privileged"]
 
   # Rollout horizon per iteration (steps = num_envs * num_steps_per_env)
-  num_steps_per_env: 1024
+  num_steps_per_env: 2048 # 修复：增加采样长度，稳定梯度
   max_iterations: 500
   save_interval: 20
   experiment_name: "forklift_ppo"

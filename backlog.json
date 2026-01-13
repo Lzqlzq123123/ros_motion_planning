@@ -1,18 +1,10 @@
 [
   {
-    "id": "TASK-213",
-    "title": "Optimize Training Convergence",
-    "type": "Optimization",
-    "description": "1. Fix `self.scan` initialization to 10.0 to match data distribution.\n2. Tune reward function: Reduce `collision_penalty` to -50.0 to prevent 'freezing' behavior.",
-    "test_command": "python3 src/rl_training/train_new.py",
-    "context_needed": ["src/rl_training/config/forklift_ppo.yaml", "src/rl_training/envs/ros_gazebo_env.py"]
-  },
-  {
-    "id": "TASK-214",
-    "title": "Upgrade Policy Model to LSTM",
-    "type": "Feature",
-    "description": "Enable LSTM in the PPO policy configuration to handle temporal dependencies and potential partial observability. Update `src/rl_training/config/forklift_ppo.yaml` to set `class_name: ActorCriticRecurrent` (if applicable) or add `rnn_type: 'lstm'` parameters depending on rsl_rl version support.",
-    "test_command": "python3 src/rl_training/train_new.py",
-    "context_needed": ["src/rl_training/config/forklift_ppo.yaml"]
+    "id": "TASK-217",
+    "title": "Fix NaN Loss by Refactoring Env Interface",
+    "type": "Refactor",
+    "description": "Refactor the ros_gazebo_env.py to use a tuple-based observation interface (obs, privileged_obs) instead of TensorDict, which is causing instability with the recurrent policy. This aligns the environment with rsl_rl's standard and most stable API, aiming to resolve the persistent NaN errors. The forklift_ppo.yaml will also be updated to remove the now-obsolete obs_groups.",
+    "test_command": "python3 src/rl_training/train_new.py --config src/rl_training/config/forklift_ppo.yaml",
+    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py", "src/rl_training/config/forklift_ppo.yaml"]
   }
 ]

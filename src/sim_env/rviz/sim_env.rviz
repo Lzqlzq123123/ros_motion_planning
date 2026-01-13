@@ -523,7 +523,7 @@ Visualization Manager:
       Marker Topic: /robot1/rl_goal_marker
       Name: Marker
       Namespaces:
-        {}
+        rl_goal: true
       Queue Size: 100
       Value: true
   Enabled: true

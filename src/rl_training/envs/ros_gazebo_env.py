@@ -51,6 +51,12 @@ class RosGazeboEnv(VecEnv):
             init_pos = self.init_poses.get(name, [0.0, 0.0, 0.0])
             self.robots.append(RobotAgent(name, i, name, env_cfg, init_pos))
 
+        # Wait for odom to ensure valid observations at startup
+        rospy.loginfo("Waiting for robots to receive odometry...")
+        for robot in self.robots:
+            robot.wait_for_odom()
+        rospy.loginfo("All robots ready.")
+
         # Track robot1 init pose for interference goal reference
         self.robot1_init = self.init_poses.get(self.agent_names[0], [0.0, 0.0, 0.0]) if self.agent_names else [0.0, 0.0, 0.0]
 
@@ -68,6 +74,7 @@ class RosGazeboEnv(VecEnv):
             
         # Buffers
         self.obs_buf = torch.zeros((self.num_envs, self.num_obs), device=device)
+        self.privileged_obs_buf = torch.zeros((self.num_envs, self.num_obs), device=device)
         self.rew_buf = torch.zeros(self.num_envs, device=device)
         self.reset_buf = torch.ones(self.num_envs, dtype=torch.bool, device=device)
         self.episode_length_buf = torch.zeros(self.num_envs, dtype=torch.long, device=device)
@@ -292,9 +299,22 @@ class RobotAgent:
     def odom_cb(self, msg):
         with self.lock:
             self.odom = msg
+            
+    def wait_for_odom(self, timeout=10.0):
+        start = rospy.Time.now()
+        rate = rospy.Rate(10)
+        while self.odom is None and not rospy.is_shutdown():
+            if (rospy.Time.now() - start).to_sec() > timeout:
+                rospy.logwarn(f"[{self.ns}] No odom received within {timeout}s. Verify Gazebo simulation is running.")
+                break
+            rate.sleep()
 
     def get_observation(self):
         with self.lock:
+            if self.odom is None:
+                # Return zero observation if odom is not yet available to prevent crash
+                return np.zeros(self.env_cfg.get('num_observations'), dtype=np.float32)
+
             px = 0.0
             py = 0.0
             yaw = 0.0
@@ -334,6 +354,11 @@ class RobotAgent:
                     self.scan / 10.0,  # normalize lidar ranges（max range 100.0）
                     extra
                 ])
+                
+                # Sanity check: handle NaNs/Infs to prevent PPO explosion
+                obs = np.nan_to_num(obs, posinf=10.0, neginf=-10.0)
+                obs = np.clip(obs, -20.0, 20.0) # Conservative clip
+
                 if self.env_cfg.get('reward_debug', False):
                     print("--- Observation Debug ---")
                     print('pose_vec:', pose_vec)
@@ -404,8 +429,12 @@ class RobotAgent:
         
         # 1. Progress Reward (Dense reward for moving towards goal)
         progress_reward_scale = r_cfg.get('progress_reward_scale')
-        progress = self.prev_dist_to_goal - dist_to_goal
-        progress_reward = progress * progress_reward_scale
+        # progress = self.prev_dist_to_goal - dist_to_goal
+        # progress_reward = progress * progress_reward_scale
+        # reward += progress_reward
+        progress = lin_vel * math.cos(target_angle)
+        dt = self.env_cfg.get('control_dt', 0.1)
+        progress_reward = progress * dt * progress_reward_scale
         reward += progress_reward
 
         # 1.1 Distance Penalty (Potential field to guide globally)
@@ -447,9 +476,8 @@ class RobotAgent:
         min_range_threshold = r_cfg.get('min_range_threshold')
         min_range_reward = 0.0
         if min_scan < min_range_threshold:
-             shortfall = min_range_threshold - min_scan
-             ratio = shortfall / max(min_range_threshold, 1e-6)
-             min_range_reward = r_cfg.get('min_range_penalty') * ratio
+             diff = min_range_threshold - min_scan
+             min_range_reward = r_cfg.get('min_range_penalty') * (math.exp(diff/min_range_threshold) - 1.0)
              reward += min_range_reward
 
         # 7. Goal & Success
