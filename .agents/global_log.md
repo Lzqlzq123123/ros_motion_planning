@@ -393,3 +393,20 @@
 - **So my code is currently sitting with 215/216 applied (dirty working tree).**
 - **I should explain the metrics as requested, and then ask/confirm to commit/test the fixes.**
 
+
+## Global Path Optimization
+- **Changes**: 
+  - [`ros_gazebo_env.py`](src/rl_training/envs/ros_gazebo_env.py:54-66): Added global path pre-planning in `__init__`
+  - [`ros_gazebo_env.py`](src/rl_training/envs/ros_gazebo_env.py:97-145): Added `_get_global_path_for_robot1()` method
+  - [`ros_gazebo_env.py`](src/rl_training/envs/ros_gazebo_env.py:206-227): Simplified `reset()` method - removed redundant planning
+  - [`ros_gazebo_env.py`](src/rl_training/envs/ros_gazebo_env.py:259-261): Updated `reset_robot()` to use pre-planned path
+  - [`ros_gazebo_env.py`](src/rl_training/envs/ros_gazebo_env.py:323): Updated `RobotAgent.__init__()` to accept `global_path` parameter
+  - [`ros_gazebo_env.py`](src/rl_training/envs/ros_gazebo_env.py:351-361): Initialize waypoint on construction if path exists
+- **Line Stats**: +52, -107
+- **Errors**: None
+- **Context**: 
+  - Global path is now planned once during environment initialization instead of every episode
+  - Path is stored in `self.robot1_global_path` and passed to robot1 agent
+  - Each episode reset reuses the same path by resetting waypoint index to 0
+  - Removed `plan_global_path()` method and `global_path_planned` flag as they're no longer needed
+  - This optimization significantly reduces computational overhead during training

@@ -4,11 +4,11 @@ env:
   agent_names: ["robot1"] # Names of robots in Gazebo
   num_observations: 367
   num_actions: 2 # [linear_velocity, angular_velocity]
-  max_episode_length: 256  # Max steps per episode
+  max_episode_length: 512  # Max steps per episode
   control_dt: 0.1          # Physics duration per step (seconds)
   goals:
     #- [0, -3.0, 0]
-    - [0, -2.0, 0]
+    - [0, -2.0, -1.57]
 
   opponent: # 对抗车配置（robot2）
     enabled: false  #若设为 false，环境不重置对抗车位置，不发布 goal。

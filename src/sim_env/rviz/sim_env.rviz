@@ -7,6 +7,7 @@ Panels:
         - /Robot11
         - /Robot11/RobotModel1
         - /Robot11/Image11
+        - /Robot11/Path1
         - /Robot21
         - /Robot21/Image21
         - /Robot21/LaserScan21
@@ -312,7 +313,7 @@ Visualization Manager:
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
-          Topic: ""
+          Topic: /robot1/global_path_vis
           Unreliable: false
           Value: true
       Enabled: true
@@ -561,7 +562,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 10.477655410766602
+      Distance: 8.790153503417969
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

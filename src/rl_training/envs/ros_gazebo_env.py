@@ -7,6 +7,7 @@ from tensordict import TensorDict
 from geometry_msgs.msg import Twist, PoseStamped, Point
 from nav_msgs.msg import Odometry, Path
 from sensor_msgs.msg import LaserScan
+from nav_msgs.srv import GetPlan, GetPlanRequest
 from visualization_msgs.msg import Marker
 from gazebo_msgs.srv import SetModelState, GetWorldProperties
 from gazebo_msgs.msg import ModelState
@@ -46,9 +47,10 @@ class RosGazeboEnv(VecEnv):
         
         # Initialize Robots
         self.robots = []
-        self.init_poses = env_cfg.get('init_poses', {})
+        self.init_poses = env_cfg.get('init_poses')
+
         for i, name in enumerate(self.agent_names):
-            init_pos = self.init_poses.get(name, [0.0, 0.0, 0.0])
+            init_pos = self.init_poses.get(name)
             self.robots.append(RobotAgent(name, i, name, env_cfg, init_pos))
 
         # Wait for odom to ensure valid observations at startup
@@ -66,8 +68,8 @@ class RosGazeboEnv(VecEnv):
         self.opponent_name = opponent_cfg.get('model_name', 'robot2')
         self.opponent_goal_topic = opponent_cfg.get('goal_topic', f"/{self.opponent_name}/move_base_simple/goal")
         self.opponent_frame_id = opponent_cfg.get('frame_id', 'map')
-        self.opponent_goal_offset = opponent_cfg.get('goal_offset', 0.3)
-        self.opponent_init_pose = self.init_poses.get(self.opponent_name, opponent_cfg.get('init_pose', [0.0, 0.0, 0.0]))
+        self.opponent_goal_offset = opponent_cfg.get('goal_offset')
+        self.opponent_init_pose = self.init_poses.get(self.opponent_name, opponent_cfg.get('init_pose'))
         self.opponent_goal_pub = None
         if self.opponent_enabled:
             self.opponent_goal_pub = rospy.Publisher(self.opponent_goal_topic, PoseStamped, queue_size=1)
@@ -80,6 +82,9 @@ class RosGazeboEnv(VecEnv):
         self.episode_length_buf = torch.zeros(self.num_envs, dtype=torch.long, device=device)
         self.extras = {}
         
+
+
+
     def get_observations(self):
         for i, robot in enumerate(self.robots):
             obs = robot.get_observation()
@@ -98,19 +103,13 @@ class RosGazeboEnv(VecEnv):
             robot.set_action(actions_np[i])
             
         # 2. Unpause physics to execute actions
-        try:
-            self.unpause_physics_srv()
-        except rospy.ServiceException as e:
-            rospy.logerr(f"/gazebo/unpause_physics service call failed: {e}")
+        self._call_service_safe(self.unpause_physics_srv, "/gazebo/unpause_physics")
 
         # 3. Wait for control_dt
         rospy.sleep(self.control_dt)
         
         # 4. Pause physics to freeze state
-        try:
-            self.pause_physics_srv()
-        except rospy.ServiceException as e:
-            rospy.logerr(f"/gazebo/pause_physics service call failed: {e}")
+        self._call_service_safe(self.pause_physics_srv, "/gazebo/pause_physics")
 
         # 5. Get observations
         obs = self.get_observations()
@@ -141,10 +140,7 @@ class RosGazeboEnv(VecEnv):
 
     def reset(self):
         # Unpause to allow state updates during reset
-        try:
-            self.unpause_physics_srv()
-        except rospy.ServiceException as e:
-            rospy.logerr(f"/gazebo/unpause_physics service call failed: {e}")
+        self._call_service_safe(self.unpause_physics_srv, "/gazebo/unpause_physics")
 
         for i in range(self.num_envs):
             self.reset_robot(i)
@@ -153,18 +149,22 @@ class RosGazeboEnv(VecEnv):
         rospy.sleep(self.control_dt)
 
         # Pause again
-        try:
-            self.pause_physics_srv()
-        except rospy.ServiceException as e:
-            rospy.logerr(f"/gazebo/pause_physics service call failed: {e}")
+        self._call_service_safe(self.pause_physics_srv, "/gazebo/pause_physics")
 
         self.episode_length_buf[:] = 0
         self.reset_buf[:] = False
         return self.get_observations()
 
+    def _call_service_safe(self, service_proxy, service_name):
+        """Call ROS service with error logging."""
+        try:
+            service_proxy()
+        except rospy.ServiceException as e:
+            rospy.logerr(f"{service_name} service call failed: {e}")
+
     def reset_robot(self, idx):
         robot = self.robots[idx]
-        init_x, init_y, _ = robot.init_pos
+        init_x, init_y, init_yaw = robot.init_pos
         
         # Reset Pose
         state = ModelState()
@@ -172,7 +172,7 @@ class RosGazeboEnv(VecEnv):
         state.pose.position.x = init_x
         state.pose.position.y = init_y
         state.pose.position.z = 0.0
-        q = tf.transformations.quaternion_from_euler(0, 0, np.random.uniform(-3.14, 3.14))
+        q = tf.transformations.quaternion_from_euler(0, 0, init_yaw)
         state.pose.orientation.x = q[0]
         state.pose.orientation.y = q[1]
         state.pose.orientation.z = q[2]
@@ -186,20 +186,13 @@ class RosGazeboEnv(VecEnv):
         state.twist.angular.y = 0.0
         state.twist.angular.z = 0.0
 
-        try:
-            self.set_model_state_srv(state)
-        except rospy.ServiceException as e:
-            rospy.logerr(f"Service call failed: {e}")
-            
+        self._call_service_safe(lambda: self.set_model_state_srv(state), "/gazebo/set_model_state")
+        
         # Generate New Goal
         goals = self.env_cfg.get('goals')
-
-        # 从配置的列表中随机选择一个目标点
         goal_idx = np.random.randint(0, len(goals))
         goal = goals[goal_idx]
-        goal_x = goal[0]
-        goal_y = goal[1]
-        goal_yaw = goal[2]
+        goal_x, goal_y, goal_yaw = goal[0], goal[1], goal[2]
         robot.reset(goal_x, goal_y, goal_yaw, init_x, init_y)
 
         # Also reset and command the interference robot (e.g., robot2)
@@ -222,10 +215,7 @@ class RosGazeboEnv(VecEnv):
         state.pose.orientation.z = q[2]
         state.pose.orientation.w = q[3]
 
-        try:
-            self.set_model_state_srv(state)
-        except rospy.ServiceException as e:
-            rospy.logerr(f"[reset_interference_robot] Service call failed: {e}")
+        self._call_service_safe(lambda: self.set_model_state_srv(state), "/gazebo/set_model_state")
 
         # Send goal for opponent: robot1 initial pose as its destination
         goal_x = self.robot1_init[0]
@@ -286,6 +276,7 @@ class RobotAgent:
         self.current_action = np.zeros(2)
         self.prev_action = np.zeros(2)
 
+
     def scan_cb(self, msg):
         with self.lock:
             scan = np.array(msg.ranges)
@@ -294,7 +285,6 @@ class RobotAgent:
             elif len(scan) < self.scan_dim:
                 scan = np.pad(scan, (0, self.scan_dim-len(scan)), 'constant')
             self.scan = np.nan_to_num(scan, posinf=10.0, neginf=0.0)
-            # print("scan:@@@@@@@@", self.scan)
 
     def odom_cb(self, msg):
         with self.lock:
@@ -315,55 +305,41 @@ class RobotAgent:
                 # Return zero observation if odom is not yet available to prevent crash
                 return np.zeros(self.env_cfg.get('num_observations'), dtype=np.float32)
 
-            px = 0.0
-            py = 0.0
-            yaw = 0.0
-            lin_vel = 0.0
-            ang_vel = 0.0
-            target_dist = 0.0
-            target_angle = 0.0
-            yaw_err_to_target = 0.0
+            px = self.odom.pose.pose.position.x
+            py = self.odom.pose.pose.position.y
+            yaw = self.get_yaw(self.odom.pose.pose.orientation)
             
-            if self.odom is not None:
-                px = self.odom.pose.pose.position.x
-                py = self.odom.pose.pose.position.y
-                yaw = self.get_yaw(self.odom.pose.pose.orientation)
-                # print("yaw:@@@@@@@@", yaw)
-                
-                lin_vel = self.odom.twist.twist.linear.x
-                ang_vel = self.odom.twist.twist.angular.z
-                
-                dx = self.goal_x - px
-                dy = self.goal_y - py
-                target_dist = math.sqrt(dx**2 + dy**2)
-                
-                target_angle = math.atan2(dy, dx) - yaw
-                target_angle = math.atan2(math.sin(target_angle), math.cos(target_angle))
+            lin_vel = self.odom.twist.twist.linear.x
+            ang_vel = self.odom.twist.twist.angular.z
+            
+            dx = self.goal_x - px
+            dy = self.goal_y - py
+            target_dist = math.sqrt(dx**2 + dy**2)
+            
+            target_angle = math.atan2(dy, dx) - yaw
+            target_angle = math.atan2(math.sin(target_angle), math.cos(target_angle))
 
-                yaw_err_to_target = self.goal_yaw - yaw
-                yaw_err_to_target = math.atan2(math.sin(yaw_err_to_target), math.cos(yaw_err_to_target))
+            # Pose: [x, y, yaw, vx, wz]
+            pose_vec = np.array([px, py, yaw, lin_vel, ang_vel], dtype=np.float32)
+            
+            # Extra: [dist, target_angle]
+            extra = np.array([target_dist, target_angle], dtype=np.float32)
 
-                # Pose: [x, y, yaw, vx, wz]
-                pose_vec = np.array([px, py, yaw, lin_vel, ang_vel], dtype=np.float32)
-                
-                # Extra: [dist, target_angle, yaw_err_to_target]
-                extra = np.array([target_dist, target_angle], dtype=np.float32)
+            obs = np.concatenate([
+                pose_vec,
+                self.scan / 10.0,  # normalize lidar ranges
+                extra
+            ])
+            
+            # Sanity check: handle NaNs/Infs to prevent PPO explosion
+            obs = np.nan_to_num(obs, posinf=10.0, neginf=-10.0)
+            obs = np.clip(obs, -20.0, 20.0)
 
-                obs = np.concatenate([
-                    pose_vec,
-                    self.scan / 10.0,  # normalize lidar ranges（max range 100.0）
-                    extra
-                ])
-                
-                # Sanity check: handle NaNs/Infs to prevent PPO explosion
-                obs = np.nan_to_num(obs, posinf=10.0, neginf=-10.0)
-                obs = np.clip(obs, -20.0, 20.0) # Conservative clip
-
-                if self.env_cfg.get('reward_debug', False):
-                    print("--- Observation Debug ---")
-                    print('pose_vec:', pose_vec)
-                    print('extra:', extra)
-                return obs
+            if self.env_cfg.get('reward_debug', False):
+                print("--- Observation Debug ---")
+                print('pose_vec:', pose_vec)
+                print('extra:', extra)
+            return obs
 
     def get_yaw(self, q):
         siny_cosp = 2 * (q.w * q.z + q.x * q.y)
@@ -384,28 +360,26 @@ class RobotAgent:
         msg = Twist()
         msg.linear.x = np.clip(scaled_action[0], clip_low[0], clip_high[0])
         msg.angular.z = np.clip(scaled_action[1], clip_low[1], clip_high[1])
-        
+
         if self.env_cfg.get('reward_debug', False):
              print("--- Action Debug ---")
              print(f"[set_action] Raw: [{action[0]:.2f}, {action[1]:.2f}] -> Scaled: [{scaled_action[0]:.2f}, {scaled_action[1]:.2f}] -> Clipped: [{msg.linear.x:.2f}, {msg.angular.z:.2f}]")
 
         self.cmd_vel_pub.publish(msg)
 
-
-
     def compute_reward_and_done(self):
         reward = 0.0
         done = False
+
+        # If odom not received yet, skip reward/termination to avoid None access
+        if self.odom is None:
+            return reward, done
 
         # Configs
         r_cfg = self.reward_cfg
         t_cfg = self.term_cfg
 
         # State
-        # If odom not received yet, skip reward/termination to avoid None access
-        if self.odom is None:
-            return reward, done
-
         px = self.odom.pose.pose.position.x
         py = self.odom.pose.pose.position.y
         pz = self.odom.pose.pose.position.z
@@ -419,7 +393,7 @@ class RobotAgent:
         dx = self.goal_x - px
         dy = self.goal_y - py
         target_angle = math.atan2(dy, dx) - yaw
-        target_angle = math.atan2(math.sin(target_angle), math.cos(target_angle)) # Normalize
+        target_angle = math.atan2(math.sin(target_angle), math.cos(target_angle))
 
         # Yaw Error to Target Goal Orientation
         yaw_err_to_target = self.goal_yaw - yaw
@@ -429,9 +403,6 @@ class RobotAgent:
         
         # 1. Progress Reward (Dense reward for moving towards goal)
         progress_reward_scale = r_cfg.get('progress_reward_scale')
-        # progress = self.prev_dist_to_goal - dist_to_goal
-        # progress_reward = progress * progress_reward_scale
-        # reward += progress_reward
         progress = lin_vel * math.cos(target_angle)
         dt = self.env_cfg.get('control_dt', 0.1)
         progress_reward = progress * dt * progress_reward_scale
@@ -447,13 +418,11 @@ class RobotAgent:
         reward += step_cost
         
         # 3. Smoothness
-        # smoothness_scale is negative, penalizing difference
         diff = self.current_action - self.prev_action
         smoothness_reward = np.dot(diff, diff) * r_cfg.get('smoothness_scale')
         reward += smoothness_reward
 
         # 3.1 Action Magnitude Penalty (Prevent saturation)
-        # Penalize large raw actions to keep them within reasonable range [-1, 1]
         action_penalty = np.sum(np.square(self.current_action)) * r_cfg.get('action_penalty_scale')
         reward += action_penalty
         
@@ -481,22 +450,15 @@ class RobotAgent:
              reward += min_range_reward
 
         # 7. Goal & Success
-        # Simplified: Reach goal position -> Done + Reward
-        at_goal_pos = dist_to_goal < t_cfg.get('success_pos')
+        is_final_goal_reached = dist_to_goal < t_cfg.get('success_pos')
         
-        goal_reward = r_cfg.get('goal_reward')
         current_goal_reward = 0.0
-        
-        if at_goal_pos:
+        if is_final_goal_reached:
             done = True
-            current_goal_reward = goal_reward
-            # print(f"Robot {self.id} reached goal!")
+            current_goal_reward = r_cfg.get('goal_reward')
+            rospy.loginfo(f"Robot {self.id} reached final goal!")
         
         reward += current_goal_reward
-            
-        # Termination: Min Height
-        # if pz < t_cfg.get('min_height'):
-        #     done = True
             
         # Update prev
         self.prev_dist_to_goal = dist_to_goal
@@ -521,18 +483,8 @@ class RobotAgent:
         
         return float(reward), done
 
-    def reset(self, goal_x, goal_y, goal_yaw, current_x, current_y):
-        self.goal_x = goal_x
-        self.goal_y = goal_y
-        self.goal_yaw = goal_yaw
-        
-        # Reset state variables
-        self.prev_pose = np.array([current_x, current_y])
-        self.prev_dist_to_goal = math.sqrt((goal_x - current_x)**2 + (goal_y - current_y)**2)
-        
-        self.current_action = np.zeros(2)
-        self.prev_action = np.zeros(2)
-        
+
+    def publish_goal_marker(self, goal_x, goal_y):
         marker = Marker()
         marker.header.frame_id = "map"
         marker.header.stamp = rospy.Time.now()
@@ -552,3 +504,21 @@ class RobotAgent:
         marker.color.g = 1.0
         marker.color.b = 0.0
         self.goal_marker_pub.publish(marker)
+
+    def reset(self, goal_x, goal_y, goal_yaw, current_x, current_y):
+        # Set goal
+        self.goal_x = goal_x
+        self.goal_y = goal_y
+        self.goal_yaw = goal_yaw
+        if self.goal_x is not None:
+            self.publish_goal_marker(self.goal_x, self.goal_y)
+        
+        # Reset state variables
+        self.prev_pose = np.array([current_x, current_y])
+        if self.goal_x is not None:
+            self.prev_dist_to_goal = math.sqrt((self.goal_x - current_x)**2 + (self.goal_y - current_y)**2)
+        else:
+            self.prev_dist_to_goal = 0.0
+        
+        self.current_action = np.zeros(2)
+        self.prev_action = np.zeros(2)
