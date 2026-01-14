@@ -193,7 +193,7 @@ class RosGazeboEnv(VecEnv):
         goal_idx = np.random.randint(0, len(goals))
         goal = goals[goal_idx]
         goal_x, goal_y, goal_yaw = goal[0], goal[1], goal[2]
-        robot.reset(goal_x, goal_y, goal_yaw, init_x, init_y)
+        robot.reset(goal_x, goal_y, goal_yaw, init_x, init_y, init_yaw)
 
         # Also reset and command the interference robot (e.g., robot2)
         if self.opponent_enabled and robot.model_name == self.agent_names[0]:
@@ -253,10 +253,25 @@ class RobotAgent:
         self.env_cfg = env_cfg
         self.reward_cfg = env_cfg.get('reward')
         self.term_cfg = env_cfg.get('termination')
+        self.path_cfg = env_cfg.get('path', {})
+
+        self.plan_service = None
+        self.plan_publisher = None
+        if self.path_cfg.get('enabled'):
+            plan_service_name = f"/{self.ns}/move_base/make_plan"
+
+            rospy.wait_for_service(plan_service_name, timeout=3.0)
+            self.plan_service = rospy.ServiceProxy(plan_service_name, GetPlan)
+            rospy.loginfo(f"[{self.ns}] Successfully connected to planner service '{plan_service_name}'")
+            
+            if self.path_cfg.get('visualize'):
+                self.plan_publisher = rospy.Publisher(f"/{self.ns}/global_plan", Path, queue_size=1, latch=True)
         
         self.cmd_vel_pub = rospy.Publisher(f"/{self.ns}/cmd_vel", Twist, queue_size=1)
         self.goal_marker_pub = rospy.Publisher(f"/{self.ns}/rl_goal_marker", Marker, queue_size=1, latch=True)
         
+        self.global_plan = None
+        self.plan_for_goal = None
         self.scan_dim = 360
         # Initialize scan with safe values (e.g. 10.0) to avoid immediate false collision detection (0.0 < threshold)
         self.scan = np.full(self.scan_dim, 10.0)
@@ -345,6 +360,59 @@ class RobotAgent:
         siny_cosp = 2 * (q.w * q.z + q.x * q.y)
         cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z)
         return math.atan2(siny_cosp, cosy_cosp)
+
+    def update_global_plan(self, start_x, start_y, start_yaw):
+        """Calls the global planner service to get a new path."""
+        if not self.path_cfg.get('enabled', False) or self.plan_service is None:
+            self.global_plan = None
+            return
+
+        req = GetPlanRequest()
+        req.start.header.frame_id = "map"
+        req.start.pose.position.x = start_x
+        req.start.pose.position.y = start_y
+        q_start = tf.transformations.quaternion_from_euler(0, 0, start_yaw)
+        req.start.pose.orientation.x = q_start[0]
+        req.start.pose.orientation.y = q_start[1]
+        req.start.pose.orientation.z = q_start[2]
+        req.start.pose.orientation.w = q_start[3]
+
+        req.goal.header.frame_id = "map"
+        req.goal.pose.position.x = self.goal_x
+        req.goal.pose.position.y = self.goal_y
+        q_goal = tf.transformations.quaternion_from_euler(0, 0, self.goal_yaw)
+        req.goal.pose.orientation.x = q_goal[0]
+        req.goal.pose.orientation.y = q_goal[1]
+        req.goal.pose.orientation.z = q_goal[2]
+        req.goal.pose.orientation.w = q_goal[3]
+
+        try:
+            res = self.plan_service(req)
+            if res.plan.poses:
+                # Manually set the header frame_id for RViz visualization
+                res.plan.header.frame_id = "map"
+                res.plan.header.stamp = rospy.Time.now()
+                
+                self.global_plan = res.plan
+                if self.path_cfg.get('visualize', False) and self.plan_publisher is not None:
+                    self.plan_publisher.publish(self.global_plan)
+            else:
+                rospy.logwarn(f"[{self.ns}] Planner returned an empty plan.")
+                self.global_plan = None
+        except rospy.ServiceException as e:
+            rospy.logerr(f"[{self.ns}] Service call to make_plan failed: {e}")
+            self.global_plan = None
+            
+    def calculate_cross_track_error(self, robot_x, robot_y):
+        """Calculates the minimum distance from the robot to the global plan."""
+        if self.global_plan is None or not self.global_plan.poses:
+            return 0.0
+
+        path_points = np.array([[p.pose.position.x, p.pose.position.y] for p in self.global_plan.poses])
+        robot_pos = np.array([robot_x, robot_y])
+        
+        distances = np.linalg.norm(path_points - robot_pos, axis=1)
+        return np.min(distances)
 
     def set_action(self, action):
         self.prev_action = self.current_action
@@ -460,6 +528,16 @@ class RobotAgent:
         
         reward += current_goal_reward
             
+        # 8. Path Following Reward
+        path_reward = 0.0
+        cross_track_error = 0.0
+        if self.path_cfg.get('enabled', False) and self.global_plan is not None:
+            cross_track_error = self.calculate_cross_track_error(px, py)
+            # Use a decaying function to give high reward for low error
+            reward_scale = self.path_cfg.get('path_reward_scale', 0.0)
+            path_reward = reward_scale * (1.0 - math.tanh(cross_track_error))
+            reward += path_reward
+
         # Update prev
         self.prev_dist_to_goal = dist_to_goal
         self.prev_pose = np.array([px, py])
@@ -476,6 +554,7 @@ class RobotAgent:
                 f"  Head: {heading_penalty:.4f} target_angle: {target_angle:.4f}\n"
                 f"  Coll: {collision_reward:.4f}\n"
                 f"  MinDistReward: {min_range_reward:.4f} min_scan: {min_scan:.4f}\n"
+                f"  PathReward: {path_reward:.4f} (cte: {cross_track_error:.4f})\n"
                 f"  Goal: {current_goal_reward:.4f}\n"
                 f"  Done: {done}\n"
                 f"-------------------"
@@ -496,16 +575,16 @@ class RobotAgent:
         marker.pose.position.y = goal_y
         marker.pose.position.z = 0.5
         marker.pose.orientation.w = 1.0
-        marker.scale.x = 0.3
-        marker.scale.y = 0.3
-        marker.scale.z = 0.3
+        marker.scale.x = 0.2
+        marker.scale.y = 0.2
+        marker.scale.z = 0.2
         marker.color.a = 1.0
         marker.color.r = 0.0
         marker.color.g = 1.0
         marker.color.b = 0.0
         self.goal_marker_pub.publish(marker)
 
-    def reset(self, goal_x, goal_y, goal_yaw, current_x, current_y):
+    def reset(self, goal_x, goal_y, goal_yaw, current_x, current_y, current_yaw):
         # Set goal
         self.goal_x = goal_x
         self.goal_y = goal_y
@@ -513,6 +592,13 @@ class RobotAgent:
         if self.goal_x is not None:
             self.publish_goal_marker(self.goal_x, self.goal_y)
         
+        # Get a new global plan only if the goal has changed or no plan exists
+        current_goal_tuple = (goal_x, goal_y, goal_yaw)
+        if self.global_plan is None or self.plan_for_goal != current_goal_tuple:
+            rospy.loginfo(f"[{self.ns}] Requesting new global plan for goal {current_goal_tuple}.")
+            self.update_global_plan(current_x, current_y, current_yaw)
+            self.plan_for_goal = current_goal_tuple # Cache the goal this plan is for
+
         # Reset state variables
         self.prev_pose = np.array([current_x, current_y])
         if self.goal_x is not None:
