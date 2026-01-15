@@ -8,13 +8,9 @@ Panels:
         - /Robot11/RobotModel1
         - /Robot11/Image11
         - /Robot11/Path1
-        - /Robot21
         - /Robot21/Image21
         - /Robot21/LaserScan21
         - /Robot21/Path1
-        - /Path1
-        - /Map2
-        - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 212
   - Class: rviz/Tool Properties
@@ -313,7 +309,7 @@ Visualization Manager:
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
-          Topic: /robot1/global_path_vis
+          Topic: /robot1/global_plan
           Unreliable: false
           Value: true
       Enabled: true
@@ -562,7 +558,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 8.790153503417969
+      Distance: 11.996426582336426
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -570,9 +566,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 2.3408827781677246
-        Y: 1.1355801820755005
-        Z: 0.1458965688943863
+        X: 0.7392080426216125
+        Y: 0.10314503312110901
+        Z: 0.14692969620227814
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -596,5 +592,5 @@ Window Geometry:
   Tool Properties:
     collapsed: false
   Width: 1470
-  X: 3650
-  Y: 34
+  X: 3280
+  Y: 67

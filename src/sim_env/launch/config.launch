@@ -23,7 +23,7 @@
   <arg name="gui" default="false" />
   <arg name="headless" default="false" />
   <arg name="rviz_file" default="" />
-  <arg name="show_rviz" default="false" />
+  <arg name="show_rviz" default="true" />
 
   <!-- Set Gazebo model path -->
   <env name="GAZEBO_MODEL_PATH" value="$(find sim_env)/models:$(optenv GAZEBO_MODEL_PATH)" />
@@ -44,7 +44,9 @@
 
   <!-- spawn multi 
   s with specific pose, and add robot control and state publisher. -->
-  <include file="$(find sim_env)/launch/include/robots/start_robots.launch.xml" />
+  <include file="$(find sim_env)/launch/include/robots/start_robots.launch.xml">
+    <arg name="agent_id" value="$(arg robot_number)" />
+  </include>
 
   <!-- open rviz for visualization -->
   <node pkg="dynamic_rviz_config" type="rviz_generate.py" name="rosapp_rviz" args="$(arg robot_number)" output="screen"

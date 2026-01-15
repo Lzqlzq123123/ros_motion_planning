@@ -41,9 +41,9 @@ obstacle_layer:
   }
 
 inflation_layer:
-  enabled:              false # 不使用动态障碍物的膨胀层
-  cost_scaling_factor:  2.0  # exponential rate at which the obstacle cost drops off (default: 10)
-  inflation_radius:     0.2  # max. distance from an obstacle at which costs are incurred for planning paths.
+  enabled:              true # 启用膨胀层以在障碍物周围创建安全区域
+  cost_scaling_factor:  3.0  # exponential rate at which the obstacle cost drops off (default: 10)
+  inflation_radius:     0.3  # max. distance from an obstacle at which costs are incurred for planning paths.
 
 static_map:
   enabled:              true # 使用静态地图

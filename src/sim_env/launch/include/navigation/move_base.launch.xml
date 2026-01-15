@@ -34,7 +34,7 @@
 
     <!-- move base module -->
     <!-- launch-prefix="xterm -e gdb -ex run - -args" -->
-    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" unless="$(eval arg('local_planner') == 'ppo')">
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
         <!-- global planner plugin -->
         <param name="base_global_planner" value="nomad_planner/NoMaDPlanner" if="$(eval arg('global_planner')=='diffusion')" />
         <param name="base_global_planner" value="path_planner/PathPlanner" unless="$(eval arg('global_planner')=='diffusion')" />
