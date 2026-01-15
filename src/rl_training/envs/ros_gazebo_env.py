@@ -111,9 +111,7 @@ class RosGazeboEnv(VecEnv):
         # 4. Pause physics to freeze state
         self._call_service_safe(self.pause_physics_srv, "/gazebo/pause_physics")
 
-        # 5. Get observations
-        obs = self.get_observations()
-        
+        # 5. Compute rewards/dones and handle resets before returning observations
         self.rew_buf[:] = 0.0
         self.reset_buf[:] = False
         
@@ -135,6 +133,12 @@ class RosGazeboEnv(VecEnv):
             if time_outs[i]:
                 self.reset_robot(i)
                 self.episode_length_buf[i] = 0
+
+        # 6. After any resets, grab fresh observations for the new state
+        obs = self.get_observations()
+
+        # 7. Populate extras for PPO (notably time_outs for bootstrapping)
+        self.extras = {"time_outs": time_outs.to(self.device)}
 
         return obs, self.rew_buf, self.reset_buf, self.extras
 
@@ -291,6 +295,10 @@ class RobotAgent:
         self.current_action = np.zeros(2)
         self.prev_action = np.zeros(2)
 
+        # Path-following related
+        self.cumulative_path_lengths = None
+        self.prev_path_progress = 0.0
+
 
     def scan_cb(self, msg):
         with self.lock:
@@ -324,8 +332,9 @@ class RobotAgent:
             py = self.odom.pose.pose.position.y
             yaw = self.get_yaw(self.odom.pose.pose.orientation)
             
-            lin_vel = self.odom.twist.twist.linear.x
-            ang_vel = self.odom.twist.twist.angular.z
+            # Use previous action instead of odometry velocity as per user request
+            # lin_vel = self.odom.twist.twist.linear.x
+            # ang_vel = self.odom.twist.twist.angular.z
             
             dx = self.goal_x - px
             dy = self.goal_y - py
@@ -334,11 +343,11 @@ class RobotAgent:
             target_angle = math.atan2(dy, dx) - yaw
             target_angle = math.atan2(math.sin(target_angle), math.cos(target_angle))
 
-            # Pose: [x, y, yaw, vx, wz]
-            pose_vec = np.array([px, py, yaw, lin_vel, ang_vel], dtype=np.float32)
+            # Pose: [x, y, yaw, prev_v_cmd, prev_w_cmd]
+            pose_vec = np.array([px, py, yaw, self.prev_action[0], self.prev_action[1]], dtype=np.float32)
             
             # Extra: [dist, target_angle]
-            extra = np.array([target_dist, target_angle], dtype=np.float32)
+            extra = np.array([dx,dy, target_angle], dtype=np.float32)
 
             obs = np.concatenate([
                 pose_vec,
@@ -394,25 +403,80 @@ class RobotAgent:
                 res.plan.header.stamp = rospy.Time.now()
                 
                 self.global_plan = res.plan
+
+                # Pre-calculate cumulative path lengths for efficient progress calculation
+                path_points = np.array([[p.pose.position.x, p.pose.position.y] for p in self.global_plan.poses])
+                segment_lengths = np.linalg.norm(np.diff(path_points, axis=0), axis=1)
+                self.cumulative_path_lengths = np.insert(np.cumsum(segment_lengths), 0, 0)
+
                 if self.path_cfg.get('visualize', False) and self.plan_publisher is not None:
                     self.plan_publisher.publish(self.global_plan)
             else:
                 rospy.logwarn(f"[{self.ns}] Planner returned an empty plan.")
                 self.global_plan = None
+                self.cumulative_path_lengths = None
         except rospy.ServiceException as e:
             rospy.logerr(f"[{self.ns}] Service call to make_plan failed: {e}")
             self.global_plan = None
+            self.cumulative_path_lengths = None
             
-    def calculate_cross_track_error(self, robot_x, robot_y):
-        """Calculates the minimum distance from the robot to the global plan."""
-        if self.global_plan is None or not self.global_plan.poses:
-            return 0.0
+    def calculate_path_errors(self, robot_x, robot_y):
+        """
+        Calculates both cross-track error and longitudinal progress along the path.
+        - Cross-track error (CTE): The minimum perpendicular distance to the path.
+        - Progress: The distance from the start of the path to the closest point on the path.
+        """
+        if self.global_plan is None or not self.global_plan.poses or self.cumulative_path_lengths is None:
+            return 0.0, self.prev_path_progress # Return 0 CTE and non-advancing progress
 
         path_points = np.array([[p.pose.position.x, p.pose.position.y] for p in self.global_plan.poses])
         robot_pos = np.array([robot_x, robot_y])
+
+        min_dist_sq = float('inf')
+        best_progress = self.prev_path_progress # Default to previous progress
         
-        distances = np.linalg.norm(path_points - robot_pos, axis=1)
-        return np.min(distances)
+        # Iterate over all path segments
+        for i in range(len(path_points) - 1):
+            p1 = path_points[i]
+            p2 = path_points[i+1]
+
+            # Vector of the segment
+            line_vec = p2 - p1
+            segment_len_sq = np.dot(line_vec, line_vec)
+
+            # If segment has zero length, skip
+            if segment_len_sq < 1e-6:
+                continue
+
+            # Vector from segment start to robot
+            robot_vec = robot_pos - p1
+
+            # Projection of robot_vec onto line_vec, scaled by segment length
+            t = np.dot(robot_vec, line_vec) / segment_len_sq
+            
+            # Clamp t to be within the segment [0, 1]
+            t_clamped = np.clip(t, 0.0, 1.0)
+
+            # Find the closest point on the (infinite) line or the segment endpoints
+            closest_point_on_segment = p1 + t_clamped * line_vec
+            
+            # Calculate distance from robot to this closest point
+            dist_sq = np.sum((robot_pos - closest_point_on_segment)**2)
+
+            if dist_sq < min_dist_sq:
+                min_dist_sq = dist_sq
+                # Progress is the cumulative length to the start of the segment plus the projected length
+                segment_progress = t_clamped * np.sqrt(segment_len_sq)
+                best_progress = self.cumulative_path_lengths[i] + segment_progress
+
+        cross_track_error = np.sqrt(min_dist_sq)
+        
+        # Ensure progress is monotonically increasing to avoid rewards for moving backwards
+        # This can happen if the robot cuts a corner.
+        if best_progress < self.prev_path_progress - 0.1: # Allow for small numerical errors
+             return cross_track_error, self.prev_path_progress
+
+        return cross_track_error, best_progress
 
     def set_action(self, action):
         self.prev_action = self.current_action
@@ -528,15 +592,28 @@ class RobotAgent:
         
         reward += current_goal_reward
             
-        # 8. Path Following Reward
-        path_reward = 0.0
+        # 8. Path Following Rewards
+        path_progress_reward = 0.0
+        cross_track_penalty = 0.0
         cross_track_error = 0.0
         if self.path_cfg.get('enabled', False) and self.global_plan is not None:
-            cross_track_error = self.calculate_cross_track_error(px, py)
-            # Use a decaying function to give high reward for low error
-            reward_scale = self.path_cfg.get('path_reward_scale', 0.0)
-            path_reward = reward_scale * (1.0 - math.tanh(cross_track_error))
-            reward += path_reward
+            # Calculate both CTE and progress along path
+            cross_track_error, current_path_progress = self.calculate_path_errors(px, py)
+
+            # A. Cross-Track Error Penalty (Lateral Control)
+            # Penalize the robot for being far from the path.
+            cte_penalty_scale = self.path_cfg.get('cross_track_penalty_scale')
+            cross_track_penalty = cte_penalty_scale * cross_track_error
+            reward += cross_track_penalty
+
+            # B. Path Progress Reward (Longitudinal Control), like MetaDrive's driving_reward
+            progress_reward_scale = self.path_cfg.get('path_progress_reward_scale')
+            progress_delta = current_path_progress - self.prev_path_progress
+            path_progress_reward = progress_reward_scale * progress_delta
+            reward += path_progress_reward
+
+            # Update previous progress for next step
+            self.prev_path_progress = current_path_progress
 
         # Update prev
         self.prev_dist_to_goal = dist_to_goal
@@ -554,7 +631,8 @@ class RobotAgent:
                 f"  Head: {heading_penalty:.4f} target_angle: {target_angle:.4f}\n"
                 f"  Coll: {collision_reward:.4f}\n"
                 f"  MinDistReward: {min_range_reward:.4f} min_scan: {min_scan:.4f}\n"
-                f"  PathReward: {path_reward:.4f} (cte: {cross_track_error:.4f})\n"
+                f"  CrossTrackPenalty: {cross_track_penalty:.4f} (cte: {cross_track_error:.4f})\n"
+                f"  PathProgressReward: {path_progress_reward:.4f} (progress_delta: {progress_delta:.4f})\n"
                 f"  Goal: {current_goal_reward:.4f}\n"
                 f"  Done: {done}\n"
                 f"-------------------"
@@ -601,6 +679,7 @@ class RobotAgent:
 
         # Reset state variables
         self.prev_pose = np.array([current_x, current_y])
+        self.prev_path_progress = 0.0 # Reset progress at the start of a new episode
         if self.goal_x is not None:
             self.prev_dist_to_goal = math.sqrt((self.goal_x - current_x)**2 + (self.goal_y - current_y)**2)
         else:

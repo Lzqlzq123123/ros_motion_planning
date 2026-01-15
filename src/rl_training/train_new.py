@@ -72,6 +72,9 @@ def main():
     # Create Environment
     env = RosGazeboEnv(env_cfg, device=args.device)
 
+    # Reset once so goals/plans are initialized before training rollouts
+    env.reset()
+
     # Create Runner
     # Note: OnPolicyRunner expects (env, train_cfg, log_dir, device)
     # We need to adapt the config structure to match what rsl_rl expects if necessary.

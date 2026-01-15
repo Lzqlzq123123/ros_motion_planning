@@ -2,10 +2,10 @@
 
 env:
   agent_names: ["robot1"] # Names of robots in Gazebo
-  num_observations: 367
+  num_observations: 368
   num_actions: 2 # [linear_velocity, angular_velocity]
   max_episode_length: 256  # Max steps per episode
-  control_dt: 0.1          # Physics duration per step (seconds)
+  control_dt: 0.05        # Physics duration per step (seconds)
   goals:
     #- [0, -3.0, 0]
     - [0, -2.0, -1.57]
@@ -20,26 +20,27 @@ env:
   # Action Scaling & Clipping
   action_scale: [1, 1]
   action_clip_low: [0, -0.6]  # [v_min, w_min] - 允许负角速度（右转）
-  action_clip_high: [1, 0.6]  # [v_max, w_max]
+  action_clip_high: [0.5, 0.6]  # [v_max, w_max]
   
   reward_debug: true # 打印 reward 分解用于调试
 
   reward:
     type: displacement
-    smoothness_scale: -1      # 惩罚动作不平滑（负值）
+    smoothness_scale: -0.05   # 惩罚动作不平滑（负值）
     action_penalty_scale: 0.0 # 惩罚大幅度动作（防止饱和）
     heading_penalty_scale: -1  # 朝向偏差惩罚（负值）
     collision_penalty: -50.0     # 碰撞惩罚（降低惩罚防止 freezing）
     min_range_penalty: -2.0      # 靠障碍太近惩罚（负值）
     min_range_threshold: 0.7       # lidar 小于该距离开始惩罚 （单位：米）  lidar最小0.17米
     goal_reward: 200.0            # 到终点一次性奖励（正值）
-    step_cost: -1             # 每步负奖励（负值）
-    dist_penalty_scale: -0.5    # 绝对距离惩罚系数（负值）
-    progress_reward_scale: 100.0   # 进度奖励系数（正值，奖励每步靠近目标的距离）
+    step_cost: -0.1          # 每步负奖励（负值），以鼓励尽快完成任务
+    dist_penalty_scale: 0    # 绝对距离惩罚系数（负值）
+    progress_reward_scale: 0   # 进度奖励系数（正值，奖励每步靠近目标的距离）
 
   path:
     enabled: true
-    path_reward_scale: 1.0        # 路径跟随奖励 (正值)，离路径越近奖励越高
+    cross_track_penalty_scale: -1.0 # 路径跟随惩罚（横向误差），离路径越远惩罚越大
+    path_progress_reward_scale: 80.0 # 沿路径前进奖励（纵向进度）
     visualize: true               # 在Rviz中可视化全局路径
 
   termination:                  # 终止条件
@@ -83,8 +84,8 @@ runner:
     critic: ["privileged"]
 
   # Rollout horizon per iteration (steps = num_envs * num_steps_per_env)
-  num_steps_per_env: 2048 # 修复：增加采样长度，稳定梯度
+  num_steps_per_env: 1024 # 修复：增加采样长度，稳定梯度
   max_iterations: 500
-  save_interval: 20
+  save_interval: 10
   experiment_name: "forklift_ppo"
   run_name: "run_7"
