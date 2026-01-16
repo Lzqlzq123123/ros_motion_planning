@@ -7,8 +7,10 @@ env:
   max_episode_length: 256  # Max steps per episode
   control_dt: 0.05        # Physics duration per step (seconds)
   goals:
-    #- [0, -3.0, 0]
-    - [0, -2.0, -1.57]
+    - [0, -3.0, -1.57]
+    # - [-3, -2, -1.57]
+    - [0, 2, 1.57]
+
 
   opponent: # 对抗车配置（robot2）
     enabled: false  #若设为 false，环境不重置对抗车位置，不发布 goal。
@@ -30,7 +32,7 @@ env:
     action_penalty_scale: 0.0 # 惩罚大幅度动作（防止饱和）
     heading_penalty_scale: -1  # 朝向偏差惩罚（负值）
     collision_penalty: -50.0     # 碰撞惩罚（降低惩罚防止 freezing）
-    min_range_penalty: -2.0      # 靠障碍太近惩罚（负值）
+    min_range_penalty: -4.0      # 靠障碍太近惩罚（负值）
     min_range_threshold: 0.7       # lidar 小于该距离开始惩罚 （单位：米）  lidar最小0.17米
     goal_reward: 200.0            # 到终点一次性奖励（正值）
     step_cost: -0.1          # 每步负奖励（负值），以鼓励尽快完成任务
@@ -39,8 +41,8 @@ env:
 
   path:
     enabled: true
-    cross_track_penalty_scale: -1.0 # 路径跟随惩罚（横向误差），离路径越远惩罚越大
-    path_progress_reward_scale: 80.0 # 沿路径前进奖励（纵向进度）
+    cross_track_penalty_scale: -0.5 # 路径跟随惩罚（横向误差），离路径越远惩罚越大
+    path_progress_reward_scale: 100.0 # 沿路径前进奖励（纵向进度）
     visualize: true               # 在Rviz中可视化全局路径
 
   termination:                  # 终止条件
@@ -49,7 +51,7 @@ env:
     min_collision_range: 0.2  # 碰撞判定阈值（单位：米）
 
     # 严格位姿成功条件（终止用）
-    success_pos: 0.1            # 位置误差容差（米）小于此视为到达目标点
+    success_pos: 0.2            # 位置误差容差（米）小于此视为到达目标点
 
 
 runner:
@@ -85,7 +87,12 @@ runner:
 
   # Rollout horizon per iteration (steps = num_envs * num_steps_per_env)
   num_steps_per_env: 1024 # 修复：增加采样长度，稳定梯度
-  max_iterations: 500
+  max_iterations: 600
   save_interval: 10
   experiment_name: "forklift_ppo"
-  run_name: "run_7"
+  run_name: "run_10"
+
+  #loading pre-trained model
+  # resume_path: null  # or "path/to/your/model.pth" to resume training
+  resume_path: null #/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_ppo/run_7/model_599.pt
+  

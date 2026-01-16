@@ -76,14 +76,25 @@ def main():
     env.reset()
 
     # Create Runner
-    # Note: OnPolicyRunner expects (env, train_cfg, log_dir, device)
-    # We need to adapt the config structure to match what rsl_rl expects if necessary.
-    # Here we pass the raw config dicts.
-    
     log_dir = os.path.join(os.path.dirname(__file__), 'logs', runner_cfg['experiment_name'], runner_cfg['run_name'])
     os.makedirs(log_dir, exist_ok=True)
-
+    
+    # Disable the runner's internal resume mechanism since we handle it manually
+    runner_cfg['resume'] = False
     runner = OnPolicyRunner(env, runner_cfg, log_dir=log_dir, device=args.device)
+
+    # Manually load checkpoint if resume_path is provided in the config
+    resume_path = runner_cfg.get("resume_path")
+    if resume_path and os.path.exists(resume_path):
+        print(f"Loading model from: {resume_path}")
+        try:
+            runner.load(resume_path, load_optimizer=False)
+            # Reset counters so logging starts from iteration 0 for this run
+            runner.current_learning_iteration = 0
+            runner.tot_timesteps = 0
+        except Exception as e:
+            print(f"Error loading model from {resume_path}: {e}")
+            print("Starting training from scratch.")
 
     # Train
     runner.learn(num_learning_iterations=runner_cfg['max_iterations'], init_at_random_ep_len=True)

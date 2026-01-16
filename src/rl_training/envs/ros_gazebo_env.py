@@ -49,6 +49,47 @@ class RosGazeboEnv(VecEnv):
         self.robots = []
         self.init_poses = env_cfg.get('init_poses')
 
+        # Pre-plan all global paths
+        self.global_plans = {}
+        if env_cfg.get('path', {}).get('enabled', False):
+            rospy.loginfo("Pre-planning global paths for all goals...")
+            # Assuming robot1 is the agent we are planning for
+            plan_service_name = f"/{self.agent_names[0]}/move_base/make_plan"
+            rospy.wait_for_service(plan_service_name, timeout=5.0)
+            plan_service = rospy.ServiceProxy(plan_service_name, GetPlan)
+            
+            start_pos = self.init_poses.get(self.agent_names[0])
+            start_x, start_y, start_yaw = start_pos[0], start_pos[1], start_pos[2]
+
+            for goal in env_cfg.get('goals'):
+                goal_x, goal_y, goal_yaw = goal[0], goal[1], goal[2]
+                
+                req = GetPlanRequest()
+                req.start.header.frame_id = "map"
+                req.start.pose.position.x = start_x
+                req.start.pose.position.y = start_y
+                q_start = tf.transformations.quaternion_from_euler(0, 0, start_yaw)
+                req.start.pose.orientation.x = q_start[0]
+                req.start.pose.orientation.y = q_start[1]
+                req.start.pose.orientation.z = q_start[2]
+                req.start.pose.orientation.w = q_start[3]
+
+                req.goal.header.frame_id = "map"
+                req.goal.pose.position.x = goal_x
+                req.goal.pose.position.y = goal_y
+                q_goal = tf.transformations.quaternion_from_euler(0, 0, goal_yaw)
+                req.goal.pose.orientation.x = q_goal[0]
+                req.goal.pose.orientation.y = q_goal[1]
+                req.goal.pose.orientation.z = q_goal[2]
+                req.goal.pose.orientation.w = q_goal[3]
+
+                res = plan_service(req)
+                if res.plan.poses:
+                    self.global_plans[tuple(goal)] = res.plan
+                else:
+                    self.global_plans[tuple(goal)] = None
+                    assert False, f"Failed to plan path for goal: {goal}"
+                    
         for i, name in enumerate(self.agent_names):
             init_pos = self.init_poses.get(name)
             self.robots.append(RobotAgent(name, i, name, env_cfg, init_pos))
@@ -197,7 +238,8 @@ class RosGazeboEnv(VecEnv):
         goal_idx = np.random.randint(0, len(goals))
         goal = goals[goal_idx]
         goal_x, goal_y, goal_yaw = goal[0], goal[1], goal[2]
-        robot.reset(goal_x, goal_y, goal_yaw, init_x, init_y, init_yaw)
+        path_for_goal = self.global_plans.get(tuple(goal))
+        robot.reset(goal_x, goal_y, goal_yaw, init_x, init_y, init_yaw, path=path_for_goal)
 
         # Also reset and command the interference robot (e.g., robot2)
         if self.opponent_enabled and robot.model_name == self.agent_names[0]:
@@ -259,23 +301,14 @@ class RobotAgent:
         self.term_cfg = env_cfg.get('termination')
         self.path_cfg = env_cfg.get('path', {})
 
-        self.plan_service = None
         self.plan_publisher = None
-        if self.path_cfg.get('enabled'):
-            plan_service_name = f"/{self.ns}/move_base/make_plan"
-
-            rospy.wait_for_service(plan_service_name, timeout=3.0)
-            self.plan_service = rospy.ServiceProxy(plan_service_name, GetPlan)
-            rospy.loginfo(f"[{self.ns}] Successfully connected to planner service '{plan_service_name}'")
-            
-            if self.path_cfg.get('visualize'):
-                self.plan_publisher = rospy.Publisher(f"/{self.ns}/global_plan", Path, queue_size=1, latch=True)
+        if self.path_cfg.get('enabled') and self.path_cfg.get('visualize'):
+            self.plan_publisher = rospy.Publisher(f"/{self.ns}/global_plan", Path, queue_size=1, latch=True)
         
         self.cmd_vel_pub = rospy.Publisher(f"/{self.ns}/cmd_vel", Twist, queue_size=1)
         self.goal_marker_pub = rospy.Publisher(f"/{self.ns}/rl_goal_marker", Marker, queue_size=1, latch=True)
         
         self.global_plan = None
-        self.plan_for_goal = None
         self.scan_dim = 360
         # Initialize scan with safe values (e.g. 10.0) to avoid immediate false collision detection (0.0 < threshold)
         self.scan = np.full(self.scan_dim, 10.0)
@@ -370,55 +403,6 @@ class RobotAgent:
         cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z)
         return math.atan2(siny_cosp, cosy_cosp)
 
-    def update_global_plan(self, start_x, start_y, start_yaw):
-        """Calls the global planner service to get a new path."""
-        if not self.path_cfg.get('enabled', False) or self.plan_service is None:
-            self.global_plan = None
-            return
-
-        req = GetPlanRequest()
-        req.start.header.frame_id = "map"
-        req.start.pose.position.x = start_x
-        req.start.pose.position.y = start_y
-        q_start = tf.transformations.quaternion_from_euler(0, 0, start_yaw)
-        req.start.pose.orientation.x = q_start[0]
-        req.start.pose.orientation.y = q_start[1]
-        req.start.pose.orientation.z = q_start[2]
-        req.start.pose.orientation.w = q_start[3]
-
-        req.goal.header.frame_id = "map"
-        req.goal.pose.position.x = self.goal_x
-        req.goal.pose.position.y = self.goal_y
-        q_goal = tf.transformations.quaternion_from_euler(0, 0, self.goal_yaw)
-        req.goal.pose.orientation.x = q_goal[0]
-        req.goal.pose.orientation.y = q_goal[1]
-        req.goal.pose.orientation.z = q_goal[2]
-        req.goal.pose.orientation.w = q_goal[3]
-
-        try:
-            res = self.plan_service(req)
-            if res.plan.poses:
-                # Manually set the header frame_id for RViz visualization
-                res.plan.header.frame_id = "map"
-                res.plan.header.stamp = rospy.Time.now()
-                
-                self.global_plan = res.plan
-
-                # Pre-calculate cumulative path lengths for efficient progress calculation
-                path_points = np.array([[p.pose.position.x, p.pose.position.y] for p in self.global_plan.poses])
-                segment_lengths = np.linalg.norm(np.diff(path_points, axis=0), axis=1)
-                self.cumulative_path_lengths = np.insert(np.cumsum(segment_lengths), 0, 0)
-
-                if self.path_cfg.get('visualize', False) and self.plan_publisher is not None:
-                    self.plan_publisher.publish(self.global_plan)
-            else:
-                rospy.logwarn(f"[{self.ns}] Planner returned an empty plan.")
-                self.global_plan = None
-                self.cumulative_path_lengths = None
-        except rospy.ServiceException as e:
-            rospy.logerr(f"[{self.ns}] Service call to make_plan failed: {e}")
-            self.global_plan = None
-            self.cumulative_path_lengths = None
             
     def calculate_path_errors(self, robot_x, robot_y):
         """
@@ -596,6 +580,7 @@ class RobotAgent:
         path_progress_reward = 0.0
         cross_track_penalty = 0.0
         cross_track_error = 0.0
+        progress_delta = 0.0  # Initialize here to prevent UnboundLocalError
         if self.path_cfg.get('enabled', False) and self.global_plan is not None:
             # Calculate both CTE and progress along path
             cross_track_error, current_path_progress = self.calculate_path_errors(px, py)
@@ -662,7 +647,7 @@ class RobotAgent:
         marker.color.b = 0.0
         self.goal_marker_pub.publish(marker)
 
-    def reset(self, goal_x, goal_y, goal_yaw, current_x, current_y, current_yaw):
+    def reset(self, goal_x, goal_y, goal_yaw, current_x, current_y, current_yaw, path=None):
         # Set goal
         self.goal_x = goal_x
         self.goal_y = goal_y
@@ -670,13 +655,25 @@ class RobotAgent:
         if self.goal_x is not None:
             self.publish_goal_marker(self.goal_x, self.goal_y)
         
-        # Get a new global plan only if the goal has changed or no plan exists
-        current_goal_tuple = (goal_x, goal_y, goal_yaw)
-        if self.global_plan is None or self.plan_for_goal != current_goal_tuple:
-            rospy.loginfo(f"[{self.ns}] Requesting new global plan for goal {current_goal_tuple}.")
-            self.update_global_plan(current_x, current_y, current_yaw)
-            self.plan_for_goal = current_goal_tuple # Cache the goal this plan is for
+        # Set the pre-planned global path
+        if path is None:
+            assert False, f"[{self.ns}] No pre-planned path provided for goal ({goal_x}, {goal_y})"
+        self.global_plan = path
+        self.cumulative_path_lengths = None # Reset and recalculate
 
+        if self.global_plan and self.global_plan.poses:
+            # Manually set the header frame_id for RViz visualization
+            self.global_plan.header.frame_id = "map"
+            self.global_plan.header.stamp = rospy.Time.now()
+
+            # Pre-calculate cumulative path lengths for efficient progress calculation
+            path_points = np.array([[p.pose.position.x, p.pose.position.y] for p in self.global_plan.poses])
+            segment_lengths = np.linalg.norm(np.diff(path_points, axis=0), axis=1)
+            self.cumulative_path_lengths = np.insert(np.cumsum(segment_lengths), 0, 0)
+            
+            if self.path_cfg.get('visualize', False) and self.plan_publisher is not None:
+                self.plan_publisher.publish(self.global_plan)
+        
         # Reset state variables
         self.prev_pose = np.array([current_x, current_y])
         self.prev_path_progress = 0.0 # Reset progress at the start of a new episode
