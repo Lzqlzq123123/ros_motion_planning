@@ -18,6 +18,7 @@ import math
 class RosGazeboEnv(VecEnv):
     def __init__(self, env_cfg, device="cpu"):
         self.env_cfg = env_cfg
+        self.cfg = env_cfg  # Alias for runner logging compatibility
         self.device = device
         
         # Extract robot configurations
@@ -27,7 +28,6 @@ class RosGazeboEnv(VecEnv):
         # Observation and Action spaces
         self.num_obs = env_cfg.get('num_observations')
         self.num_actions = env_cfg.get('num_actions')
-        self.max_episode_length = env_cfg.get('max_episode_length')
         self.control_dt = env_cfg.get('control_dt')
 
         # ROS Initialization
@@ -94,6 +94,9 @@ class RosGazeboEnv(VecEnv):
             init_pos = self.init_poses.get(name)
             self.robots.append(RobotAgent(name, i, name, env_cfg, init_pos))
 
+        # Track whether each robot has completed its first spawn (first uses fixed init pose)
+        self.first_reset_done = [False] * self.num_envs
+
         # Wait for odom to ensure valid observations at startup
         rospy.loginfo("Waiting for robots to receive odometry...")
         for robot in self.robots:
@@ -120,11 +123,9 @@ class RosGazeboEnv(VecEnv):
         self.privileged_obs_buf = torch.zeros((self.num_envs, self.num_obs), device=device)
         self.rew_buf = torch.zeros(self.num_envs, device=device)
         self.reset_buf = torch.ones(self.num_envs, dtype=torch.bool, device=device)
-        self.episode_length_buf = torch.zeros(self.num_envs, dtype=torch.long, device=device)
-        self.extras = {}
+        self.max_episode_length = env_cfg.get('max_episode_length', int(1e9))
+        self.episode_length_buf = torch.zeros((self.num_envs, 1), dtype=torch.long, device=device)
         
-
-
 
     def get_observations(self):
         for i, robot in enumerate(self.robots):
@@ -155,6 +156,7 @@ class RosGazeboEnv(VecEnv):
         # 5. Compute rewards/dones and handle resets before returning observations
         self.rew_buf[:] = 0.0
         self.reset_buf[:] = False
+        self.episode_length_buf += 1
         
         for i, robot in enumerate(self.robots):
             rew, done = robot.compute_reward_and_done()
@@ -162,26 +164,14 @@ class RosGazeboEnv(VecEnv):
             self.reset_buf[i] = done
             
             if done:
-                self.reset_robot(i)
                 self.episode_length_buf[i] = 0
-            else:
-                self.episode_length_buf[i] += 1
+                self.reset_robot(i)
                 
-        time_outs = self.episode_length_buf >= self.max_episode_length
-        self.reset_buf |= time_outs
-        
-        for i in range(self.num_envs):
-            if time_outs[i]:
-                self.reset_robot(i)
-                self.episode_length_buf[i] = 0
-
         # 6. After any resets, grab fresh observations for the new state
         obs = self.get_observations()
 
-        # 7. Populate extras for PPO (notably time_outs for bootstrapping)
-        self.extras = {"time_outs": time_outs.to(self.device)}
-
-        return obs, self.rew_buf, self.reset_buf, self.extras
+        # 7. Return extras (empty)
+        return obs, self.rew_buf, self.reset_buf, {}
 
     def reset(self):
         # Unpause to allow state updates during reset
@@ -196,8 +186,8 @@ class RosGazeboEnv(VecEnv):
         # Pause again
         self._call_service_safe(self.pause_physics_srv, "/gazebo/pause_physics")
 
-        self.episode_length_buf[:] = 0
         self.reset_buf[:] = False
+        self.episode_length_buf[:] = 0
         return self.get_observations()
 
     def _call_service_safe(self, service_proxy, service_name):
@@ -209,7 +199,17 @@ class RosGazeboEnv(VecEnv):
 
     def reset_robot(self, idx):
         robot = self.robots[idx]
-        init_x, init_y, init_yaw = robot.init_pos
+        # First reset uses configured init pose; subsequent resets sample random pose/yaw
+        if not self.first_reset_done[idx]:
+            init_x, init_y, init_yaw = robot.init_pos
+            self.first_reset_done[idx] = True
+        else:
+            rand_cfg = self.env_cfg.get('random_spawn')
+            x_min, x_max = rand_cfg.get('x_range')
+            y_min, y_max = rand_cfg.get('y_range')
+            init_x = np.random.uniform(x_min, x_max)
+            init_y = np.random.uniform(y_min, y_max)
+            init_yaw = np.random.uniform(-math.pi, math.pi)
         
         # Reset Pose
         state = ModelState()
@@ -263,9 +263,11 @@ class RosGazeboEnv(VecEnv):
 
         self._call_service_safe(lambda: self.set_model_state_srv(state), "/gazebo/set_model_state")
 
-        # Send goal for opponent: robot1 initial pose as its destination
-        goal_x = self.robot1_init[0]
-        goal_y = self.robot1_init[1]
+        # Send goal for opponent: first goal in goals list
+        goals = self.env_cfg.get('goals')
+        goal = goals[0]
+        goal_x = goal[0]
+        goal_y = goal[1]
         self.publish_interference_goal(goal_x, goal_y)
 
     def publish_interference_goal(self, goal_x, goal_y):
@@ -309,7 +311,7 @@ class RobotAgent:
         self.goal_marker_pub = rospy.Publisher(f"/{self.ns}/rl_goal_marker", Marker, queue_size=1, latch=True)
         
         self.global_plan = None
-        self.scan_dim = 360
+        self.scan_dim = 180
         # Initialize scan with safe values (e.g. 10.0) to avoid immediate false collision detection (0.0 < threshold)
         self.scan = np.full(self.scan_dim, 10.0)
         self.odom = None
@@ -322,15 +324,7 @@ class RobotAgent:
         self.goal_x = 0.0
         self.goal_y = 0.0
         self.goal_yaw = 0.0
-        self.prev_dist_to_goal = 0.0
-        self.prev_pose = np.zeros(2)
-        
-        self.current_action = np.zeros(2)
-        self.prev_action = np.zeros(2)
-
-        # Path-following related
-        self.cumulative_path_lengths = None
-        self.prev_path_progress = 0.0
+        self.last_cmd = np.zeros(2, dtype=np.float32)
 
 
     def scan_cb(self, msg):
@@ -340,7 +334,7 @@ class RobotAgent:
                 scan = scan[:self.scan_dim]
             elif len(scan) < self.scan_dim:
                 scan = np.pad(scan, (0, self.scan_dim-len(scan)), 'constant')
-            self.scan = np.nan_to_num(scan, posinf=10.0, neginf=0.0)
+            self.scan = np.nan_to_num(scan, posinf=30.0, neginf=0.0)
 
     def odom_cb(self, msg):
         with self.lock:
@@ -364,38 +358,32 @@ class RobotAgent:
             px = self.odom.pose.pose.position.x
             py = self.odom.pose.pose.position.y
             yaw = self.get_yaw(self.odom.pose.pose.orientation)
-            
-            # Use previous action instead of odometry velocity as per user request
-            # lin_vel = self.odom.twist.twist.linear.x
-            # ang_vel = self.odom.twist.twist.angular.z
-            
             dx = self.goal_x - px
             dy = self.goal_y - py
-            target_dist = math.sqrt(dx**2 + dy**2)
-            
-            target_angle = math.atan2(dy, dx) - yaw
-            target_angle = math.atan2(math.sin(target_angle), math.cos(target_angle))
+            dist_to_goal = math.sqrt(dx**2 + dy**2)
 
-            # Pose: [x, y, yaw, prev_v_cmd, prev_w_cmd]
-            pose_vec = np.array([px, py, yaw, self.prev_action[0], self.prev_action[1]], dtype=np.float32)
-            
-            # Extra: [dist, target_angle]
-            extra = np.array([dx,dy, target_angle], dtype=np.float32)
+            heading_error = math.atan2(dy, dx) - yaw
+            heading_error = math.atan2(math.sin(heading_error), math.cos(heading_error))
+
+            min_range = float(np.min(self.scan))
+
+            robot_state = np.array([
+                heading_error,
+                dist_to_goal,
+                min_range,
+                self.last_cmd[0],
+                self.last_cmd[1]
+            ], dtype=np.float32)
 
             obs = np.concatenate([
-                pose_vec,
-                self.scan / 10.0,  # normalize lidar ranges
-                extra
-            ])
-            
-            # Sanity check: handle NaNs/Infs to prevent PPO explosion
-            obs = np.nan_to_num(obs, posinf=10.0, neginf=-10.0)
-            obs = np.clip(obs, -20.0, 20.0)
+                self.scan/30, # Normalize scan to [0, 1] assuming max range 30m
+                robot_state
+            ]).astype(np.float32)
 
             if self.env_cfg.get('reward_debug', False):
                 print("--- Observation Debug ---")
-                print('pose_vec:', pose_vec)
-                print('extra:', extra)
+                print('robot_state:', robot_state)
+                print('min_scan:', np.min(self.scan))
             return obs
 
     def get_yaw(self, q):
@@ -405,67 +393,9 @@ class RobotAgent:
 
             
     def calculate_path_errors(self, robot_x, robot_y):
-        """
-        Calculates both cross-track error and longitudinal progress along the path.
-        - Cross-track error (CTE): The minimum perpendicular distance to the path.
-        - Progress: The distance from the start of the path to the closest point on the path.
-        """
-        if self.global_plan is None or not self.global_plan.poses or self.cumulative_path_lengths is None:
-            return 0.0, self.prev_path_progress # Return 0 CTE and non-advancing progress
-
-        path_points = np.array([[p.pose.position.x, p.pose.position.y] for p in self.global_plan.poses])
-        robot_pos = np.array([robot_x, robot_y])
-
-        min_dist_sq = float('inf')
-        best_progress = self.prev_path_progress # Default to previous progress
-        
-        # Iterate over all path segments
-        for i in range(len(path_points) - 1):
-            p1 = path_points[i]
-            p2 = path_points[i+1]
-
-            # Vector of the segment
-            line_vec = p2 - p1
-            segment_len_sq = np.dot(line_vec, line_vec)
-
-            # If segment has zero length, skip
-            if segment_len_sq < 1e-6:
-                continue
-
-            # Vector from segment start to robot
-            robot_vec = robot_pos - p1
-
-            # Projection of robot_vec onto line_vec, scaled by segment length
-            t = np.dot(robot_vec, line_vec) / segment_len_sq
-            
-            # Clamp t to be within the segment [0, 1]
-            t_clamped = np.clip(t, 0.0, 1.0)
-
-            # Find the closest point on the (infinite) line or the segment endpoints
-            closest_point_on_segment = p1 + t_clamped * line_vec
-            
-            # Calculate distance from robot to this closest point
-            dist_sq = np.sum((robot_pos - closest_point_on_segment)**2)
-
-            if dist_sq < min_dist_sq:
-                min_dist_sq = dist_sq
-                # Progress is the cumulative length to the start of the segment plus the projected length
-                segment_progress = t_clamped * np.sqrt(segment_len_sq)
-                best_progress = self.cumulative_path_lengths[i] + segment_progress
-
-        cross_track_error = np.sqrt(min_dist_sq)
-        
-        # Ensure progress is monotonically increasing to avoid rewards for moving backwards
-        # This can happen if the robot cuts a corner.
-        if best_progress < self.prev_path_progress - 0.1: # Allow for small numerical errors
-             return cross_track_error, self.prev_path_progress
-
-        return cross_track_error, best_progress
+        return 0.0, 0.0
 
     def set_action(self, action):
-        self.prev_action = self.current_action
-        self.current_action = action
-
         # Apply scaling (PPO output is typically [-1, 1])
         scale = self.env_cfg.get('action_scale')
         scaled_action = action * np.array(scale)
@@ -477,6 +407,8 @@ class RobotAgent:
         msg.linear.x = np.clip(scaled_action[0], clip_low[0], clip_high[0])
         msg.angular.z = np.clip(scaled_action[1], clip_low[1], clip_high[1])
 
+        self.last_cmd = np.array([msg.linear.x, msg.angular.z], dtype=np.float32)
+
         if self.env_cfg.get('reward_debug', False):
              print("--- Action Debug ---")
              print(f"[set_action] Raw: [{action[0]:.2f}, {action[1]:.2f}] -> Scaled: [{scaled_action[0]:.2f}, {scaled_action[1]:.2f}] -> Clipped: [{msg.linear.x:.2f}, {msg.angular.z:.2f}]")
@@ -487,142 +419,70 @@ class RobotAgent:
         reward = 0.0
         done = False
 
-        # If odom not received yet, skip reward/termination to avoid None access
         if self.odom is None:
             return reward, done
 
-        # Configs
         r_cfg = self.reward_cfg
         t_cfg = self.term_cfg
 
-        # State
         px = self.odom.pose.pose.position.x
         py = self.odom.pose.pose.position.y
-        pz = self.odom.pose.pose.position.z
-        yaw = self.get_yaw(self.odom.pose.pose.orientation)
-        lin_vel = self.odom.twist.twist.linear.x
-        ang_vel = self.odom.twist.twist.angular.z
-        
-        dist_to_goal = math.sqrt((self.goal_x - px)**2 + (self.goal_y - py)**2)
-        
-        # Target Angle (Relative Bearing)
         dx = self.goal_x - px
         dy = self.goal_y - py
-        target_angle = math.atan2(dy, dx) - yaw
-        target_angle = math.atan2(math.sin(target_angle), math.cos(target_angle))
 
-        # Yaw Error to Target Goal Orientation
-        yaw_err_to_target = self.goal_yaw - yaw
-        yaw_err_to_target = math.atan2(math.sin(yaw_err_to_target), math.cos(yaw_err_to_target))
+        dist_to_goal = math.sqrt(dx**2 + dy**2)
+        min_scan = float(np.min(self.scan))
+        min_collision_range = t_cfg.get('min_collision_range')
 
-        # --- Reward Calculation ---
-        
-        # 1. Progress Reward (Dense reward for moving towards goal)
-        progress_reward_scale = r_cfg.get('progress_reward_scale')
-        progress = lin_vel * math.cos(target_angle)
-        dt = self.env_cfg.get('control_dt', 0.1)
-        progress_reward = progress * dt * progress_reward_scale
-        reward += progress_reward
+        # initialize components so they exist in all branches
+        distance_reward = 0.0
+        turn_reward = 0.0
+        ob_reward = 0.0
+        heading = 0.0
 
-        # 1.1 Distance Penalty (Potential field to guide globally)
-        dist_penalty_scale = r_cfg.get('dist_penalty_scale')
-        dist_penalty = dist_to_goal * dist_penalty_scale
-        reward += dist_penalty
-        
-        # 2. Step Cost
-        step_cost = r_cfg.get('step_cost')
-        reward += step_cost
-        
-        # 3. Smoothness
-        diff = self.current_action - self.prev_action
-        smoothness_reward = np.dot(diff, diff) * r_cfg.get('smoothness_scale')
-        reward += smoothness_reward
+        goal_reached = dist_to_goal < t_cfg.get('success_pos')
+        collision = min_scan < min_collision_range
 
-        # 3.1 Action Magnitude Penalty (Prevent saturation)
-        action_penalty = np.sum(np.square(self.current_action)) * r_cfg.get('action_penalty_scale')
-        reward += action_penalty
-        
-        # 4. Heading Penalty
-        heading_penalty = abs(target_angle) * r_cfg.get('heading_penalty_scale')
-        reward += heading_penalty
-        
-        # 5. Collision
-        min_scan = np.min(self.scan)
-        collision_dist = t_cfg.get('min_collision_range')
-        collision_reward = 0.0
-        
-        if min_scan < collision_dist:
-            collision_reward = r_cfg.get('collision_penalty')
-            reward += collision_reward
-            if t_cfg.get('collision'):
-                done = True
-        
-        # 6. Min Range Penalty (Obstacle avoidance)
-        min_range_threshold = r_cfg.get('min_range_threshold')
-        min_range_reward = 0.0
-        if min_scan < min_range_threshold:
-             diff = min_range_threshold - min_scan
-             min_range_reward = r_cfg.get('min_range_penalty') * (math.exp(diff/min_range_threshold) - 1.0)
-             reward += min_range_reward
-
-        # 7. Goal & Success
-        is_final_goal_reached = dist_to_goal < t_cfg.get('success_pos')
-        
-        current_goal_reward = 0.0
-        if is_final_goal_reached:
+        if goal_reached:
+            distance_reward = r_cfg.get('goal_reward')
+            reward = distance_reward
             done = True
-            current_goal_reward = r_cfg.get('goal_reward')
-            rospy.loginfo(f"Robot {self.id} reached final goal!")
-        
-        reward += current_goal_reward
-            
-        # 8. Path Following Rewards
-        path_progress_reward = 0.0
-        cross_track_penalty = 0.0
-        cross_track_error = 0.0
-        progress_delta = 0.0  # Initialize here to prevent UnboundLocalError
-        if self.path_cfg.get('enabled', False) and self.global_plan is not None:
-            # Calculate both CTE and progress along path
-            cross_track_error, current_path_progress = self.calculate_path_errors(px, py)
+            rospy.loginfo(f"Robot {self.id} reached goal. Reward: {reward}")
+        elif collision:
+            ob_reward = r_cfg.get('collision_penalty')
+            reward = ob_reward
+            done = True
+        else:
+            heading = math.atan2(dy, dx) - self.get_yaw(self.odom.pose.pose.orientation)
+            heading = math.atan2(math.sin(heading), math.cos(heading))
+            current_distance = dist_to_goal
+            obstacle_min_range = min_scan
 
-            # A. Cross-Track Error Penalty (Lateral Control)
-            # Penalize the robot for being far from the path.
-            cte_penalty_scale = self.path_cfg.get('cross_track_penalty_scale')
-            cross_track_penalty = cte_penalty_scale * cross_track_error
-            reward += cross_track_penalty
+            distance_reward = -current_distance
+            turn_reward = -abs(heading)
+            # Read obstacle threshold from termination config to avoid None
+            obstacle_penalty_range = t_cfg.get('obstacle_min_range')
+            if obstacle_min_range < obstacle_penalty_range:
+                ob_reward = - (2 ** (0.6 / obstacle_min_range))
+            else:
+                ob_reward = 0.0
+            reward = distance_reward + turn_reward + ob_reward
 
-            # B. Path Progress Reward (Longitudinal Control), like MetaDrive's driving_reward
-            progress_reward_scale = self.path_cfg.get('path_progress_reward_scale')
-            progress_delta = current_path_progress - self.prev_path_progress
-            path_progress_reward = progress_reward_scale * progress_delta
-            reward += path_progress_reward
-
-            # Update previous progress for next step
-            self.prev_path_progress = current_path_progress
-
-        # Update prev
-        self.prev_dist_to_goal = dist_to_goal
-        self.prev_pose = np.array([px, py])
-        
         if self.env_cfg.get('reward_debug', False):
             print("--- Reward Debug ---")
             print(
                 f"Robot {self.id} Total Reward: {reward:.4f}\n"
-                f"  Progress: {progress_reward:.4f} (diff: {progress:.4f})\n"
-                f"  DistPenalty: {dist_penalty:.4f} dist_to_goal: {dist_to_goal:.4f}\n"
-                f"  Step: {step_cost:.4f}\n"
-                f"  Smooth: {smoothness_reward:.4f}\n"
-                f"  Action: {action_penalty:.4f}\n"
-                f"  Head: {heading_penalty:.4f} target_angle: {target_angle:.4f}\n"
-                f"  Coll: {collision_reward:.4f}\n"
-                f"  MinDistReward: {min_range_reward:.4f} min_scan: {min_scan:.4f}\n"
-                f"  CrossTrackPenalty: {cross_track_penalty:.4f} (cte: {cross_track_error:.4f})\n"
-                f"  PathProgressReward: {path_progress_reward:.4f} (progress_delta: {progress_delta:.4f})\n"
-                f"  Goal: {current_goal_reward:.4f}\n"
-                f"  Done: {done}\n"
+                f"  distance_reward: {distance_reward:.4f}\n"
+                f"  turn_reward: {turn_reward:.4f}\n"
+                f"  ob_reward: {ob_reward:.4f}\n"
+                f"  dist_to_goal: {dist_to_goal:.3f}\n"
+                f"  heading: {heading:.3f}\n"
+                f"  min_scan: {min_scan:.3f}\n"
+                f"  cmd: [{self.last_cmd[0]:.3f}, {self.last_cmd[1]:.3f}]\n"
+                f"  goal_reached: {goal_reached}, collision: {collision}\n"
                 f"-------------------"
             )
-        
+
         return float(reward), done
 
 
@@ -655,32 +515,13 @@ class RobotAgent:
         if self.goal_x is not None:
             self.publish_goal_marker(self.goal_x, self.goal_y)
         
-        # Set the pre-planned global path
-        if path is None:
-            assert False, f"[{self.ns}] No pre-planned path provided for goal ({goal_x}, {goal_y})"
+        # 路径可选：若未提供全局路径则清空并继续（与 velodyne 对齐无需路径）
         self.global_plan = path
-        self.cumulative_path_lengths = None # Reset and recalculate
-
         if self.global_plan and self.global_plan.poses:
-            # Manually set the header frame_id for RViz visualization
             self.global_plan.header.frame_id = "map"
             self.global_plan.header.stamp = rospy.Time.now()
-
-            # Pre-calculate cumulative path lengths for efficient progress calculation
-            path_points = np.array([[p.pose.position.x, p.pose.position.y] for p in self.global_plan.poses])
-            segment_lengths = np.linalg.norm(np.diff(path_points, axis=0), axis=1)
-            self.cumulative_path_lengths = np.insert(np.cumsum(segment_lengths), 0, 0)
-            
             if self.path_cfg.get('visualize', False) and self.plan_publisher is not None:
                 self.plan_publisher.publish(self.global_plan)
         
         # Reset state variables
-        self.prev_pose = np.array([current_x, current_y])
-        self.prev_path_progress = 0.0 # Reset progress at the start of a new episode
-        if self.goal_x is not None:
-            self.prev_dist_to_goal = math.sqrt((self.goal_x - current_x)**2 + (self.goal_y - current_y)**2)
-        else:
-            self.prev_dist_to_goal = 0.0
-        
-        self.current_action = np.zeros(2)
-        self.prev_action = np.zeros(2)
+        self.last_cmd = np.zeros(2, dtype=np.float32)

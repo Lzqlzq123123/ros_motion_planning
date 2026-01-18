@@ -97,7 +97,7 @@ def main():
             print("Starting training from scratch.")
 
     # Train
-    runner.learn(num_learning_iterations=runner_cfg['max_iterations'], init_at_random_ep_len=True)
+    runner.learn(num_learning_iterations=runner_cfg['max_iterations'])
 
 if __name__ == '__main__':
     main()
