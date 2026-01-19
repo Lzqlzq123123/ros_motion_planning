@@ -2,7 +2,7 @@
 
 env:
   agent_names: ["robot1"] # Names of robots in Gazebo
-  num_observations: 185  # 180 激光 + heading + dist + min_range + lin_cmd + ang_cmd
+  num_observations: 16  # 10 pooled lidar + dist + heading + last_cmd(2) + yaw_norm + diff_angle_norm
   num_actions: 2 # [linear_velocity, angular_velocity]
   control_dt: 0.05        # Physics duration per step (seconds)
   max_episode_length: 1000000000  # 仅为 runner 兼容占位，不用于截断回合
@@ -32,8 +32,14 @@ env:
   reward_debug: true # 打印 reward 分解用于调试
 
   reward:
-    collision_penalty: -200.0     
-    goal_reward: 1600.0           
+    collision_penalty: -100.0     
+    goal_reward: 120
+  # Reward shaping hyperparameters (used in progress / wall / time penalties)
+  reward_shaping:
+    distance_scale: 200   # multiplier for progress-based term
+    wall_scale: 4.0         # multiplier for wall penalty term
+    time_penalty: -1.0       # per-step time penalty
+    diagonal_base: 8.0      # base used to compute diagonal = diagonal_base * sqrt(2)
 
   path:
     enabled: false               # 启用全局路径规划
@@ -53,13 +59,14 @@ runner:
     use_clipped_value_loss: True
     clip_param: 0.2
     entropy_coef: 0.01  # 稍微增加一点熵，鼓励早期探索
-    num_learning_epochs: 5
-    num_mini_batches: 4
+    num_learning_epochs: 2 #
+    num_mini_batches: 4  # mini batch size = num_envs * num_steps / num_mini_batches
     learning_rate: 3.0e-4
     gamma: 0.99
     max_grad_norm: 1.0
     rnd_cfg: null
     symmetry_cfg: null
+    schedule: adaptive  # adaptive, fixed
 
   policy:
     class_name: "ActorCritic" # or "RecurrentActorCritic" 
@@ -78,9 +85,9 @@ runner:
     critic: ["privileged"]
 
   # Rollout horizon per iteration (steps = num_envs * num_steps_per_env)
-  num_steps_per_env: 512
+  num_steps_per_env: 1024
   max_iterations: 500
-  save_interval: 10
+  save_interval: 20
   experiment_name: "forklift_ppo"
   run_name: "run_12"
 

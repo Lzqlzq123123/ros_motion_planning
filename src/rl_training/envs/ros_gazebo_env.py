@@ -325,6 +325,8 @@ class RobotAgent:
         self.goal_y = 0.0
         self.goal_yaw = 0.0
         self.last_cmd = np.zeros(2, dtype=np.float32)
+        # Track previous distance to goal for progress-based reward
+        self.past_distance = None
 
 
     def scan_cb(self, msg):
@@ -358,32 +360,40 @@ class RobotAgent:
             px = self.odom.pose.pose.position.x
             py = self.odom.pose.pose.position.y
             yaw = self.get_yaw(self.odom.pose.pose.orientation)
+            yaw_deg = math.degrees(yaw) % 360.0
             dx = self.goal_x - px
             dy = self.goal_y - py
             dist_to_goal = math.sqrt(dx**2 + dy**2)
+            goal_heading = math.atan2(dy, dx)  # [-pi, pi]
 
-            heading_error = math.atan2(dy, dx) - yaw
-            heading_error = math.atan2(math.sin(heading_error), math.cos(heading_error))
+            # Downsample LiDAR: take 30 evenly spaced beams, then min-pool each 3-beam group -> 10 dims
+            sample_indices = np.linspace(0, self.scan_dim - 1, 30).astype(int)
+            scan_sampled = self.scan[sample_indices].reshape(10, 3)
+            lidar_pooled = np.min(scan_sampled, axis=1) / 30.0  # normalize by assumed max range 30m
 
-            min_range = float(np.min(self.scan))
-
-            robot_state = np.array([
-                heading_error,
-                dist_to_goal,
-                min_range,
-                self.last_cmd[0],
-                self.last_cmd[1]
-            ], dtype=np.float32)
+            # Normalize yaw to [0, 1], and heading alignment error to [-1, 1]
+            yaw_norm = yaw_deg / 360.0
+            diff_angle = (yaw_deg - math.degrees(goal_heading))
+            diff_angle = (diff_angle + 180.0) % 360.0 - 180.0  # wrap to [-180, 180]
+            diff_angle_norm = diff_angle / 180.0
 
             obs = np.concatenate([
-                self.scan/30, # Normalize scan to [0, 1] assuming max range 30m
-                robot_state
+                lidar_pooled.astype(np.float32),
+                np.array([dist_to_goal, goal_heading], dtype=np.float32),
+                np.array([
+                    self.last_cmd[0],
+                    self.last_cmd[1],
+                    yaw_norm,
+                    diff_angle_norm,
+                ], dtype=np.float32),
             ]).astype(np.float32)
 
             if self.env_cfg.get('reward_debug', False):
                 print("--- Observation Debug ---")
-                print('robot_state:', robot_state)
-                print('min_scan:', np.min(self.scan))
+                print('lidar_pooled:', lidar_pooled)
+                print('dist_to_goal:', dist_to_goal)
+                print('goal_heading(rad):', goal_heading)
+                print('yaw_norm:', yaw_norm, 'diff_angle_norm:', diff_angle_norm)
             return obs
 
     def get_yaw(self, q):
@@ -434,51 +444,86 @@ class RobotAgent:
         min_scan = float(np.min(self.scan))
         min_collision_range = t_cfg.get('min_collision_range')
 
-        # initialize components so they exist in all branches
-        distance_reward = 0.0
-        turn_reward = 0.0
-        ob_reward = 0.0
-        heading = 0.0
+        # Read shaping params early so debug printing can always access them
+        rs = self.env_cfg.get('reward_shaping', {})
+        distance_scale = float(rs.get('distance_scale'))
+        wall_scale = float(rs.get('wall_scale'))
+        time_step_pen = float(rs.get('time_penalty'))
+        diagonal_base = float(rs.get('diagonal_base'))
+
+        # debug helpers
+        distance_rate = 0.0
+        current_pen_dis = 0.0
+        max_state = 0.0
+        value_middle = 0.0
+        wall_rate_pen = 0.0
+        distance_component = 0.0
+        wall_component = 0.0
+        event_str = "step"
 
         goal_reached = dist_to_goal < t_cfg.get('success_pos')
         collision = min_scan < min_collision_range
 
         if goal_reached:
-            distance_reward = r_cfg.get('goal_reward')
-            reward = distance_reward
+            goal = r_cfg.get('goal_reward')
+            reward = goal
+            event_str = "goal"
             done = True
             rospy.loginfo(f"Robot {self.id} reached goal. Reward: {reward}")
-        elif collision:
-            ob_reward = r_cfg.get('collision_penalty')
-            reward = ob_reward
+        elif collision: 
+            collision_reward = r_cfg.get('collision_penalty')
+            reward = collision_reward
+            event_str = "collision"
             done = True
         else:
-            heading = math.atan2(dy, dx) - self.get_yaw(self.odom.pose.pose.orientation)
-            heading = math.atan2(math.sin(heading), math.cos(heading))
+            # Progress-based reward (distance reduction), wall proximity penalty, and time penalty
             current_distance = dist_to_goal
-            obstacle_min_range = min_scan
 
-            distance_reward = -current_distance
-            turn_reward = -abs(heading)
-            # Read obstacle threshold from termination config to avoid None
-            obstacle_penalty_range = t_cfg.get('obstacle_min_range')
-            if obstacle_min_range < obstacle_penalty_range:
-                ob_reward = - (2 ** (0.6 / obstacle_min_range))
+            # Initialize past_distance if not set
+            if self.past_distance is None:
+                self.past_distance = current_distance
+
+            # Distance progress
+            distance_rate = (self.past_distance - current_distance)
+            diagonal = diagonal_base * math.sqrt(2.0)
+            if distance_rate >= 0:
+                distance_rate = distance_rate * (1.0 + (diagonal - current_distance) / diagonal)
             else:
-                ob_reward = 0.0
-            reward = distance_reward + turn_reward + ob_reward
+                distance_rate = distance_rate * (1.0 + current_distance / diagonal)
+
+            # Wall penalty based on scan distribution (replicates pen_wall logic)
+            scan_norm = np.clip(self.scan / 30.0, 0.0, 1.0)
+            max_state = float(np.max(scan_norm)) if scan_norm.size > 0 else 0.0
+            if scan_norm.size % 2 != 0:
+                idx_middle = scan_norm.size // 2
+                value_middle = float(scan_norm[idx_middle])
+            else:
+                idx_g = scan_norm.size // 2
+                idx_l = idx_g - 1
+                value_middle = max(float(scan_norm[idx_g]), float(scan_norm[idx_l]))
+            if value_middle < 0.2 * max_state:
+                current_pen_dis = (max_state - value_middle)
+            else:
+                current_pen_dis = 0.0
+            
+            distance_component = distance_scale * distance_rate
+            wall_rate_pen = -current_pen_dis
+            wall_component = wall_scale * wall_rate_pen
+
+            reward = distance_component + wall_component + time_step_pen
+
+            # Update past distance for next step
+            self.past_distance = current_distance
 
         if self.env_cfg.get('reward_debug', False):
             print("--- Reward Debug ---")
             print(
-                f"Robot {self.id} Total Reward: {reward:.4f}\n"
-                f"  distance_reward: {distance_reward:.4f}\n"
-                f"  turn_reward: {turn_reward:.4f}\n"
-                f"  ob_reward: {ob_reward:.4f}\n"
-                f"  dist_to_goal: {dist_to_goal:.3f}\n"
-                f"  heading: {heading:.3f}\n"
-                f"  min_scan: {min_scan:.3f}\n"
-                f"  cmd: [{self.last_cmd[0]:.3f}, {self.last_cmd[1]:.3f}]\n"
+                f"Event: {event_str} | Total Reward: {reward:.4f}\n"
+                f"  current_distance: {dist_to_goal:.3f}\n"
+                f"  distance_rate: {distance_rate:.6f} | distance_component: {distance_component:.4f}\n"
+                f"  wall: max_state={max_state:.3f}, middle={value_middle:.3f}, current_pen={current_pen_dis:.4f}| wall_component: {wall_component:.4f}\n"
+                f"  time_penalty: {time_step_pen:.3f}\n"
+                f"  min_scan: {min_scan:.3f} | cmd: [{self.last_cmd[0]:.3f}, {self.last_cmd[1]:.3f}]\n"
                 f"  goal_reached: {goal_reached}, collision: {collision}\n"
                 f"-------------------"
             )
@@ -525,3 +570,8 @@ class RobotAgent:
         
         # Reset state variables
         self.last_cmd = np.zeros(2, dtype=np.float32)
+        # Initialize past distance used by progress-based reward
+        try:
+            self.past_distance = math.hypot(self.goal_x - current_x, self.goal_y - current_y)
+        except Exception:
+            self.past_distance = None
