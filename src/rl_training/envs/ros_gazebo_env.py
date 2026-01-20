@@ -5,9 +5,8 @@ import tf.transformations
 from rsl_rl.env import VecEnv
 from tensordict import TensorDict
 from geometry_msgs.msg import Twist, PoseStamped, Point
-from nav_msgs.msg import Odometry, Path
+from nav_msgs.msg import Odometry, Path, OccupancyGrid
 from sensor_msgs.msg import LaserScan
-from nav_msgs.srv import GetPlan, GetPlanRequest
 from visualization_msgs.msg import Marker
 from gazebo_msgs.srv import SetModelState, GetWorldProperties
 from gazebo_msgs.msg import ModelState
@@ -49,47 +48,16 @@ class RosGazeboEnv(VecEnv):
         self.robots = []
         self.init_poses = env_cfg.get('init_poses')
 
-        # Pre-plan all global paths
-        self.global_plans = {}
-        if env_cfg.get('path', {}).get('enabled', False):
-            rospy.loginfo("Pre-planning global paths for all goals...")
-            # Assuming robot1 is the agent we are planning for
-            plan_service_name = f"/{self.agent_names[0]}/move_base/make_plan"
-            rospy.wait_for_service(plan_service_name, timeout=5.0)
-            plan_service = rospy.ServiceProxy(plan_service_name, GetPlan)
-            
-            start_pos = self.init_poses.get(self.agent_names[0])
-            start_x, start_y, start_yaw = start_pos[0], start_pos[1], start_pos[2]
-
-            for goal in env_cfg.get('goals'):
-                goal_x, goal_y, goal_yaw = goal[0], goal[1], goal[2]
-                
-                req = GetPlanRequest()
-                req.start.header.frame_id = "map"
-                req.start.pose.position.x = start_x
-                req.start.pose.position.y = start_y
-                q_start = tf.transformations.quaternion_from_euler(0, 0, start_yaw)
-                req.start.pose.orientation.x = q_start[0]
-                req.start.pose.orientation.y = q_start[1]
-                req.start.pose.orientation.z = q_start[2]
-                req.start.pose.orientation.w = q_start[3]
-
-                req.goal.header.frame_id = "map"
-                req.goal.pose.position.x = goal_x
-                req.goal.pose.position.y = goal_y
-                q_goal = tf.transformations.quaternion_from_euler(0, 0, goal_yaw)
-                req.goal.pose.orientation.x = q_goal[0]
-                req.goal.pose.orientation.y = q_goal[1]
-                req.goal.pose.orientation.z = q_goal[2]
-                req.goal.pose.orientation.w = q_goal[3]
-
-                res = plan_service(req)
-                if res.plan.poses:
-                    self.global_plans[tuple(goal)] = res.plan
-                else:
-                    self.global_plans[tuple(goal)] = None
-                    assert False, f"Failed to plan path for goal: {goal}"
-                    
+        # Goal sampling
+        self.goal_range = env_cfg.get('goal_range')
+        self.goal_max_attempts = int(env_cfg.get('goal_max_attempts', 50))
+        gv_cfg = env_cfg.get('goal_validation', {})
+        self.costmap_topic = gv_cfg.get('costmap_topic', '/move_base/global_costmap/costmap')
+        self.costmap_free_thresh = gv_cfg.get('costmap_free_threshold', 50)
+        self.costmap_inflation = float(gv_cfg.get('costmap_inflation', 0.2))
+        self.costmap_data = None
+        rospy.Subscriber(self.costmap_topic, OccupancyGrid, self._costmap_cb, queue_size=1)
+        
         for i, name in enumerate(self.agent_names):
             init_pos = self.init_poses.get(name)
             self.robots.append(RobotAgent(name, i, name, env_cfg, init_pos))
@@ -197,6 +165,79 @@ class RosGazeboEnv(VecEnv):
         except rospy.ServiceException as e:
             rospy.logerr(f"{service_name} service call failed: {e}")
 
+    def sample_goal(self, start_x, start_y, start_yaw):
+        """Sample a goal; optionally reject if costmap shows collision (inflated)."""
+        goals = self.env_cfg.get('goals', [])
+        use_range = self.goal_range is not None
+        attempts = max(1, self.goal_max_attempts)
+
+        fallback_goal = None
+
+        for _ in range(attempts):
+            if use_range:
+                x_range = self.goal_range.get('x_range', [-1.0, 1.0])
+                y_range = self.goal_range.get('y_range', [-1.0, 1.0])
+                yaw_range = self.goal_range.get('yaw_range', [-math.pi, math.pi])
+                goal_x = np.random.uniform(x_range[0], x_range[1])
+                goal_y = np.random.uniform(y_range[0], y_range[1])
+                goal_yaw = np.random.uniform(yaw_range[0], yaw_range[1])
+            else:
+                goal = goals[np.random.randint(0, len(goals))]
+                goal_x, goal_y, goal_yaw = goal[0], goal[1], goal[2]
+
+            fallback_goal = (goal_x, goal_y, goal_yaw)
+
+            if self.costmap_data is None:
+                # No costmap yet; accept and move on to avoid blocking resets
+                return goal_x, goal_y, goal_yaw
+
+            if self._is_goal_free_in_costmap(goal_x, goal_y):
+                return goal_x, goal_y, goal_yaw
+
+        rospy.logwarn("Goal sampling hit max attempts; using last sampled goal (may be occupied).")
+        if fallback_goal is not None:
+            return fallback_goal
+        return 0.0, 0.0, 0.0
+
+    def _costmap_cb(self, msg):
+        """Cache costmap for goal filtering."""
+        self.costmap_data = msg
+
+    def _is_goal_free_in_costmap(self, goal_x, goal_y):
+        grid = self.costmap_data
+        res = grid.info.resolution
+        ox = grid.info.origin.position.x
+        oy = grid.info.origin.position.y
+        width = grid.info.width
+        height = grid.info.height
+
+        inflate_cells = max(0, int(self.costmap_inflation / res))
+
+        cx = int((goal_x - ox) / res)
+        cy = int((goal_y - oy) / res)
+
+        if cx < 0 or cy < 0 or cx >= width or cy >= height:
+            return False
+
+        data = grid.data
+
+        def cell_cost(ix, iy):
+            idx = iy * width + ix
+            if idx < 0 or idx >= len(data):
+                return 100
+            return data[idx]
+
+        for ix in range(cx - inflate_cells, cx + inflate_cells + 1):
+            for iy in range(cy - inflate_cells, cy + inflate_cells + 1):
+                if ix < 0 or iy < 0 or ix >= width or iy >= height:
+                    return False
+                val = cell_cost(ix, iy)
+                if val == -1:  # unknown treated as occupied
+                    return False
+                if val >= self.costmap_free_thresh:
+                    return False
+        return True
+
     def reset_robot(self, idx):
         robot = self.robots[idx]
         # First reset uses configured init pose; subsequent resets sample random pose/yaw
@@ -234,18 +275,17 @@ class RosGazeboEnv(VecEnv):
         self._call_service_safe(lambda: self.set_model_state_srv(state), "/gazebo/set_model_state")
         
         # Generate New Goal
-        goals = self.env_cfg.get('goals')
-        goal_idx = np.random.randint(0, len(goals))
-        goal = goals[goal_idx]
-        goal_x, goal_y, goal_yaw = goal[0], goal[1], goal[2]
-        path_for_goal = self.global_plans.get(tuple(goal))
-        robot.reset(goal_x, goal_y, goal_yaw, init_x, init_y, init_yaw, path=path_for_goal)
+        goal_x, goal_y, goal_yaw = self.sample_goal(init_x, init_y, init_yaw)
+        robot.reset(goal_x, goal_y, goal_yaw, init_x, init_y, init_yaw, path=None)
+
+        # Track last main goal for opponent reference
+        self.latest_goal = (goal_x, goal_y, goal_yaw)
 
         # Also reset and command the interference robot (e.g., robot2)
         if self.opponent_enabled and robot.model_name == self.agent_names[0]:
-            self.reset_interference_robot()
+            self.reset_interference_robot(goal_x, goal_y)
 
-    def reset_interference_robot(self):
+    def reset_interference_robot(self, goal_x, goal_y):
         if not self.opponent_enabled:
             return
 
@@ -263,11 +303,7 @@ class RosGazeboEnv(VecEnv):
 
         self._call_service_safe(lambda: self.set_model_state_srv(state), "/gazebo/set_model_state")
 
-        # Send goal for opponent: first goal in goals list
-        goals = self.env_cfg.get('goals')
-        goal = goals[0]
-        goal_x = goal[0]
-        goal_y = goal[1]
+        # Send goal for opponent: mirror primary goal with offset
         self.publish_interference_goal(goal_x, goal_y)
 
     def publish_interference_goal(self, goal_x, goal_y):

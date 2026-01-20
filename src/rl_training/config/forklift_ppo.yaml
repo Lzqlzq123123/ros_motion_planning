@@ -5,20 +5,27 @@ env:
   num_observations: 16  # 10 pooled lidar + dist + heading + last_cmd(2) + yaw_norm + diff_angle_norm
   num_actions: 2 # [linear_velocity, angular_velocity]
   control_dt: 0.05        # Physics duration per step (seconds)
-  max_episode_length: 1000000000  # 仅为 runner 兼容占位，不用于截断回合
+  max_episode_length: 1024  # 仅为 runner 兼容占位，不用于截断回合
   random_spawn:
     x_range: [1.0, 4.0]
     y_range: [-1.0, 2.5]
-  goals:
-    - [0, -3.0, -1.57]
-    - [-3, -2, -1.57]
-    - [1 , 0, -3.14]
-    - [2.0, 2.0, 0.0]
-    - [0, -1, -1.57]
+  # Goal sampling: uniformly draw inside ranges; costmap filters occupancy
+  goal_range:
+    x_range: [-3.5, 3.5]
+    y_range: [-3.5, 3.5]
+    yaw_range: [-3.14, 3.14]
+  goal_max_attempts: 60
+  goal_validation:
+    costmap_topic: /robot1/move_base/global_costmap/costmap
+    costmap_free_threshold: 50   # >=阈值视为占用
+    costmap_inflation: 0.3       # 膨胀半径（米）
+
+  # (Optional) Static list kept only as fallback if goal_range is removed
+  goals: []
 
 
   opponent: # 对抗车配置（robot2）
-    enabled: true  #若设为 false，环境不重置对抗车位置，不发布 goal。
+    enabled: false  #若设为 false，环境不重置对抗车位置，不发布 goal。
     model_name: robot2
     goal_topic: /robot2/move_base_simple/goal
     frame_id: map  # goal is published in map frame; init pose来自user_config.yaml
@@ -48,7 +55,7 @@ env:
   termination:                  # 终止条件
     min_height: -1.0       
     min_collision_range: 0.2  # 碰撞判定阈值（单位：米）
-    success_pos: 0.2          # 位置误差容差（米）小于此视为到达目标点
+    success_pos: 0.5          # 位置误差容差（米）小于此视为到达目标点
     obstacle_min_range: 0.8   # 障碍物最小距离（米），用于奖励计算
 
 
@@ -85,7 +92,7 @@ runner:
     critic: ["privileged"]
 
   # Rollout horizon per iteration (steps = num_envs * num_steps_per_env)
-  num_steps_per_env: 1024
+  num_steps_per_env: 2048
   max_iterations: 500
   save_interval: 20
   experiment_name: "forklift_ppo"
