@@ -33,8 +33,8 @@ env:
   
   # Action Scaling & Clipping
   action_scale: [1, 1]
-  action_clip_low: [0, -1]  # [v_min, w_min] - 允许负角速度（右转）
-  action_clip_high: [0.6, 1]  # [v_max, w_max]
+  action_clip_low: [0, -0.6]  # [v_min, w_min] - 允许负角速度（右转）
+  action_clip_high: [0.6, 0.6]  # [v_max, w_max]
   
   reward_debug: true # 打印 reward 分解用于调试
 
@@ -43,10 +43,12 @@ env:
     goal_reward: 120
   # Reward shaping hyperparameters (used in progress / wall / time penalties)
   reward_shaping:
-    distance_scale: 200   # multiplier for progress-based term
-    wall_scale: 4.0         # multiplier for wall penalty term
+    distance_scale: 300   # multiplier for progress-based term
+    wall_scale: 8.0         # multiplier for wall penalty term
     time_penalty: -1.0       # per-step time penalty
     diagonal_base: 8.0      # base used to compute diagonal = diagonal_base * sqrt(2)
+    heading_scale: 0      # bonus ~cos(heading_error), encourages facing goal
+    ang_vel_scale: -4      # penalty on |w| to抑制原地转圈
 
   path:
     enabled: false               # 启用全局路径规划
@@ -54,8 +56,8 @@ env:
 
   termination:                  # 终止条件
     min_height: -1.0       
-    min_collision_range: 0.2  # 碰撞判定阈值（单位：米）
-    success_pos: 0.5          # 位置误差容差（米）小于此视为到达目标点
+    min_collision_range: 0.3  # 碰撞判定阈值（单位：米）
+    success_pos: 0.3          # 位置误差容差（米）小于此视为到达目标点
     obstacle_min_range: 0.8   # 障碍物最小距离（米），用于奖励计算
 
 
@@ -64,7 +66,7 @@ runner:
     class_name: "PPO"
     value_loss_coef: 1.0
     use_clipped_value_loss: True
-    clip_param: 0.2
+    clip_param: 0.1
     entropy_coef: 0.01  # 稍微增加一点熵，鼓励早期探索
     num_learning_epochs: 2 #
     num_mini_batches: 4  # mini batch size = num_envs * num_steps / num_mini_batches
@@ -76,8 +78,8 @@ runner:
     schedule: adaptive  # adaptive, fixed
 
   policy:
-    class_name: "ActorCritic" # or "RecurrentActorCritic" 
-    init_noise_std: 0.6 # 增加初始探索噪声 (0.1 -> 0.6)
+    class_name: "ResActorCritic" # navbot_ppo 风格残差 Actor-Critic
+    init_noise_std: 0.2 # 增加初始探索噪声 (0.1 -> 0.6)
     actor_hidden_dims: [256, 128, 64]
     critic_hidden_dims: [256, 128, 64]
     activation: "elu" 

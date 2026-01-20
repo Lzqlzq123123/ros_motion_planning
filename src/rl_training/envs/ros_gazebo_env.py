@@ -486,6 +486,8 @@ class RobotAgent:
         wall_scale = float(rs.get('wall_scale'))
         time_step_pen = float(rs.get('time_penalty'))
         diagonal_base = float(rs.get('diagonal_base'))
+        heading_scale = float(rs.get('heading_scale'))
+        ang_vel_scale = float(rs.get('ang_vel_scale'))
 
         # debug helpers
         distance_rate = 0.0
@@ -495,6 +497,8 @@ class RobotAgent:
         wall_rate_pen = 0.0
         distance_component = 0.0
         wall_component = 0.0
+        heading_component = 0.0
+        ang_vel_component = 0.0
         event_str = "step"
 
         goal_reached = dist_to_goal < t_cfg.get('success_pos')
@@ -548,6 +552,17 @@ class RobotAgent:
 
             reward = distance_component + wall_component + time_step_pen
 
+            # Heading reward: encourage facing goal
+            yaw = self.get_yaw(self.odom.pose.pose.orientation)
+            goal_heading = math.atan2(dy, dx)
+            heading_error = math.atan2(math.sin(goal_heading - yaw), math.cos(goal_heading - yaw))
+            heading_component = heading_scale * math.cos(heading_error)
+
+            # Angular velocity penalty: discourage large spins
+            ang_vel_component = ang_vel_scale * abs(self.last_cmd[1])
+
+            reward += heading_component + ang_vel_component
+
             # Update past distance for next step
             self.past_distance = current_distance
 
@@ -558,6 +573,7 @@ class RobotAgent:
                 f"  current_distance: {dist_to_goal:.3f}\n"
                 f"  distance_rate: {distance_rate:.6f} | distance_component: {distance_component:.4f}\n"
                 f"  wall: max_state={max_state:.3f}, middle={value_middle:.3f}, current_pen={current_pen_dis:.4f}| wall_component: {wall_component:.4f}\n"
+                f"  heading_component: {heading_component:.4f} | ang_vel_component: {ang_vel_component:.4f}\n"
                 f"  time_penalty: {time_step_pen:.3f}\n"
                 f"  min_scan: {min_scan:.3f} | cmd: [{self.last_cmd[0]:.3f}, {self.last_cmd[1]:.3f}]\n"
                 f"  goal_reached: {goal_reached}, collision: {collision}\n"
