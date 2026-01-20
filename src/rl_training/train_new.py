@@ -3,10 +3,18 @@ import os
 import sys
 import yaml
 import torch
-from rsl_rl.runners import OnPolicyRunner
 
 # Add current directory to path to allow imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Add local rsl_rl to path to use custom modified version
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+rsl_rl_path = os.path.join(project_root, 'third_party', 'rsl_rl')
+if os.path.exists(rsl_rl_path):
+    sys.path.insert(0, rsl_rl_path)
+    print(f"Using local rsl_rl from: {rsl_rl_path}")
+
+from rsl_rl.runners import OnPolicyRunner
 
 from envs.ros_gazebo_env import RosGazeboEnv
 
