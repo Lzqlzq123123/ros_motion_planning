@@ -4,7 +4,7 @@ env:
   agent_names: ["robot1"] # Names of robots in Gazebo
   num_observations: 16  # 10 pooled lidar + dist + heading + last_cmd(2) + yaw_norm + diff_angle_norm
   num_actions: 2 # [linear_velocity, angular_velocity]
-  control_dt: 0.1        # Physics duration per step (seconds) - 10Hz for better RL learning
+  control_dt: 0.4        # Physics duration per step (seconds) - 10Hz for better RL learning
   max_episode_length: 1024  # 仅为 runner 兼容占位，不用于截断回合
   random_spawn:
     x_range: [-4.5, 1]
