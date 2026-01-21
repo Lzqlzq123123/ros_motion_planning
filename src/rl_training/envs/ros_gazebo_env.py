@@ -49,8 +49,8 @@ class RosGazeboEnv(VecEnv):
         self.init_poses = env_cfg.get('init_poses')
 
         # Goal sampling
-        self.goal_range = env_cfg.get('goal_range')
-        self.goal_max_attempts = int(env_cfg.get('goal_max_attempts', 50))
+        self.goal_radius_range = env_cfg.get('goal_radius_range')
+        self.max_attempts = int(env_cfg.get('max_attempts', 50))
         gv_cfg = env_cfg.get('goal_validation', {})
         self.costmap_topic = gv_cfg.get('costmap_topic', '/move_base/global_costmap/costmap')
         self.costmap_free_thresh = gv_cfg.get('costmap_free_threshold', 50)
@@ -166,24 +166,19 @@ class RosGazeboEnv(VecEnv):
             rospy.logerr(f"{service_name} service call failed: {e}")
 
     def sample_goal(self, start_x, start_y, start_yaw):
-        """Sample a goal; optionally reject if costmap shows collision (inflated)."""
-        goals = self.env_cfg.get('goals', [])
-        use_range = self.goal_range is not None
-        attempts = max(1, self.goal_max_attempts)
-
+        """Sample a goal around initial position with radius r; optionally reject if costmap shows collision."""
+        attempts = max(1, self.max_attempts)
         fallback_goal = None
 
         for _ in range(attempts):
-            if use_range:
-                x_range = self.goal_range.get('x_range', [-1.0, 1.0])
-                y_range = self.goal_range.get('y_range', [-1.0, 1.0])
-                yaw_range = self.goal_range.get('yaw_range', [-math.pi, math.pi])
-                goal_x = np.random.uniform(x_range[0], x_range[1])
-                goal_y = np.random.uniform(y_range[0], y_range[1])
-                goal_yaw = np.random.uniform(yaw_range[0], yaw_range[1])
-            else:
-                goal = goals[np.random.randint(0, len(goals))]
-                goal_x, goal_y, goal_yaw = goal[0], goal[1], goal[2]
+            # Sample goal within radius range from initial position
+            min_radius, max_radius = self.goal_radius_range
+            radius = np.random.uniform(min_radius, max_radius)
+            angle = np.random.uniform(0, 2 * math.pi)
+            
+            goal_x = start_x + radius * math.cos(angle)
+            goal_y = start_y + radius * math.sin(angle)
+            goal_yaw = np.random.uniform(-math.pi, math.pi)
 
             fallback_goal = (goal_x, goal_y, goal_yaw)
 
@@ -191,19 +186,19 @@ class RosGazeboEnv(VecEnv):
                 # No costmap yet; accept and move on to avoid blocking resets
                 return goal_x, goal_y, goal_yaw
 
-            if self._is_goal_free_in_costmap(goal_x, goal_y):
+            if self._is_free_in_costmap(goal_x, goal_y):
                 return goal_x, goal_y, goal_yaw
 
         rospy.logwarn("Goal sampling hit max attempts; using last sampled goal (may be occupied).")
         if fallback_goal is not None:
             return fallback_goal
-        return 0.0, 0.0, 0.0
+        return start_x, start_y, 0.0  # Fallback to initial position
 
     def _costmap_cb(self, msg):
         """Cache costmap for goal filtering."""
         self.costmap_data = msg
 
-    def _is_goal_free_in_costmap(self, goal_x, goal_y):
+    def _is_free_in_costmap(self, _x, _y):
         grid = self.costmap_data
         res = grid.info.resolution
         ox = grid.info.origin.position.x
@@ -213,8 +208,8 @@ class RosGazeboEnv(VecEnv):
 
         inflate_cells = max(0, int(self.costmap_inflation / res))
 
-        cx = int((goal_x - ox) / res)
-        cy = int((goal_y - oy) / res)
+        cx = int((_x - ox) / res)
+        cy = int((_y - oy) / res)
 
         if cx < 0 or cy < 0 or cx >= width or cy >= height:
             return False
@@ -238,6 +233,22 @@ class RosGazeboEnv(VecEnv):
                     return False
         return True
 
+    def sample_free_position(self, x_range, y_range):
+        """Sample a free position using costmap validation (similar to sample_goal)."""
+        if self.costmap_data is None:
+            # No costmap yet; return random position
+            return np.random.uniform(x_range[0], x_range[1]), np.random.uniform(y_range[0], y_range[1])
+        
+        for _ in range(self.max_attempts):
+            init_x = np.random.uniform(x_range[0], x_range[1])
+            init_y = np.random.uniform(y_range[0], y_range[1])
+            
+            if self._is_free_in_costmap(init_x, init_y):
+                return init_x, init_y
+        
+        rospy.logwarn("Position sampling hit max attempts; using last sampled position (may be occupied).")
+        return np.random.uniform(x_range[0], x_range[1]), np.random.uniform(y_range[0], y_range[1])
+
     def reset_robot(self, idx):
         robot = self.robots[idx]
         # First reset uses configured init pose; subsequent resets sample random pose/yaw
@@ -248,8 +259,9 @@ class RosGazeboEnv(VecEnv):
             rand_cfg = self.env_cfg.get('random_spawn')
             x_min, x_max = rand_cfg.get('x_range')
             y_min, y_max = rand_cfg.get('y_range')
-            init_x = np.random.uniform(x_min, x_max)
-            init_y = np.random.uniform(y_min, y_max)
+            
+            # Use costmap validation for random spawn position
+            init_x, init_y = self.sample_free_position([x_min, x_max], [y_min, y_max])
             init_yaw = np.random.uniform(-math.pi, math.pi)
         
         # Reset Pose
@@ -558,8 +570,10 @@ class RobotAgent:
             heading_error = math.atan2(math.sin(goal_heading - yaw), math.cos(goal_heading - yaw))
             heading_component = heading_scale * math.cos(heading_error)
 
-            # Angular velocity penalty: discourage large spins
-            ang_vel_component = ang_vel_scale * abs(self.last_cmd[1])
+            # Angular velocity penalty: discourage large spins with quadratic penalty
+            # Use normalized angular velocity to make penalty more effective
+            normalized_angular_vel = abs(self.last_cmd[1]) / 0.5  # Normalize to [0, 1] range
+            ang_vel_component = ang_vel_scale * (normalized_angular_vel ** 2)
 
             reward += heading_component + ang_vel_component
 
@@ -593,7 +607,7 @@ class RobotAgent:
         marker.action = Marker.ADD
         marker.pose.position.x = goal_x
         marker.pose.position.y = goal_y
-        marker.pose.position.z = 0.5
+        marker.pose.position.z = 0
         marker.pose.orientation.w = 1.0
         marker.scale.x = 0.2
         marker.scale.y = 0.2

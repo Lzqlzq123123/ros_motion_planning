@@ -196,9 +196,9 @@
       <rightFrontJoint>front_right_wheel_joint</rightFrontJoint>
       <leftRearJoint>rear_left_wheel_joint</leftRearJoint>
       <rightRearJoint>rear_right_wheel_joint</rightRearJoint>
-      <wheelSeparation>0.12</wheelSeparation> <!-- 左右轮距离 缩放为原来的1/3 -->
-      <wheelDiameter>0.06</wheelDiameter>   <!-- 轮子直径 缩放为原来的1/3 -->
-      <torque>500</torque>                 <!-- 扭矩 -->
+      <wheelSeparation>0.12</wheelSeparation> <!-- 恢复原始轮距 -->
+      <wheelDiameter>0.06</wheelDiameter>   <!-- 轮子直径保持不变 -->
+      <torque>500</torque>                 <!-- 恢复原始扭矩 -->
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>

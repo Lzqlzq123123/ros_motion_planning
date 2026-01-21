@@ -4,24 +4,18 @@ env:
   agent_names: ["robot1"] # Names of robots in Gazebo
   num_observations: 16  # 10 pooled lidar + dist + heading + last_cmd(2) + yaw_norm + diff_angle_norm
   num_actions: 2 # [linear_velocity, angular_velocity]
-  control_dt: 0.05        # Physics duration per step (seconds)
+  control_dt: 0.1        # Physics duration per step (seconds) - 10Hz for better RL learning
   max_episode_length: 1024  # 仅为 runner 兼容占位，不用于截断回合
   random_spawn:
-    x_range: [1.0, 4.0]
-    y_range: [-1.0, 2.5]
-  # Goal sampling: uniformly draw inside ranges; costmap filters occupancy
-  goal_range:
-    x_range: [-3.5, 3.5]
-    y_range: [-3.5, 3.5]
-    yaw_range: [-3.14, 3.14]
+    x_range: [-4.5, 1]
+    y_range: [-5, 5]
+  goal_radius_range: [2.0, 5.0]  # [min_radius, max_radius] for goal distance from init position
   goal_max_attempts: 60
   goal_validation:
     costmap_topic: /robot1/move_base/global_costmap/costmap
     costmap_free_threshold: 50   # >=阈值视为占用
     costmap_inflation: 0.3       # 膨胀半径（米）
 
-  # (Optional) Static list kept only as fallback if goal_range is removed
-  goals: []
 
 
   opponent: # 对抗车配置（robot2）
@@ -29,12 +23,12 @@ env:
     model_name: robot2
     goal_topic: /robot2/move_base_simple/goal
     frame_id: map  # goal is published in map frame; init pose来自user_config.yaml
-    goal_offset: 0.3  # 对抗目标goal偏移（米），避免与robot1质心完全重合costmap导致规划失败
+    goal_offset: 0.5  # 对抗目标goal偏移（米），避免与robot1质心完全重合costmap导致规划失败
   
   # Action Scaling & Clipping
   action_scale: [1, 1]
-  action_clip_low: [0, -0.6]  # [v_min, w_min] - 允许负角速度（右转）
-  action_clip_high: [0.6, 0.6]  # [v_max, w_max]
+  action_clip_low: [0, -1]  # [v_min, w_min] - 允许负角速度（右转）
+  action_clip_high: [0.5, 1]  # [v_max, w_max]
   
   reward_debug: true # 打印 reward 分解用于调试
 
@@ -43,12 +37,12 @@ env:
     goal_reward: 120
   # Reward shaping hyperparameters (used in progress / wall / time penalties)
   reward_shaping:
-    distance_scale: 300   # multiplier for progress-based term
+    distance_scale: 150   # multiplier for progress-based term
     wall_scale: 8.0         # multiplier for wall penalty term
     time_penalty: -1.0       # per-step time penalty
     diagonal_base: 8.0      # base used to compute diagonal = diagonal_base * sqrt(2)
-    heading_scale: 0      # bonus ~cos(heading_error), encourages facing goal
-    ang_vel_scale: -4      # penalty on |w| to抑制原地转圈
+    heading_scale: 2.0      # bonus ~cos(heading_error), encourages facing goal
+    ang_vel_scale: -4.0      # penalty on |w| to抑制原地转圈
 
   path:
     enabled: false               # 启用全局路径规划
@@ -57,7 +51,7 @@ env:
   termination:                  # 终止条件
     min_height: -1.0       
     min_collision_range: 0.3  # 碰撞判定阈值（单位：米）
-    success_pos: 0.3          # 位置误差容差（米）小于此视为到达目标点
+    success_pos: 0.35          # 位置误差容差（米）小于此视为到达目标点
     obstacle_min_range: 0.8   # 障碍物最小距离（米），用于奖励计算
 
 
@@ -80,11 +74,11 @@ runner:
   policy:
     class_name: "ResActorCritic" # navbot_ppo 风格残差 Actor-Critic
     init_noise_std: 0.2 # 增加初始探索噪声 (0.1 -> 0.6)
-    actor_hidden_dims: [256, 128, 64]
-    critic_hidden_dims: [256, 128, 64]
-    activation: "elu" 
-    actor_obs_normalization: true
-    critic_obs_normalization: true
+    # actor_hidden_dims: [256, 128, 64]
+    # critic_hidden_dims: [256, 128, 64]
+    # activation: "elu" 
+    actor_obs_normalization: false
+    critic_obs_normalization: false
     # rnn_type: 'lstm'
     # rnn_hidden_dims: [128, 128]
     # rnn_num_layers: 1
