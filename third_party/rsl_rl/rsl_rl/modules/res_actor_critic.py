@@ -68,7 +68,7 @@ class ResActor(nn.Module):
         x = self.rb2(torch.cat([x0, x], dim=-1), apply_nl=True)
 
         linear = torch.sigmoid(self.out_linear(x))* 0.5  # Scale to [0, 0.5]
-        angular = torch.tanh(self.out_angular(x))* 0.5
+        angular = torch.tanh(self.out_angular(x))* 0.4
         return torch.cat((linear, angular), dim=-1) 
 
 
