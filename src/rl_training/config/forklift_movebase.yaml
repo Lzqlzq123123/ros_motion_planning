@@ -63,4 +63,4 @@ runner:
   seed: 1
   experiment_name: "forklift_movebase"
   run_name: "run_4"
-  resume_path: "/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_3/td3_model"
+  resume_path: "/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_3/td3_model"   
