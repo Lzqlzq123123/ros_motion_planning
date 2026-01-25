@@ -56,10 +56,6 @@ save_model = True  # Weather to save the model or not
 random_near_obstacle = True  # To take random actions near obstacles or not
 resume_path = runner_cfg.get('resume_path', None)
 
-# Update params from config if present (to respect forklift_movebase.yaml settings while keeping logic)
-if 'max_iterations' in runner_cfg:
-    # Approximate mapping: max_iterations * num_steps_per_env -> max_timesteps
-    max_timesteps = int(runner_cfg['max_iterations']) * int(runner_cfg.get('num_steps_per_env', 500))
 
 # Logging & save path setup to match project structure AND legacy structure
 experiment = runner_cfg.get('experiment_name', 'td3_experiment')
