@@ -5,7 +5,7 @@ import tf.transformations
 from rsl_rl.env import VecEnv
 from tensordict import TensorDict
 from geometry_msgs.msg import Twist, PoseStamped, Point
-from nav_msgs.msg import Odometry, Path, OccupancyGrid
+from nav_msgs.msg import Odometry, OccupancyGrid
 from sensor_msgs.msg import LaserScan
 from visualization_msgs.msg import Marker
 from gazebo_msgs.srv import SetModelState, GetWorldProperties
@@ -29,6 +29,10 @@ class RosGazeboEnv(VecEnv):
         self.num_actions = env_cfg.get('num_actions')
         self.control_dt = env_cfg.get('control_dt')
 
+        # RSL-RL expects VecEnv to expose step_dt and unwrapped
+        self.step_dt = self.control_dt
+        self.unwrapped = self
+
         # ROS Initialization
         if not rospy.get_node_uri():
             rospy.init_node("rl_training_node", anonymous=True)
@@ -49,13 +53,15 @@ class RosGazeboEnv(VecEnv):
         self.init_poses = env_cfg.get('init_poses')
 
         # Goal sampling
-        self.goal_radius_range = env_cfg.get('goal_radius_range')
         self.max_attempts = int(env_cfg.get('max_attempts', 50))
         gv_cfg = env_cfg.get('goal_validation', {})
         self.costmap_topic = gv_cfg.get('costmap_topic', '/move_base/global_costmap/costmap')
         self.costmap_free_thresh = gv_cfg.get('costmap_free_threshold', 50)
         self.costmap_inflation = float(gv_cfg.get('costmap_inflation', 0.2))
         self.costmap_data = None
+        # Goal sampling window (change_goal) grows slowly to avoid stagnation
+        self.goal_span_upper = 5.0
+        self.goal_span_lower = -5.0
         rospy.Subscriber(self.costmap_topic, OccupancyGrid, self._costmap_cb, queue_size=1)
         
         for i, name in enumerate(self.agent_names):
@@ -91,7 +97,7 @@ class RosGazeboEnv(VecEnv):
         self.privileged_obs_buf = torch.zeros((self.num_envs, self.num_obs), device=device)
         self.rew_buf = torch.zeros(self.num_envs, device=device)
         self.reset_buf = torch.ones(self.num_envs, dtype=torch.bool, device=device)
-        self.max_episode_length = env_cfg.get('max_episode_length', int(1e9))
+        self.max_episode_length = env_cfg.get('max_episode_length')
         self.episode_length_buf = torch.zeros((self.num_envs, 1), dtype=torch.long, device=device)
         
 
@@ -107,7 +113,7 @@ class RosGazeboEnv(VecEnv):
 
     def step(self, actions):
         actions_np = actions.detach().cpu().numpy()
-        
+
         # 1. Set actions (publish cmd_vel)
         for i, robot in enumerate(self.robots):
             robot.set_action(actions_np[i])
@@ -165,37 +171,22 @@ class RosGazeboEnv(VecEnv):
         except rospy.ServiceException as e:
             rospy.logerr(f"{service_name} service call failed: {e}")
 
-    def sample_goal(self, start_x, start_y, start_yaw):
-        """Sample a goal around initial position with radius r; optionally reject if costmap shows collision."""
-        attempts = max(1, self.max_attempts)
-        fallback_goal = None
-
-        for _ in range(attempts):
-            # Sample goal within radius range from initial position
-            min_radius, max_radius = self.goal_radius_range
-            radius = np.random.uniform(min_radius, max_radius)
-            angle = np.random.uniform(0, 2 * math.pi)
-            
-            goal_x = start_x + radius * math.cos(angle)
-            goal_y = start_y + radius * math.sin(angle)
-            goal_yaw = np.random.uniform(-math.pi, math.pi)
-
-            fallback_goal = (goal_x, goal_y, goal_yaw)
-
-            if self.costmap_data is None:
-                # No costmap yet; accept and move on to avoid blocking resets
-                return goal_x, goal_y, goal_yaw
-
-            if self._is_free_in_costmap(goal_x, goal_y):
-                return goal_x, goal_y, goal_yaw
-
-        rospy.logwarn("Goal sampling hit max attempts; using last sampled goal (may be occupied).")
-        if fallback_goal is not None:
-            return fallback_goal
-        return start_x, start_y, 0.0  # Fallback to initial position
+    def change_goal(self, current_x, current_y):
+        """Sample a relative goal following DRL-robot-navigation strategy (expand search window over time)."""
+        if self.goal_span_upper < 10.0:
+            self.goal_span_upper += 0.004
+        if self.goal_span_lower > -10.0:
+            self.goal_span_lower -= 0.004
+        for _ in range(self.max_attempts):
+            gx = current_x + np.random.uniform(self.goal_span_lower, self.goal_span_upper)
+            gy = current_y + np.random.uniform(self.goal_span_lower, self.goal_span_upper)
+            if self.costmap_data is None or self._is_free_in_costmap(gx, gy):
+                return gx, gy, 0.0
+        rospy.logwarn("change_goal failed to find free cell; using current position")
+        return current_x, current_y, 0.0
 
     def _costmap_cb(self, msg):
-        """Cache costmap for goal filtering."""
+        """Cache costmap for goal and spawn filtering."""
         self.costmap_data = msg
 
     def _is_free_in_costmap(self, _x, _y):
@@ -234,20 +225,19 @@ class RosGazeboEnv(VecEnv):
         return True
 
     def sample_free_position(self, x_range, y_range):
-        """Sample a free position using costmap validation (similar to sample_goal)."""
+        """Sample a free position using costmap validation."""
         if self.costmap_data is None:
-            # No costmap yet; return random position
             return np.random.uniform(x_range[0], x_range[1]), np.random.uniform(y_range[0], y_range[1])
-        
+
+        last = None
         for _ in range(self.max_attempts):
             init_x = np.random.uniform(x_range[0], x_range[1])
             init_y = np.random.uniform(y_range[0], y_range[1])
-            
+            last = (init_x, init_y)
             if self._is_free_in_costmap(init_x, init_y):
                 return init_x, init_y
-        
-        rospy.logwarn("Position sampling hit max attempts; using last sampled position (may be occupied).")
-        return np.random.uniform(x_range[0], x_range[1]), np.random.uniform(y_range[0], y_range[1])
+        rospy.logwarn("Spawn sampling hit max attempts; using last sampled position (may be occupied).")
+        return last if last is not None else (x_range[0], y_range[0])
 
     def reset_robot(self, idx):
         robot = self.robots[idx]
@@ -259,11 +249,9 @@ class RosGazeboEnv(VecEnv):
             rand_cfg = self.env_cfg.get('random_spawn')
             x_min, x_max = rand_cfg.get('x_range')
             y_min, y_max = rand_cfg.get('y_range')
-            
-            # Use costmap validation for random spawn position
             init_x, init_y = self.sample_free_position([x_min, x_max], [y_min, y_max])
             init_yaw = np.random.uniform(-math.pi, math.pi)
-        
+
         # Reset Pose
         state = ModelState()
         state.model_name = robot.model_name
@@ -275,7 +263,6 @@ class RosGazeboEnv(VecEnv):
         state.pose.orientation.y = q[1]
         state.pose.orientation.z = q[2]
         state.pose.orientation.w = q[3]
-        
         # Reset Velocity
         state.twist.linear.x = 0.0
         state.twist.linear.y = 0.0
@@ -285,9 +272,9 @@ class RosGazeboEnv(VecEnv):
         state.twist.angular.z = 0.0
 
         self._call_service_safe(lambda: self.set_model_state_srv(state), "/gazebo/set_model_state")
-        
-        # Generate New Goal
-        goal_x, goal_y, goal_yaw = self.sample_goal(init_x, init_y, init_yaw)
+
+        # Generate New Goal (relative sampling like change_goal from DRL-robot-navigation)
+        goal_x, goal_y, goal_yaw = self.change_goal(init_x, init_y)
         robot.reset(goal_x, goal_y, goal_yaw, init_x, init_y, init_yaw, path=None)
 
         # Track last main goal for opponent reference
@@ -349,19 +336,13 @@ class RobotAgent:
         self.env_cfg = env_cfg
         self.reward_cfg = env_cfg.get('reward')
         self.term_cfg = env_cfg.get('termination')
-        self.path_cfg = env_cfg.get('path', {})
-
-        self.plan_publisher = None
-        if self.path_cfg.get('enabled') and self.path_cfg.get('visualize'):
-            self.plan_publisher = rospy.Publisher(f"/{self.ns}/global_plan", Path, queue_size=1, latch=True)
-        
         self.cmd_vel_pub = rospy.Publisher(f"/{self.ns}/cmd_vel", Twist, queue_size=1)
         self.goal_marker_pub = rospy.Publisher(f"/{self.ns}/rl_goal_marker", Marker, queue_size=1, latch=True)
-        
-        self.global_plan = None
         self.scan_dim = 180
+        # Number of lidar beams to keep in observation
+        self.lidar_beams = int(env_cfg.get('lidar_beams'))
         # Initialize scan with safe values (e.g. 10.0) to avoid immediate false collision detection (0.0 < threshold)
-        self.scan = np.full(self.scan_dim, 10.0)
+        self.scan = np.full(self.scan_dim, 30.0)
         self.odom = None
         
         rospy.Subscriber(f"/{self.ns}/scan", LaserScan, self.scan_cb)
@@ -373,7 +354,6 @@ class RobotAgent:
         self.goal_y = 0.0
         self.goal_yaw = 0.0
         self.last_cmd = np.zeros(2, dtype=np.float32)
-        # Track previous distance to goal for progress-based reward
         self.past_distance = None
 
 
@@ -408,40 +388,34 @@ class RobotAgent:
             px = self.odom.pose.pose.position.x
             py = self.odom.pose.pose.position.y
             yaw = self.get_yaw(self.odom.pose.pose.orientation)
-            yaw_deg = math.degrees(yaw) % 360.0
             dx = self.goal_x - px
             dy = self.goal_y - py
             dist_to_goal = math.sqrt(dx**2 + dy**2)
             goal_heading = math.atan2(dy, dx)  # [-pi, pi]
 
-            # Downsample LiDAR: take 30 evenly spaced beams, then min-pool each 3-beam group -> 10 dims
-            sample_indices = np.linspace(0, self.scan_dim - 1, 30).astype(int)
-            scan_sampled = self.scan[sample_indices].reshape(10, 3)
-            lidar_pooled = np.min(scan_sampled, axis=1) / 30.0  # normalize by assumed max range 30m
+            # Downsample LiDAR to fixed beam count (velodyne_env style): evenly spaced beams normalized by 30m range
+            sample_indices = np.linspace(0, self.scan_dim - 1, self.lidar_beams).astype(int)
+            lidar_sampled = self.scan[sample_indices]
+            lidar_norm = np.clip(lidar_sampled / 30.0, 0.0, 1.0)
 
-            # Normalize yaw to [0, 1], and heading alignment error to [-1, 1]
-            yaw_norm = yaw_deg / 360.0
-            diff_angle = (yaw_deg - math.degrees(goal_heading))
-            diff_angle = (diff_angle + 180.0) % 360.0 - 180.0  # wrap to [-180, 180]
-            diff_angle_norm = diff_angle / 180.0
+            # Heading error like TD3 env: relative angle goal-heading vs current yaw in [-pi, pi]
+            theta = math.atan2(math.sin(goal_heading - yaw), math.cos(goal_heading - yaw))
 
             obs = np.concatenate([
-                lidar_pooled.astype(np.float32),
-                np.array([dist_to_goal, goal_heading], dtype=np.float32),
+                lidar_norm.astype(np.float32),
                 np.array([
+                    dist_to_goal,
+                    theta,
                     self.last_cmd[0],
                     self.last_cmd[1],
-                    yaw_norm,
-                    diff_angle_norm,
                 ], dtype=np.float32),
             ]).astype(np.float32)
 
             if self.env_cfg.get('reward_debug', False):
                 print("--- Observation Debug ---")
-                print('lidar_pooled:', lidar_pooled)
-                print('dist_to_goal:', dist_to_goal)
-                print('goal_heading(rad):', goal_heading)
-                print('yaw_norm:', yaw_norm, 'diff_angle_norm:', diff_angle_norm)
+                print('lidar_norm:', lidar_norm)
+                print('dist_to_goal:', dist_to_goal, 'theta:', theta)
+                print('last_cmd:', self.last_cmd)
             return obs
 
     def get_yaw(self, q):
@@ -476,6 +450,10 @@ class RobotAgent:
     def compute_reward_and_done(self):
         reward = 0.0
         done = False
+        distance_rate = 0.0
+        distance_component = 0.0
+        avoid_term = 0.0
+        base_motion = 0.0
 
         if self.odom is None:
             return reward, done
@@ -489,107 +467,57 @@ class RobotAgent:
         dy = self.goal_y - py
 
         dist_to_goal = math.sqrt(dx**2 + dy**2)
-        min_scan = float(np.min(self.scan))
+        min_scan = float(np.nan_to_num(np.min(self.scan), posinf=30.0, neginf=0.0))
         min_collision_range = t_cfg.get('min_collision_range')
 
-        # Read shaping params early so debug printing can always access them
-        rs = self.env_cfg.get('reward_shaping', {})
-        distance_scale = float(rs.get('distance_scale'))
-        wall_scale = float(rs.get('wall_scale'))
-        time_step_pen = float(rs.get('time_penalty'))
-        diagonal_base = float(rs.get('diagonal_base'))
-        heading_scale = float(rs.get('heading_scale'))
-        ang_vel_scale = float(rs.get('ang_vel_scale'))
-
-        # debug helpers
-        distance_rate = 0.0
-        current_pen_dis = 0.0
-        max_state = 0.0
-        value_middle = 0.0
-        wall_rate_pen = 0.0
-        distance_component = 0.0
-        wall_component = 0.0
-        heading_component = 0.0
-        ang_vel_component = 0.0
         event_str = "step"
-
         goal_reached = dist_to_goal < t_cfg.get('success_pos')
         collision = min_scan < min_collision_range
 
         if goal_reached:
-            goal = r_cfg.get('goal_reward')
-            reward = goal
+            reward = r_cfg.get('goal_reward')
             event_str = "goal"
             done = True
             rospy.loginfo(f"Robot {self.id} reached goal. Reward: {reward}")
-        elif collision: 
-            collision_reward = r_cfg.get('collision_penalty')
-            reward = collision_reward
+        elif collision:
+            reward = r_cfg.get('collision_penalty')
             event_str = "collision"
             done = True
         else:
-            # Progress-based reward (distance reduction), wall proximity penalty, and time penalty
-            current_distance = dist_to_goal
+            # Progress + obstacle avoidance + basic motion shaping
+            rs = self.env_cfg.get('reward_shaping', {})
+            distance_scale = float(rs.get('distance_scale'))
 
-            # Initialize past_distance if not set
-            if self.past_distance is None:
-                self.past_distance = current_distance
+            lin_v = self.last_cmd[0]
+            ang_v = self.last_cmd[1]
 
             # Distance progress
-            distance_rate = (self.past_distance - current_distance)
-            diagonal = diagonal_base * math.sqrt(2.0)
-            if distance_rate >= 0:
-                distance_rate = distance_rate * (1.0 + (diagonal - current_distance) / diagonal)
-            else:
-                distance_rate = distance_rate * (1.0 + current_distance / diagonal)
-
-            # Wall penalty based on scan distribution (replicates pen_wall logic)
-            scan_norm = np.clip(self.scan / 30.0, 0.0, 1.0)
-            max_state = float(np.max(scan_norm)) if scan_norm.size > 0 else 0.0
-            if scan_norm.size % 2 != 0:
-                idx_middle = scan_norm.size // 2
-                value_middle = float(scan_norm[idx_middle])
-            else:
-                idx_g = scan_norm.size // 2
-                idx_l = idx_g - 1
-                value_middle = max(float(scan_norm[idx_g]), float(scan_norm[idx_l]))
-            if value_middle < 0.2 * max_state:
-                current_pen_dis = (max_state - value_middle)
-            else:
-                current_pen_dis = 0.0
-            
+            current_distance = dist_to_goal
+            if self.past_distance is None:
+                self.past_distance = current_distance
+            distance_rate = self.past_distance - current_distance
             distance_component = distance_scale * distance_rate
-            wall_rate_pen = -current_pen_dis
-            wall_component = wall_scale * wall_rate_pen
 
-            reward = distance_component + wall_component + time_step_pen
+            # Obstacle avoidance term per DRL design: penalize when closest beam < 1m
+            avoid_term = 1 - min(1.0, min_scan)
 
-            # Heading reward: encourage facing goal
-            yaw = self.get_yaw(self.odom.pose.pose.orientation)
-            goal_heading = math.atan2(dy, dx)
-            heading_error = math.atan2(math.sin(goal_heading - yaw), math.cos(goal_heading - yaw))
-            heading_component = heading_scale * math.cos(heading_error)
+            # Base motion shaping: encourage forward, penalize spin (DRL baseline)
+            base_motion = 0.5 * lin_v - 0.5 * abs(ang_v)
 
-            # Angular velocity penalty: discourage large spins with quadratic penalty
-            # Use normalized angular velocity to make penalty more effective
-            normalized_angular_vel = abs(self.last_cmd[1]) / 0.5  # Normalize to [0, 1] range
-            ang_vel_component = ang_vel_scale * (normalized_angular_vel ** 2)
+            reward = distance_component + base_motion - avoid_term
 
-            reward += heading_component + ang_vel_component
-
-            # Update past distance for next step
+            # Update tracker
             self.past_distance = current_distance
 
         if self.env_cfg.get('reward_debug', False):
             print("--- Reward Debug ---")
             print(
                 f"Event: {event_str} | Total Reward: {reward:.4f}\n"
-                f"  current_distance: {dist_to_goal:.3f}\n"
-                f"  distance_rate: {distance_rate:.6f} | distance_component: {distance_component:.4f}\n"
-                f"  wall: max_state={max_state:.3f}, middle={value_middle:.3f}, current_pen={current_pen_dis:.4f}| wall_component: {wall_component:.4f}\n"
-                f"  heading_component: {heading_component:.4f} | ang_vel_component: {ang_vel_component:.4f}\n"
-                f"  time_penalty: {time_step_pen:.3f}\n"
-                f"  min_scan: {min_scan:.3f} | cmd: [{self.last_cmd[0]:.3f}, {self.last_cmd[1]:.3f}]\n"
+                f"  dist_to_goal: {dist_to_goal:.3f} | min_scan: {min_scan:.3f}\n"
+                f"  distance_rate: {distance_rate:.4f} | distance_component: {distance_component:.4f}\n"
+                f"  avoid_term: {avoid_term:.4f} (min_scan={min_scan:.3f})\n"
+                f"  base_motion: {base_motion:.4f}\n"
+                f"  cmd: [{self.last_cmd[0]:.3f}, {self.last_cmd[1]:.3f}]\n"
                 f"  goal_reached: {goal_reached}, collision: {collision}\n"
                 f"-------------------"
             )
@@ -625,18 +553,9 @@ class RobotAgent:
         self.goal_yaw = goal_yaw
         if self.goal_x is not None:
             self.publish_goal_marker(self.goal_x, self.goal_y)
-        
-        # 路径可选：若未提供全局路径则清空并继续（与 velodyne 对齐无需路径）
-        self.global_plan = path
-        if self.global_plan and self.global_plan.poses:
-            self.global_plan.header.frame_id = "map"
-            self.global_plan.header.stamp = rospy.Time.now()
-            if self.path_cfg.get('visualize', False) and self.plan_publisher is not None:
-                self.plan_publisher.publish(self.global_plan)
-        
+
         # Reset state variables
         self.last_cmd = np.zeros(2, dtype=np.float32)
-        # Initialize past distance used by progress-based reward
         try:
             self.past_distance = math.hypot(self.goal_x - current_x, self.goal_y - current_y)
         except Exception:

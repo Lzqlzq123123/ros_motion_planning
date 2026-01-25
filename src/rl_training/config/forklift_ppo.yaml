@@ -2,14 +2,14 @@
 
 env:
   agent_names: ["robot1"] # Names of robots in Gazebo
-  num_observations: 16  # 10 pooled lidar + dist + heading + last_cmd(2) + yaw_norm + diff_angle_norm
+  num_observations: 24  # 20 lidar beams + dist + theta + last_cmd(2)
+  lidar_beams: 20       # Match DRL-robot-navigation velodyne_env dimensionality
   num_actions: 2 # [linear_velocity, angular_velocity]
-  control_dt: 0.4        # Physics duration per step (seconds) - 10Hz for better RL learning
-  max_episode_length: 1024  # 仅为 runner 兼容占位，不用于截断回合
+  control_dt: 0.1       # Physics duration per step (seconds) - 10Hz for better RL learning
+  max_episode_length: 500  # 仅为 runner 兼容占位，不用于截断回合
   random_spawn:
     x_range: [-4.5, 1]
     y_range: [-5, 5]
-  goal_radius_range: [2.0, 5.0]  # [min_radius, max_radius] for goal distance from init position
   goal_max_attempts: 60
   goal_validation:
     costmap_topic: /robot1/move_base/global_costmap/costmap
@@ -33,16 +33,12 @@ env:
   reward_debug: true # 打印 reward 分解用于调试
 
   reward:
-    collision_penalty: -100.0     
-    goal_reward: 120
-  # Reward shaping hyperparameters (used in progress / wall / time penalties)
+    collision_penalty: -100.0
+    goal_reward: 100.0
   reward_shaping:
-    distance_scale: 150   # multiplier for progress-based term
-    wall_scale: 8.0         # multiplier for wall penalty term
-    time_penalty: -1.0       # per-step time penalty
-    diagonal_base: 8.0      # base used to compute diagonal = diagonal_base * sqrt(2)
-    heading_scale: 2.0      # bonus ~cos(heading_error), encourages facing goal
-    ang_vel_scale: -4.0      # penalty on |w| to抑制原地转圈
+    distance_scale: 20
+
+
 
   path:
     enabled: false               # 启用全局路径规划
@@ -50,26 +46,40 @@ env:
 
   termination:                  # 终止条件
     min_height: -1.0       
-    min_collision_range: 0.3  # 碰撞判定阈值（单位：米）
-    success_pos: 0.35          # 位置误差容差（米）小于此视为到达目标点
-    obstacle_min_range: 0.8   # 障碍物最小距离（米），用于奖励计算
-
+    min_collision_range: 0.4  # 碰撞判定阈值（单位：米）
+    success_pos: 0.2          # 位置误差容差（米）小于此视为到达目标点
 
 runner:
   algorithm:
-    class_name: "PPO"
-    value_loss_coef: 1.0
-    use_clipped_value_loss: True
-    clip_param: 0.1
-    entropy_coef: 0.01  # 稍微增加一点熵，鼓励早期探索
-    num_learning_epochs: 2 #
+    class_name: PPO
+    # Training
+    learning_rate: 0.001
+    num_learning_epochs: 5
     num_mini_batches: 4  # mini batch size = num_envs * num_steps / num_mini_batches
-    learning_rate: 3.0e-4
-    gamma: 0.99
-    max_grad_norm: 1.0
-    rnd_cfg: null
-    symmetry_cfg: null
     schedule: adaptive  # adaptive, fixed
+    # Value function
+    value_loss_coef: 1.0
+    clip_param: 0.2
+    use_clipped_value_loss: true
+    # Surrogate loss
+    desired_kl: 0.01
+    entropy_coef: 0.01
+    gamma: 0.99
+    lam: 0.95
+    max_grad_norm: 1.0
+    # Miscellaneous
+    normalize_advantage_per_mini_batch: false
+    # Random network distillation
+    rnd_cfg:
+        weight: 0.0  # Initial weight of the RND reward
+        weight_schedule: null # This is a dictionary with a required key called "mode". Please check the RND module for more information
+        reward_normalization: false  # Whether to normalize RND reward
+        # Learning parameters
+        learning_rate: 0.001  # Learning rate for RND
+        # Network parameters
+        num_outputs: 1  # Number of outputs of RND network. Note: if -1, then the network will use dimensions of the observation
+        predictor_hidden_dims: [-1] # Hidden dimensions of predictor network
+        target_hidden_dims: [-1]  # Hidden dimensions of target network
 
   policy:
     class_name: "ResActorCritic" # navbot_ppo 风格残差 Actor-Critic
@@ -87,13 +97,14 @@ runner:
     actor: ["policy"]
     critic: ["privileged"]
 
-  # Rollout horizon per iteration (steps = num_envs * num_steps_per_env)
-  num_steps_per_env: 2048
+  # Rollout horizon per iteration (total_steps = num_envs * num_steps_per_env)
+  num_steps_per_env: 500
   max_iterations: 500
   save_interval: 20
+  seed: 1
   experiment_name: "forklift_ppo"
   run_name: "run_12"
-
+  
   #loading pre-trained model
   # resume_path: null  # or "path/to/your/model.pth" to resume training
   resume_path: null #/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_ppo/run_7/model_599.pt
