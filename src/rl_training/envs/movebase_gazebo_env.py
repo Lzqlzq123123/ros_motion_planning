@@ -1,7 +1,6 @@
 import math
 import threading
 from warnings import warn
-
 import numpy as np
 import rospy
 import tf.transformations
@@ -10,12 +9,15 @@ from geometry_msgs.msg import PoseStamped, Twist
 from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import SetModelState
 from nav_msgs.msg import Odometry, OccupancyGrid
-from rsl_rl.env import VecEnv
+import sys
+import os.path as osp
 from sensor_msgs.msg import LaserScan
 from std_srvs.srv import Empty
 from tensordict import TensorDict
 from visualization_msgs.msg import Marker, MarkerArray
 
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), '..', 'third_party', 'rsl_rl')))
+from rsl_rl.env import VecEnv
 
 class MoveBaseGazeboEnv(VecEnv):
     def __init__(self, env_cfg, device="cpu"):
@@ -51,11 +53,12 @@ class MoveBaseGazeboEnv(VecEnv):
         self.goal_reached_dist = env_cfg.get("goal_reached_dist", 0.3)
         self.collision_dist = env_cfg.get("collision_dist", 0.35)
 
-        # Costmap subscription for spawn/goal validity checks
-        self.costmap_topic = env_cfg.get("costmap_topic", "/move_base/global_costmap/costmap")
-        self.costmap = None
-        self.costmap_lock = threading.Lock()
-        self.costmap_sub = rospy.Subscriber(self.costmap_topic, OccupancyGrid, self.costmap_cb, queue_size=1)
+        # Map subscription for spawn/goal validity checks (use raw map instead of inflated costmap)
+        self.map_topic = env_cfg.get("map_topic", "/map")
+        self.map_grid = None
+        self.map_lock = threading.Lock()
+        self.obstacle_threshold = int(env_cfg.get("map_obstacle_threshold", 50))
+        self.map_sub = rospy.Subscriber(self.map_topic, OccupancyGrid, self.map_cb, queue_size=1)
 
         # Optional opponent (e.g., robot2) goal publishing (only marker/goal, no cmd control)
         opponent_cfg = env_cfg.get("opponent", {})
@@ -186,7 +189,7 @@ class MoveBaseGazeboEnv(VecEnv):
             init_x, init_y, init_yaw = robot.init_pos
             robot.spawned_once = True
 
-        # Resample spawn if costmap reports collision
+        # Resample spawn if map grid reports collision
         attempt = 0
         while not self._check_pos(init_x, init_y) and attempt < 30:
             init_x = np.random.uniform(x_range[0], x_range[1])
@@ -292,52 +295,46 @@ class MoveBaseGazeboEnv(VecEnv):
     def close(self):
         pass
 
-    def costmap_cb(self, msg):
-        with self.costmap_lock:
-            self.costmap = msg
+    def map_cb(self, msg):
+        with self.map_lock:
+            self.map_grid = msg
 
-    def _is_free_in_costmap(self, x, y, threshold=50):
-        with self.costmap_lock:
-            cm = self.costmap
-        if cm is None:
+    def _is_free_in_map(self, x, y, threshold=None):
+        # Query raw map occupancy grid; treat unknown (-1) and >= threshold as obstacles.
+        with self.map_lock:
+            mg = self.map_grid
+        if mg is None:
             return None
-
-        res = cm.info.resolution
-        origin_x = cm.info.origin.position.x
-        origin_y = cm.info.origin.position.y
-        width = cm.info.width
-        height = cm.info.height
-
+        res = mg.info.resolution
+        origin_x = mg.info.origin.position.x
+        origin_y = mg.info.origin.position.y
+        width = mg.info.width
+        height = mg.info.height
         mx = int((x - origin_x) / res)
         my = int((y - origin_y) / res)
-        
         if mx < 0 or my < 0 or mx >= width or my >= height:
             if self.debug:
-                 rospy.logwarn_throttle(1.0, f"[env:costmap] ({x:.2f}, {y:.2f}) out of bounds (w={width}, h={height})")
+                rospy.logwarn_throttle(1.0, f"[env:map] ({x:.2f}, {y:.2f}) out of bounds (w={width}, h={height})")
             return False
-
         idx = my * width + mx
-        val = cm.data[idx]
-        
-        # Treat unknown (-1) as obstacle to avoid generating goals in unknown space
+        val = mg.data[idx]
+        thr = self.obstacle_threshold if threshold is None else int(threshold)
         if val == -1:
             if self.debug:
-                 rospy.logwarn_throttle(1.0, f"[env:costmap] ({x:.2f}, {y:.2f}) unknown (-1) treated as obstacle")
+                rospy.logwarn_throttle(1.0, f"[env:map] ({x:.2f}, {y:.2f}) unknown (-1) treated as obstacle")
             return False
-
-        if val >= threshold:
+        if val >= thr:
             if self.debug:
-                 rospy.logwarn_throttle(1.0, f"[env:costmap] ({x:.2f}, {y:.2f}) occupied val={val}")
+                rospy.logwarn_throttle(1.0, f"[env:map] ({x:.2f}, {y:.2f}) occupied val={val}")
             return False
-            
         return True
 
     def _check_pos(self, x, y):
-        free = self._is_free_in_costmap(x, y)
+        free = self._is_free_in_map(x, y)
         if free is None:
-             if self.debug:
-                 rospy.logwarn_throttle(1.0, "[env] costmap not received yet, treating position as free")
-             return True
+            if self.debug:
+                rospy.logwarn_throttle(1.0, "[env] map not received yet, treating position as free")
+            return True
         return free
 
 
