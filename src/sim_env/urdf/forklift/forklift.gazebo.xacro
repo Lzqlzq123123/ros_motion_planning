@@ -11,45 +11,45 @@
 
 
  <gazebo reference="front_left_wheel_link">
-    <mu1>0.5</mu1>
+    <mu1>2.0</mu1>
     <mu2>0.5</mu2>
     <kp>500000.0</kp>
     <kd>10.0</kd>
     <minDepth>0.001</minDepth>
-    <maxVel>1.0</maxVel>
+    <maxVel>0.1</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="front_right_wheel_link">
-    <mu1>0.5</mu1>
-    <mu2>0.4</mu2>
+    <mu1>2.0</mu1>
+    <mu2>0.5</mu2>
     <kp>500000.0</kp>
     <kd>10.0</kd>
     <minDepth>0.001</minDepth>
-    <maxVel>1.0</maxVel>
+    <maxVel>0.1</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="rear_left_wheel_link">
-    <mu1>0</mu1>
-    <mu2>0</mu2>
+    <mu1>2.0</mu1>
+    <mu2>0.5</mu2>
     <kp>500000.0</kp>
     <kd>10.0</kd>
     <minDepth>0.001</minDepth>
-    <maxVel>1.0</maxVel>
+    <maxVel>0.1</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="rear_right_wheel_link">
-   <mu1>0</mu1>
-    <mu2>0</mu2>
+    <mu1>2.0</mu1>
+    <mu2>0.5</mu2>
     <kp>500000.0</kp>
     <kd>10.0</kd>
     <minDepth>0.001</minDepth>
-    <maxVel>1.0</maxVel>
+    <maxVel>0.1</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
@@ -187,27 +187,37 @@
     </plugin>
   </gazebo>
 
-  <!-- 四轮滑移转向驱动插件 -->
+  <!-- 四轮同驱的滑移转向（参考 nanocar）：使用 skid-steer 插件 -->
   <gazebo>
-    <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+    <plugin name="skid_steer_controller" filename="libgazebo_ros_skid_steer_drive.so">
       <alwaysOn>true</alwaysOn>
-      <updateRate>50</updateRate>
+      <updateRate>100.0</updateRate>
+      <!-- 正确的关节标签名称，避免默认值 -->
       <leftFrontJoint>front_left_wheel_joint</leftFrontJoint>
       <rightFrontJoint>front_right_wheel_joint</rightFrontJoint>
       <leftRearJoint>rear_left_wheel_joint</leftRearJoint>
       <rightRearJoint>rear_right_wheel_joint</rightRearJoint>
-      <wheelSeparation>0.12</wheelSeparation> <!-- 恢复原始轮距 -->
-      <wheelDiameter>0.06</wheelDiameter>   <!-- 轮子直径保持不变 -->
-      <torque>500</torque>                 <!-- 恢复原始扭矩 -->
+
+      <!-- 运动学参数 -->
+      <wheelSeparation>0.12</wheelSeparation>
+      <wheelDiameter>0.06</wheelDiameter>
+      <torque>20</torque>
+      <maxLinearAcceleration>0.7</maxLinearAcceleration>
+      <maxAngularAcceleration>0.7</maxAngularAcceleration>
+
+      <!-- 话题/坐标系配置 -->
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
       <robotBaseFrame>base_footprint</robotBaseFrame>
+      <!-- disable publishing odom TF to avoid duplicates; map->odom is provided by tf_map2odom_node -->
+      <publishOdomTF>false</publishOdomTF>
       <broadcastTF>true</broadcastTF>
-      <rosDebugLevel>na</rosDebugLevel>
-      <covariance_x>0.001</covariance_x>
-      <covariance_y>0.001</covariance_y>
-      <covariance_yaw>0.01</covariance_yaw>
+
+      <!-- 发布选项 -->
+      <publishTf>true</publishTf>
+      <publishWheelTF>false</publishWheelTF>
+      <publishOdom>true</publishOdom>
     </plugin>
   </gazebo>
 

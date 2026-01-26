@@ -15,7 +15,10 @@ env:
     y_range: [-5.5, 5.5]
   goal_reached_dist: 0.3
   collision_dist: 0.35
-  # Costmap subscription for spawn/goal validity checks
+  # Raw map OccupancyGrid for spawn/goal validity checks
+  map_topic: "/map"
+  map_obstacle_threshold: 50   # cells >= threshold are obstacles; -1 unknown treated as obstacle
+  # Costmap subscription for spawn/goal validity checks (optional)
   costmap_topic: "/robot1/move_base/global_costmap/costmap"
   opponent:
     enabled: false
@@ -61,4 +64,4 @@ runner:
   seed: 1
   experiment_name: "forklift_movebase"
   run_name: "run_4"
-  resume_path: null #"/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_3/td3_model"   
+  resume_path: null #"/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_3/td3_model"
