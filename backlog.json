@@ -1,10 +1,26 @@
 [
   {
-    "id": "TASK-217",
-    "title": "Fix NaN Loss by Refactoring Env Interface",
-    "type": "Refactor",
-    "description": "Refactor the ros_gazebo_env.py to use a tuple-based observation interface (obs, privileged_obs) instead of TensorDict, which is causing instability with the recurrent policy. This aligns the environment with rsl_rl's standard and most stable API, aiming to resolve the persistent NaN errors. The forklift_ppo.yaml will also be updated to remove the now-obsolete obs_groups.",
-    "test_command": "python3 src/rl_training/train_new.py --config src/rl_training/config/forklift_ppo.yaml",
-    "context_needed": ["src/rl_training/envs/ros_gazebo_env.py", "src/rl_training/config/forklift_ppo.yaml"]
+    "id": "TASK-001",
+    "title": "分析forklift模型结构",
+    "type": "analysis",
+    "description": "读取并分析/data/lzq/ros_motion_planning/src/sim_env/urdf/forklift目录下的URDF文件，了解模型结构、尺寸、传感器配置等",
+    "test_command": "确保已读取所有forklift URDF相关文件",
+    "context_needed": ["forklift.urdf.xacro", "forklift.gazebo.xacro", "forklift_base.xacro"]
+  },
+  {
+    "id": "TASK-002",
+    "title": "分析DRL小车模型结构",
+    "type": "analysis",
+    "description": "读取并分析../DRL-robot-navigation目录下的小车模型相关文件，了解模型结构、尺寸、传感器配置等",
+    "test_command": "确保已读取所有DRL小车模型相关文件",
+    "context_needed": ["velodyne_env.py", "TD3目录下的模型文件"]
+  },
+  {
+    "id": "TASK-003",
+    "title": "对比DRL小车模型和turtlebot3_waffle差异",
+    "type": "comparison",
+    "description": "创建对比文档，详细列出DRL小车模型(Pioneer3dx+Velodyne)和turtlebot3_waffle模型在结构、尺寸、传感器配置等方面的差异",
+    "test_command": "确保对比文档包含完整的差异分析",
+    "context_needed": ["TASK-002分析结果", "turtlebot3_waffle分析结果"]
   }
 ]

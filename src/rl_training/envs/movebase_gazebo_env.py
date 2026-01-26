@@ -45,8 +45,6 @@ class MoveBaseGazeboEnv(VecEnv):
 
         self.random_spawn_cfg = env_cfg.get("random_spawn", {})
         self.debug = env_cfg.get("debug", False)
-        self.goal_clip = env_cfg.get("goal_clip", [3.0, 3.0])
-        self.goal_scale = env_cfg.get("goal_scale", [1.0, 1.0])
         # TD3-style expanding goal window used for initial goal sampling
         self.goal_span_upper = 4.0
         self.goal_span_lower = -4.0
@@ -67,7 +65,7 @@ class MoveBaseGazeboEnv(VecEnv):
         self.opponent_frame_id = opponent_cfg.get("frame_id", "map")
         self.opponent_goal_offset = opponent_cfg.get("goal_offset", 0.5)
         self.opponent_init_pose = env_cfg.get("init_poses", {}).get(
-            self.opponent_name, opponent_cfg.get("init_pose", [0.0, 0.0, 0.0])
+            self.opponent_name, opponent_cfg.get("init_pose")
         )
         self.opponent_goal_pub = None
         if self.opponent_enabled:
@@ -133,11 +131,6 @@ class MoveBaseGazeboEnv(VecEnv):
             self.rew_buf[i] = rew
             self.reset_buf[i] = done
 
-            # Disable auto-reset to allow external training loop to handle reset explicitly
-            # if done:
-            #     self.episode_length_buf[i] = 0
-            #     self.reset_robot(i)
-
         obs = self.get_observations()
         return obs, self.rew_buf, self.reset_buf, {}
 
@@ -182,8 +175,8 @@ class MoveBaseGazeboEnv(VecEnv):
 
     def reset_robot(self, idx):
         robot = self.robots[idx]
-        x_range = self.random_spawn_cfg.get("x_range", [-4.5, 4.5])
-        y_range = self.random_spawn_cfg.get("y_range", [-4.5, 4.5])
+        x_range = self.random_spawn_cfg.get("x_range")
+        y_range = self.random_spawn_cfg.get("y_range")
 
         if robot.spawned_once:
             init_x = np.random.uniform(x_range[0], x_range[1])

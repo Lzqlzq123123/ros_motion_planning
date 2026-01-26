@@ -24,6 +24,41 @@ def load_yaml(path):
     with open(path, 'r') as f:
         return yaml.safe_load(f)
 
+def get_user_config_init_poses():
+    # Path to user_config.yaml relative to this script
+    # src/rl_training/train_velodyne_td3.py -> src/user_config/user_config.yaml
+    config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'user_config/user_config.yaml')
+    
+    if not os.path.exists(config_path):
+        print(f"Warning: user_config.yaml not found at {config_path}")
+        return {}
+        
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+        
+    init_poses = {}
+    if 'robots_config' in config:
+        for robot_conf in config['robots_config']:
+            # Find keys like robot1_x_pos
+            keys = list(robot_conf.keys())
+            if not keys:
+                continue
+            
+            # Extract ID
+            import re
+            match = re.match(r'robot(\d+)_', keys[0])
+            if match:
+                robot_id = match.group(1)
+                name = f"robot{robot_id}"
+                
+                x = float(robot_conf.get(f'{name}_x_pos', 0.0))
+                y = float(robot_conf.get(f'{name}_y_pos', 0.0))
+                yaw = float(robot_conf.get(f'{name}_yaw', 0.0))
+                
+                init_poses[name] = [x, y, yaw]
+    return init_poses
+
+
 # Helper function to align loading of config with original script params
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, required=True, help='Path to config yaml')
@@ -34,6 +69,10 @@ cfg = load_yaml(args.config)
 env_cfg = cfg['env']
 runner_cfg = cfg['runner']
 algo_cfg = runner_cfg.get('algorithm', {})
+
+# Inject init poses from user_config.yaml
+init_poses = get_user_config_init_poses()
+env_cfg['init_poses'] = init_poses
 
 # Set the parameters for the implementation
 device = torch.device(args.device)
@@ -58,8 +97,8 @@ resume_path = runner_cfg.get('resume_path', None)
 
 
 # Logging & save path setup to match project structure AND legacy structure
-experiment = runner_cfg.get('experiment_name', 'td3_experiment')
-run_name = runner_cfg.get('run_name', 'run_1')
+experiment = runner_cfg.get('experiment_name')
+run_name = runner_cfg.get('run_name')
 log_dir = osp.join(os.path.dirname(__file__), 'logs', experiment, run_name)
 os.makedirs(log_dir, exist_ok=True)
 
@@ -67,7 +106,7 @@ os.makedirs(log_dir, exist_ok=True)
 # Create the training environment
 # env = GazeboEnv("multi_robot_scenario.launch", environment_dim) -> Replaced by MoveBaseGazeboEnv
 env = MoveBaseGazeboEnv(env_cfg, device=args.device)
-time.sleep(5)
+time.sleep(1)
 torch.manual_seed(seed)
 np.random.seed(seed)
 

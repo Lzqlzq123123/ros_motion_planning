@@ -410,3 +410,28 @@
   - Each episode reset reuses the same path by resetting waypoint index to 0
   - Removed `plan_global_path()` method and `global_path_planned` flag as they're no longer needed
   - This optimization significantly reduces computational overhead during training
+
+## TASK-003
+- **Changes**:
+ - [`drl_vs_turtlebot3_comparison.md`](drl_vs_turtlebot3_comparison.md): Created comprehensive comparison document
+ - Analyzed DRL小车模型(Pioneer3dx+Velodyne) and Turtlebot3 Waffle models
+ - Compared robot structure, dimensions, sensor configurations, navigation methods
+- **Line Stats**: +207, -0
+- **Errors**: None
+- **Context**:
+ - DRL小车模型: Pioneer3dx平台 + 3D激光雷达 + 端到端深度强化学习导航
+ - Turtlebot3 Waffle: 紧凑型差分驱动平台 + 2D激光雷达 + 传统导航算法
+ - Key differences: 传感器配置(3D vs 2D激光), 导航方法(DRL vs 传统算法), 尺寸和重量
+ - Created detailed comparison table and technical analysis for both platforms
+
+## TASK-004
+- **Changes**:
+ - [`src/rl_training/third_party`](src/rl_training/third_party): Moved rsl_rl from root/third_party to rl_training/third_party
+ - [`src/rl_training/train_new.py`](src/rl_training/train_new.py:11-15): Simplified rsl_rl path configuration
+ - [`third_party/rsl_rl`](third_party/rsl_rl): Removed from root directory after successful move
+- **Line Stats**: +0, -0 (file move operation)
+- **Errors**: None
+- **Context**:
+ - Moved rsl_rl library from project root to rl_training module for better organization
+ - Simplified path resolution in train_new.py to directly use rl_training/third_party/rsl_rl
+ - Removed redundant sys.path.insert() since both directories are now in the same module

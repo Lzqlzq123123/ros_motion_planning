@@ -11,10 +11,8 @@ env:
   max_episode_length: 500
   scan_dim: 180        # Match lidar_beams for simplicity
   random_spawn:
-    x_range: [-4, 5]
+    x_range: [-10,0]
     y_range: [-5.5, 5.5]
-  goal_scale: [1.0, 1.0]   # unused for cmd_vel
-  goal_clip: [2.0, 2.0]    # unused for cmd_vel
   goal_reached_dist: 0.3
   collision_dist: 0.35
   # Costmap subscription for spawn/goal validity checks
@@ -63,4 +61,4 @@ runner:
   seed: 1
   experiment_name: "forklift_movebase"
   run_name: "run_4"
-  resume_path: "/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_3/td3_model"   
+  resume_path: null #"/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_3/td3_model"   
