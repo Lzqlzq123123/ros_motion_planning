@@ -499,14 +499,14 @@ class MoveBaseRobot:
             done = True
         else:
             r3 = lambda x: 1 - x if x < 1 else 0.0
-            reward = action[0] / 2 - abs(action[1]) / 2 - r3(min_scan) / 2
+            reward = action[0] / 2 - abs(action[1]) / 2 - r3(min_scan) / 2 - 0.1
 
         if self.debug:
             rospy.loginfo(
                 f"dist={dist_to_goal:.2f} min_scan={min_scan:.2f}\n "
                 f"cmd=({action[0]:.2f},{action[1]:.2f})\n "
                 f"reward={reward:.2f}\n"
-                f"v={action[0] / 2} w={- abs(action[1]) / 2}"
+                f"R_v={action[0] / 2} R_w={- abs(action[1]) / 2}"
             )
 
         

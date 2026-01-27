@@ -102,6 +102,9 @@ run_name = runner_cfg.get('run_name')
 log_dir = osp.join(os.path.dirname(__file__), 'logs', experiment, run_name)
 os.makedirs(log_dir, exist_ok=True)
 
+# Tensorboard writer
+writer = SummaryWriter(log_dir)
+print(f"[train] Tensorboard logs to {log_dir}")
 
 # Create the training environment
 # env = GazeboEnv("multi_robot_scenario.launch", environment_dim) -> Replaced by MoveBaseGazeboEnv
@@ -137,39 +140,76 @@ if resume_path:
 def evaluate(network, epoch, eval_episodes=10):
     avg_reward = 0.0
     col = 0
+    success_count = 0
     for _ in range(eval_episodes):
         count = 0
         obs_td = env.reset()
         state = obs_td['policy'][0].cpu().numpy()
         done = False
+        episode_reward = 0.0
+        episode_collided = False
+        episode_success = False
         while not done and count < 501:
             action = network.get_action(np.array(state))
-            a_in = np.array([(action[0] + 1) / 2.0, action[1]])
-            
+            a_in = np.array([(action[0] + 1) / 4.0, action[1]])
+
             # Step env
             action_tensor = torch.tensor(a_in, dtype=torch.float32, device=device).unsqueeze(0)
             next_obs_td, reward_tensor, done_tensor, _ = env.step(action_tensor)
-            
+
             state = next_obs_td['policy'][0].cpu().numpy()
             reward = float(reward_tensor[0].cpu().item())
             done = bool(done_tensor[0].cpu().item())
-            
-            avg_reward += reward
-            count += 1
+
+            episode_reward += reward
+
+            # Check collision / success for this episode
             if reward < -90:
-                col += 1
+                episode_collided = True
+            if reward >= 100:
+                episode_success = True
+
+            count += 1
+
+        avg_reward += episode_reward
+        if episode_collided:
+            col += 1
+        if episode_success:
+            success_count += 1
+
     avg_reward /= eval_episodes
     avg_col = col / eval_episodes
+
     print("..............................................")
     print(
-        "Average Reward over %i Evaluation Episodes, Epoch %i: %f, %f"
-        % (eval_episodes, epoch, avg_reward, avg_col)
+        "Average Reward over %i Evaluation Episodes, Epoch %i: %f, Collision Rate: %f, Successes: %d"
+        % (eval_episodes, epoch, avg_reward, avg_col, success_count)
     )
     print("..............................................")
-    return avg_reward
+
+    # Write evaluation metrics to Tensorboard
+
+    writer.add_scalar('eval/avg_reward', avg_reward, epoch)
+    writer.add_scalar('eval/collision_rate', avg_col, epoch)
+    writer.add_scalar('eval/success_count', success_count, epoch)
+
+
+    return avg_reward, avg_col, success_count
 
 # Create evaluation data store
 evaluations = []
+# New: detailed eval metrics and training collision tracking
+eval_reward_history = []
+eval_col_history = []
+eval_success_history = []
+
+# Training collision counters
+train_collision_count_total = 0
+collisions_since_last_eval = 0
+train_collision_history = []
+train_collision_total_history = []
+# Per-episode collision counter
+episode_collisions = 0
 
 timestep = 0
 timesteps_since_eval = 0
@@ -186,6 +226,12 @@ while timestep < max_timesteps:
     # On termination of episode
     if done:
         if timestep != 0:
+            # Log the just-finished episode metrics to Tensorboard
+            writer.add_scalar('train/episode_reward', episode_reward, episode_num + 1)
+            writer.add_scalar('train/episode_length', episode_timesteps, episode_num + 1)
+            writer.add_scalar('train/episode_collisions', episode_collisions, episode_num + 1)
+            writer.add_scalar('train/replay_size', replay_buffer.size(), episode_num + 1)
+
             network.train(
                 replay_buffer,
                 episode_timesteps,
@@ -200,12 +246,29 @@ while timestep < max_timesteps:
         if timesteps_since_eval >= eval_freq:
             print("Validating")
             timesteps_since_eval %= eval_freq
-            evaluations.append(
-                evaluate(network=network, epoch=epoch, eval_episodes=eval_ep)
-            )
+            avg_reward, avg_col, success_count = evaluate(network=network, epoch=epoch, eval_episodes=eval_ep)
+            evaluations.append(avg_reward)
+            eval_reward_history.append(avg_reward)
+            eval_col_history.append(avg_col)
+            eval_success_history.append(success_count)
+            train_collision_history.append(collisions_since_last_eval)
+            train_collision_total_history.append(train_collision_count_total)
+
+            # Write training collision stats to Tensorboard for this evaluation epoch
+
+            writer.add_scalar('train/collisions_interval', collisions_since_last_eval, epoch)
+            writer.add_scalar('train/collisions_total', train_collision_count_total, epoch)
+
+
+            collisions_since_last_eval = 0
             # Save to project log_dir
             network.save("td3_model", directory=log_dir)
             np.save(os.path.join(log_dir, "evaluations.npy"), evaluations)
+            np.save(os.path.join(log_dir, "eval_reward_history.npy"), eval_reward_history)
+            np.save(os.path.join(log_dir, "eval_col_history.npy"), eval_col_history)
+            np.save(os.path.join(log_dir, "eval_success_history.npy"), eval_success_history)
+            np.save(os.path.join(log_dir, "train_collision_history.npy"), train_collision_history)
+            np.save(os.path.join(log_dir, "train_collision_total_history.npy"), train_collision_total_history)
             epoch += 1
 
         # state = env.reset()
@@ -215,8 +278,10 @@ while timestep < max_timesteps:
         
         done = False
 
+        # Reset per-episode trackers
         episode_reward = 0
         episode_timesteps = 0
+        episode_collisions = 0
         episode_num += 1
         
     # add some exploration noise
@@ -246,7 +311,7 @@ while timestep < max_timesteps:
             action[0] = -1
 
     # Update action to fall in range [0,1] for linear velocity and [-1,1] for angular velocity
-    a_in = np.array([(action[0] + 1) / 2.0, action[1]])
+    a_in = np.array([(action[0] + 1) / 4.0, action[1]])
     
     # next_state, reward, done, target = env.step(a_in)
     action_tensor = torch.tensor(a_in, dtype=torch.float32, device=device).unsqueeze(0)
@@ -277,8 +342,38 @@ while timestep < max_timesteps:
     timestep += 1
     timesteps_since_eval += 1
 
+    # Track training collisions
+    if reward < -90:
+        train_collision_count_total += 1
+        collisions_since_last_eval += 1
+        episode_collisions += 1
+
 # After the training is done, evaluate the network and save it
-evaluations.append(evaluate(network=network, epoch=epoch, eval_episodes=eval_ep))
+avg_reward, avg_col, success_count = evaluate(network=network, epoch=epoch, eval_episodes=eval_ep)
+evaluations.append(avg_reward)
+eval_reward_history.append(avg_reward)
+eval_col_history.append(avg_col)
+eval_success_history.append(success_count)
+train_collision_history.append(collisions_since_last_eval)
+train_collision_total_history.append(train_collision_count_total)
+
+# Write final evaluation training collision stats to Tensorboard
+writer.add_scalar('train/collisions_interval', collisions_since_last_eval, epoch)
+writer.add_scalar('train/collisions_total', train_collision_count_total, epoch)
+
+
 if save_model:
     network.save("td3_model_final", directory=log_dir)
 np.save(os.path.join(log_dir, "evaluations.npy"), evaluations)
+np.save(os.path.join(log_dir, "eval_reward_history.npy"), eval_reward_history)
+np.save(os.path.join(log_dir, "eval_col_history.npy"), eval_col_history)
+np.save(os.path.join(log_dir, "eval_success_history.npy"), eval_success_history)
+np.save(os.path.join(log_dir, "train_collision_history.npy"), train_collision_history)
+np.save(os.path.join(log_dir, "train_collision_total_history.npy"), train_collision_total_history)
+
+# Flush and close Tensorboard writer
+try:
+    writer.flush()
+    writer.close()
+except Exception:
+    pass
