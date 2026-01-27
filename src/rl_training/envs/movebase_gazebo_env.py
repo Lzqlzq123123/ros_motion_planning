@@ -299,7 +299,7 @@ class MoveBaseGazeboEnv(VecEnv):
         with self.map_lock:
             self.map_grid = msg
 
-    def _is_free_in_map(self, x, y, threshold=None):
+    def _is_free_in_map(self, x, y, threshold=None, check_radius=0.0):
         # Query raw map occupancy grid; treat unknown (-1) and >= threshold as obstacles.
         with self.map_lock:
             mg = self.map_grid
@@ -312,25 +312,44 @@ class MoveBaseGazeboEnv(VecEnv):
         height = mg.info.height
         mx = int((x - origin_x) / res)
         my = int((y - origin_y) / res)
-        if mx < 0 or my < 0 or mx >= width or my >= height:
-            if self.debug:
-                rospy.logwarn_throttle(1.0, f"[env:map] ({x:.2f}, {y:.2f}) out of bounds (w={width}, h={height})")
-            return False
-        idx = my * width + mx
-        val = mg.data[idx]
+        
         thr = self.obstacle_threshold if threshold is None else int(threshold)
-        if val == -1:
-            if self.debug:
-                rospy.logwarn_throttle(1.0, f"[env:map] ({x:.2f}, {y:.2f}) unknown (-1) treated as obstacle")
-            return False
-        if val >= thr:
-            if self.debug:
-                rospy.logwarn_throttle(1.0, f"[env:map] ({x:.2f}, {y:.2f}) occupied val={val}")
-            return False
+        
+        # Check a region around the point if check_radius is provided
+        range_steps = 0
+        if check_radius > 0:
+            range_steps = int(math.ceil(check_radius / res))
+
+        for dx in range(-range_steps, range_steps + 1):
+            for dy in range(-range_steps, range_steps + 1):
+                # Optional: Check circular radius instead of square box
+                # if math.sqrt(dx*dx + dy*dy) * res > check_radius:
+                #     continue
+
+                nx = mx + dx
+                ny = my + dy
+
+                if nx < 0 or ny < 0 or nx >= width or ny >= height:
+                    if self.debug and range_steps == 0:
+                        rospy.logwarn_throttle(1.0, f"[env:map] ({x:.2f}, {y:.2f}) out of bounds (w={width}, h={height})")
+                    return False
+                
+                idx = ny * width + nx
+                val = mg.data[idx]
+                
+                if val == -1:
+                    if self.debug and range_steps == 0:
+                        rospy.logwarn_throttle(1.0, f"[env:map] ({x:.2f}, {y:.2f}) unknown (-1) treated as obstacle")
+                    return False
+                if val >= thr:
+                    if self.debug and range_steps == 0:
+                        rospy.logwarn_throttle(1.0, f"[env:map] ({x:.2f}, {y:.2f}) occupied val={val}")
+                    return False
         return True
 
     def _check_pos(self, x, y):
-        free = self._is_free_in_map(x, y)
+        # Use collision_dist to ensure the spawn position has enough clearance
+        free = self._is_free_in_map(x, y, check_radius=self.collision_dist)
         if free is None:
             if self.debug:
                 rospy.logwarn_throttle(1.0, "[env] map not received yet, treating position as free")

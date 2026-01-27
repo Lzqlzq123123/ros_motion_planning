@@ -12,44 +12,36 @@
 
  <gazebo reference="front_left_wheel_link">
     <mu1>2.0</mu1>
-    <mu2>0.5</mu2>
-    <kp>500000.0</kp>
-    <kd>10.0</kd>
-    <minDepth>0.001</minDepth>
-    <maxVel>0.1</maxVel>
+    <mu2>0.8</mu2>
+    <kp>10000000.0</kp>
+    <kd>0.6</kd>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="front_right_wheel_link">
     <mu1>2.0</mu1>
-    <mu2>0.5</mu2>
-    <kp>500000.0</kp>
-    <kd>10.0</kd>
-    <minDepth>0.001</minDepth>
-    <maxVel>0.1</maxVel>
+    <mu2>0.8</mu2>
+    <kp>10000000.0</kp>
+    <kd>0.6</kd>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="rear_left_wheel_link">
-    <mu1>2.0</mu1>
-    <mu2>0.5</mu2>
-    <kp>500000.0</kp>
-    <kd>10.0</kd>
-    <minDepth>0.001</minDepth>
-    <maxVel>0.1</maxVel>
+    <mu1>20.0</mu1>
+    <mu2>0.8</mu2>
+    <kp>10000000.0</kp>
+    <kd>0.6</kd>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="rear_right_wheel_link">
-    <mu1>2.0</mu1>
-    <mu2>0.5</mu2>
-    <kp>500000.0</kp>
-    <kd>10.0</kd>
-    <minDepth>0.001</minDepth>
-    <maxVel>0.1</maxVel>
+    <mu1>20.0</mu1>
+    <mu2>0.8</mu2>
+    <kp>10000000.0</kp>
+    <kd>0.6</kd>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
@@ -191,7 +183,7 @@
   <gazebo>
     <plugin name="skid_steer_controller" filename="libgazebo_ros_skid_steer_drive.so">
       <alwaysOn>true</alwaysOn>
-      <updateRate>100.0</updateRate>
+      <updateRate>10.0</updateRate>
       <!-- 正确的关节标签名称，避免默认值 -->
       <leftFrontJoint>front_left_wheel_joint</leftFrontJoint>
       <rightFrontJoint>front_right_wheel_joint</rightFrontJoint>
