@@ -107,7 +107,7 @@ class MoveBaseGazeboEnv(VecEnv):
         actions_np = actions.detach().cpu().numpy()
         for i, robot in enumerate(self.robots):
             robot.set_action(actions_np[i])
-            if self.opponent_enabled and robot.model_name == self.agent_names[0]:
+            if self.opponent_enabled and robot.model_name == self.agent_names[0] and (self.episode_length_buf[0] % 10 == 0):
                 self.publish_opponent_goal(robot.goal_x, robot.goal_y)
 
         rospy.wait_for_service("/gazebo/unpause_physics")
@@ -224,6 +224,7 @@ class MoveBaseGazeboEnv(VecEnv):
 
         if self.opponent_enabled and robot.model_name == self.agent_names[0]:
             self.reset_opponent()
+            self.publish_opponent_goal(gx, gy)
 
     def change_goal(self, current_x, current_y, current_yaw):
         """TD3-style expanding goal window anchored at current pose."""
@@ -282,11 +283,35 @@ class MoveBaseGazeboEnv(VecEnv):
         if not self.opponent_enabled or self.opponent_goal_pub is None:
             return
 
+        tx = goal_x - self.opponent_goal_offset
+        ty = goal_y - self.opponent_goal_offset
+
+        # Validate goal position to ensure planner feasibility
+        if not self._check_pos(tx, ty):
+            rospy.logwarn_throttle(1.0, f"[env] Opponent goal ({tx:.2f}, {ty:.2f}) invalid. Searching for valid goal...")
+            found = False
+            # Search vicinity for valid goal
+            for r in np.arange(0.5, 3.0, 0.5):
+                for ang in np.linspace(0, 2 * np.pi, 8, endpoint=False):
+                    cand_x = tx + r * np.cos(ang)
+                    cand_y = ty + r * np.sin(ang)
+                    if self._check_pos(cand_x, cand_y):
+                        tx = cand_x
+                        ty = cand_y
+                        found = True
+                        break
+                if found:
+                    break
+            
+            if not found:
+                rospy.logwarn(f"[env] Failed to find valid opponent goal near ({goal_x:.2f}, {goal_y:.2f})")
+                return
+
         msg = PoseStamped()
         msg.header.frame_id = self.opponent_frame_id
         msg.header.stamp = rospy.Time.now()
-        msg.pose.position.x = goal_x - self.opponent_goal_offset
-        msg.pose.position.y = goal_y - self.opponent_goal_offset
+        msg.pose.position.x = tx
+        msg.pose.position.y = ty
         msg.pose.position.z = 0.0
         msg.pose.orientation.w = 1.0
 
@@ -499,14 +524,14 @@ class MoveBaseRobot:
             done = True
         else:
             r3 = lambda x: 1 - x if x < 1 else 0.0
-            reward = action[0] / 2 - abs(action[1]) / 2 - r3(min_scan) / 2 - 0.1
+            reward = action[0]  - abs(action[1]) / 2 - r3(min_scan) / 2 - 0.05
 
         if self.debug:
             rospy.loginfo(
                 f"dist={dist_to_goal:.2f} min_scan={min_scan:.2f}\n "
                 f"cmd=({action[0]:.2f},{action[1]:.2f})\n "
                 f"reward={reward:.2f}\n"
-                f"R_v={action[0] / 2} R_w={- abs(action[1]) / 2}"
+                f"R_v={action[0]} R_w={- abs(action[1]) / 2}"
             )
 
         

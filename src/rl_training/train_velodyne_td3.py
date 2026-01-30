@@ -189,9 +189,9 @@ def evaluate(network, epoch, eval_episodes=10):
 
     # Write evaluation metrics to Tensorboard
 
-    writer.add_scalar('eval/avg_reward', avg_reward, epoch)
-    writer.add_scalar('eval/collision_rate', avg_col, epoch)
-    writer.add_scalar('eval/success_count', success_count, epoch)
+    writer.add_scalar('eval/avg_reward', avg_reward, epoch) #平均奖励
+    writer.add_scalar('eval/collision_rate', avg_col, epoch) #碰撞率
+    writer.add_scalar('eval/success_count', success_count, epoch) #成功次数
 
 
     return avg_reward, avg_col, success_count
@@ -229,7 +229,7 @@ while timestep < max_timesteps:
             # Log the just-finished episode metrics to Tensorboard
             writer.add_scalar('train/episode_reward', episode_reward, episode_num + 1)
             writer.add_scalar('train/episode_length', episode_timesteps, episode_num + 1)
-            writer.add_scalar('train/episode_collisions', episode_collisions, episode_num + 1)
+            writer.add_scalar('train/episode_collisions', episode_collisions, episode_num + 1) #这回合是否发生碰撞
             writer.add_scalar('train/replay_size', replay_buffer.size(), episode_num + 1)
 
             network.train(
@@ -256,8 +256,8 @@ while timestep < max_timesteps:
 
             # Write training collision stats to Tensorboard for this evaluation epoch
 
-            writer.add_scalar('train/collisions_interval', collisions_since_last_eval, epoch)
-            writer.add_scalar('train/collisions_total', train_collision_count_total, epoch)
+            writer.add_scalar('train/collisions_interval', collisions_since_last_eval, epoch) #相邻两次评估之间的碰撞次数
+            writer.add_scalar('train/collisions_total', train_collision_count_total, epoch) #训练碰撞总次数
 
 
             collisions_since_last_eval = 0
@@ -359,7 +359,7 @@ train_collision_total_history.append(train_collision_count_total)
 
 # Write final evaluation training collision stats to Tensorboard
 writer.add_scalar('train/collisions_interval', collisions_since_last_eval, epoch)
-writer.add_scalar('train/collisions_total', train_collision_count_total, epoch)
+writer.add_scalar('train/collisions_total', train_collision_count_total, epoch) #训练碰撞总次数
 
 
 if save_model:
