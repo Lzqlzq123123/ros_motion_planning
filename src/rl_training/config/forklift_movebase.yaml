@@ -60,8 +60,8 @@ runner:
     critic: ["privileged"]
   num_steps_per_env: 500
   max_iterations: 500
-  save_interval: 20
+  save_interval: 10
   seed: 1
   experiment_name: "forklift_movebase"
-  run_name: "run_4"
+  run_name: "run_7"
   resume_path: null #"/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_3/td3_model"

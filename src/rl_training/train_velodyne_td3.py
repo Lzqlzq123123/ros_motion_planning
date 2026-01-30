@@ -151,7 +151,7 @@ def evaluate(network, epoch, eval_episodes=10):
         episode_success = False
         while not done and count < 501:
             action = network.get_action(np.array(state))
-            a_in = np.array([(action[0] + 1) / 4.0, action[1]])
+            a_in = np.array([(action[0] + 1) / 2.0, action[1]])
 
             # Step env
             action_tensor = torch.tensor(a_in, dtype=torch.float32, device=device).unsqueeze(0)
@@ -311,7 +311,7 @@ while timestep < max_timesteps:
             action[0] = -1
 
     # Update action to fall in range [0,1] for linear velocity and [-1,1] for angular velocity
-    a_in = np.array([(action[0] + 1) / 4.0, action[1]])
+    a_in = np.array([(action[0] + 1) / 2.0, action[1]])
     
     # next_state, reward, done, target = env.step(a_in)
     action_tensor = torch.tensor(a_in, dtype=torch.float32, device=device).unsqueeze(0)
