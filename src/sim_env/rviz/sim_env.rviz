@@ -4,13 +4,13 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Robot11
         - /Robot11/RobotModel1
         - /Robot11/Image11
         - /Robot11/Path1
         - /Robot21/Image21
         - /Robot21/LaserScan21
         - /Robot21/Path1
+        - /Map2
       Splitter Ratio: 0.5
     Tree Height: 212
   - Class: rviz/Tool Properties
@@ -511,7 +511,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Map
-      Topic: /robot2/move_base/global_costmap/costmap
+      Topic: /robot1/move_base/global_costmap/costmap
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -520,7 +520,7 @@ Visualization Manager:
       Marker Topic: /robot1/rl_goal_marker
       Name: Marker
       Namespaces:
-        rl_goal: true
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
@@ -558,7 +558,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 11.996426582336426
+      Distance: 18.876609802246094
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -566,9 +566,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.7392080426216125
-        Y: 0.10314503312110901
-        Z: 0.14692969620227814
+        X: -1.3904988765716553
+        Y: -0.44868844747543335
+        Z: 0.14748243987560272
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false

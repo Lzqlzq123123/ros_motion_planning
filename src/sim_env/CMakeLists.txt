@@ -49,3 +49,7 @@ target_compile_definitions(gazebo_ros_velodyne_gpu_laser PRIVATE GAZEBO_GPU_RAY=
 install(TARGETS gazebo_ros_velodyne_laser gazebo_ros_velodyne_gpu_laser
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
+
+install(DIRECTORY launch config maps meshes models rviz scripts urdf worlds
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

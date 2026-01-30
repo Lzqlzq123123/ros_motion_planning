@@ -435,3 +435,25 @@
  - Moved rsl_rl library from project root to rl_training module for better organization
  - Simplified path resolution in train_new.py to directly use rl_training/third_party/rsl_rl
  - Removed redundant sys.path.insert() since both directories are now in the same module
+
+## TASK-FORKLIFT-COSTMAP
+- **Changes**: src/sim_env/config/robots/forklift/global_costmap_params_forklift.yaml: 46 -> Modified inflation_radius from 0.5 to 0.05
+- **Line Stats**: +1, -1
+- **Errors**: None
+- **Context**: Adjusted robot2 (forklift) global costmap inflation parameter to reduce obstacle expansion from 0.5m to 0.05m, allowing the robot to navigate closer to obstacles. This change is applied through the move_base.launch.xml configuration loading sequence, where robot-specific costmap parameters are loaded before common plugins.
+
+## TASK-FORKLIFT-PERFORMANCE
+- **Changes**:
+  - src/sim_env/config/robots/forklift/global_costmap_params_forklift.yaml: 19-20 -> Reduced update_frequency from 5.0 to 1.0 and publish_frequency from 2.0 to 0.5
+  - src/sim_env/config/robots/forklift/local_costmap_params_forklift.yaml: 7-8 -> Reduced update_frequency from 2.0 to 1.0 and publish_frequency from 1.0 to 0.5
+- **Line Stats**: +2, -2
+- **Errors**: None
+- **Context**: Fixed robot2 (forklift) costmap update frequency issues that were causing "Map update loop missed its desired rate" warnings and path planning failures. The reduced frequencies better match system capabilities and prevent the 66+ second delays that were causing the opponent to fail in planning paths during RL training.
+
+## TASK-FORKLIFT-COSTMAP-SIZE
+- **Changes**:
+  - src/sim_env/config/robots/forklift/local_costmap_params_forklift.yaml: 13-17 -> Increased local costmap size from 3x3m to 5x5m and increased inflation_radius from 0.05 to 0.2m
+  - src/sim_env/config/costmap/local_costmap_plugins.yaml: -> Added missing plugin configuration for local costmap
+- **Line Stats**: +6, -2
+- **Errors**: None
+- **Context**: Fixed two critical issues with robot2's local costmap: 1) Expanded the costmap size from 3x3m to 5x5m to provide adequate planning space for the forklift robot, and 2) Added the missing local_costmap_plugins.yaml file with proper obstacle and inflation layer configurations. The missing plugins were causing "Parameter 'plugins' not provided" errors, preventing the costmap from loading properly.

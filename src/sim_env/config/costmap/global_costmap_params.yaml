@@ -6,7 +6,7 @@ global_costmap:
   publish_frequency: 1.0
   transform_tolerance: 2.0
   cost_scaling_factor: 2.0
-  inflation_radius: 0.4
+  inflation_radius: 0.2
 
   ### Sensor management parameters ###
   obstacle_layer:
@@ -30,7 +30,7 @@ global_costmap:
   inflation_layer:
     enabled: true # enable the inflation layer for dynamic obstacles
     cost_scaling_factor: 5.0 # exponential rate at which the obstacle cost drops off (default: 10)
-    inflation_radius: 0.4 # max. distance from an obstacle at which costs are incurred for planning paths.
+    inflation_radius: 0.2 # max. distance from an obstacle at which costs are incurred for planning paths.
 
   static_map:
     enabled: true

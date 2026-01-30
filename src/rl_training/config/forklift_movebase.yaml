@@ -21,7 +21,7 @@ env:
   # Costmap subscription for spawn/goal validity checks (optional)
   costmap_topic: "/robot1/move_base/global_costmap/costmap"
   opponent:
-    enabled: false
+    enabled: true
     model_name: "robot2"
     goal_topic: "/robot2/move_base_simple/goal"
     frame_id: "map"
