@@ -71,6 +71,29 @@
     </inertial>
   </link>
 
+  <!-- Additional collision element for laser detection -->
+  <joint name="laser_detection_joint" type="fixed">
+    <parent link="front_axle" />
+    <child link="laser_detection_element" />
+    <origin xyz="0 0 0.25" rpy="0 0 0" />
+  </joint>
+
+  <link name="laser_detection_element">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.3 0.2 0.1" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0"
+               iyy="0.000001" iyz="0.0"
+               izz="0.000001" />
+    </inertial>
+  </link>
+
   <!-- Realsense camera on chassis -->
   <joint name="camera_joint" type="fixed">
     <origin xyz="0.0213 -0.0217 0.1667" rpy="0 0 0" />
