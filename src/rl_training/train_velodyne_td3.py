@@ -137,7 +137,7 @@ if resume_path:
         print(f"Resume path specified but file not found: {resume_path}_actor.pth")
 
 
-def evaluate(network, epoch, eval_episodes=10):
+def evaluate(*, network, epoch, eval_episodes=10):
     avg_reward = 0.0
     col = 0
     success_count = 0
@@ -217,8 +217,17 @@ episode_num = 0
 done = True
 epoch = 1
 
+# Initialize episode-scoped variables to satisfy linter
+episode_reward = 0
+episode_timesteps = 0
+
 count_rand_actions = 0
 random_action = []
+
+# Stuck detection
+STUCK_STEPS_THRESHOLD = 50  # If dist_to_goal is same for this many steps, reset
+last_dist_to_goal = -1.0
+stuck_counter = 0
 
 # Begin the training loop
 while timestep < max_timesteps:
@@ -233,14 +242,14 @@ while timestep < max_timesteps:
             writer.add_scalar('train/replay_size', replay_buffer.size(), episode_num + 1)
 
             network.train(
-                replay_buffer,
-                episode_timesteps,
-                batch_size,
-                discount,
-                tau,
-                policy_noise,
-                noise_clip,
-                policy_freq,
+                replay_buffer=replay_buffer,
+                iterations=episode_timesteps,
+                batch_size=batch_size,
+                discount=discount,
+                tau=tau,
+                policy_noise=policy_noise,
+                noise_clip=noise_clip,
+                policy_freq=policy_freq,
             )
 
         if timesteps_since_eval >= eval_freq:
@@ -283,6 +292,10 @@ while timestep < max_timesteps:
         episode_timesteps = 0
         episode_collisions = 0
         episode_num += 1
+
+        # Reset stuck detector
+        last_dist_to_goal = -1.0
+        stuck_counter = 0
         
     # add some exploration noise
     if expl_noise > expl_min:
@@ -320,7 +333,25 @@ while timestep < max_timesteps:
     next_state = next_obs_td['policy'][0].cpu().numpy()
     reward = float(reward_tensor[0].cpu().item())
     
-    done_val = bool(done_tensor[0].cpu().item())
+    # Stuck detection logic
+    is_stuck = False
+    # dist_to_goal is at index state_dim - 4 in the observation vector.
+    # We check the distance in the *new* state to see if progress was made.
+    current_dist_to_goal = next_state[state_dim - 4]
+
+    if last_dist_to_goal > 0 and round(current_dist_to_goal, 2) == round(last_dist_to_goal, 2):
+        stuck_counter += 1
+    else:
+        stuck_counter = 0  # Reset if distance changes
+
+    last_dist_to_goal = current_dist_to_goal
+
+    if stuck_counter >= STUCK_STEPS_THRESHOLD:
+        is_stuck = True
+        print(f"Robot stuck: dist_to_goal ({round(current_dist_to_goal, 2):.2f}) unchanged for {stuck_counter} steps. Resetting.")
+        stuck_counter = 0 # Reset for next attempt within the same episode if needed
+
+    done_val = bool(done_tensor[0].cpu().item()) or is_stuck
     
     done = 1 if done_val else 0 
     

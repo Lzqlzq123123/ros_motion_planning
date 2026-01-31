@@ -20,7 +20,7 @@
 
   <!-- some other parameters -->
   <arg name="debug" default="false" />
-  <arg name="gui" default="true" />
+  <arg name="gui" default="false" />
   <arg name="headless" default="false" />
   <arg name="rviz_file" default="" />
   <arg name="show_rviz" default="true" />

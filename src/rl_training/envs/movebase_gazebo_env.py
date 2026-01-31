@@ -432,23 +432,12 @@ class MoveBaseRobot:
             dy = self.goal_y - py
             dist_to_goal = math.sqrt(dx ** 2 + dy ** 2)
 
-            # TD3/velodyne_env-style theta computation (no distance guard)
-            dot = dx * 1 + dy * 0
-            mag1 = math.sqrt(dx * dx + dy * dy)
-            mag2 = 1.0
-            beta = math.acos(dot / (mag1 * mag2))
-            if dy < 0:
-                if dx < 0:
-                    beta = -beta
-                else:
-                    beta = 0 - beta
-            theta = beta - yaw
-            if theta > math.pi:
-                theta = math.pi - theta
-                theta = -math.pi - theta
-            if theta < -math.pi:
-                theta = -math.pi - theta
-                theta = math.pi - theta
+            # Simplified theta computation using atan2
+            goal_yaw = math.atan2(dy, dx)
+            theta = goal_yaw - yaw
+            
+            # Normalize angle to [-pi, pi]
+            theta = math.atan2(math.sin(theta), math.cos(theta))
 
             # Sector-based min-pooling to match original TD3 velodyne_env.py
             # Divide scan into sectors and take the minimum distance in each sector
@@ -543,9 +532,9 @@ class MoveBaseRobot:
         self.publish_markers(np.zeros(2, dtype=np.float32))
 
     def _get_yaw(self, q):
-        siny_cosp = 2 * (q.w * q.z + q.x * q.y)
-        cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z)
-        return math.atan2(siny_cosp, cosy_cosp)
+        orientation_list = [q.x, q.y, q.z, q.w]
+        _, _, yaw = tf.transformations.euler_from_quaternion(orientation_list)
+        return yaw
 
     def publish_markers(self, action):
         # Publish goal marker
