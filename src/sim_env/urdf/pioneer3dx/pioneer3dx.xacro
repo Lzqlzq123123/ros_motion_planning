@@ -18,7 +18,7 @@
 
   <!-- Laser -->
   <xacro:include filename="$(find sim_env)/urdf/pioneer3dx/laser/hokuyo.xacro"/>
-  <xacro:laser name="front_laser" parent="chassis" xyz="0.125 0 0.25" rpy="0 0 0" meshes="package://sim_env/urdf/pioneer3dx/meshes/laser"/>
+  <xacro:laser name="front_laser" parent="chassis" xyz="0 0 0.25" rpy="0 0 0" meshes="package://sim_env/urdf/pioneer3dx/meshes/laser"/>
 
 
   <!-- GPU Laser

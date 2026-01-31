@@ -486,3 +486,13 @@
   - 修复确保了无论使用CPU还是CUDA设备，都能正确处理张量赋值
   - 测试脚本验证了修复在CPU和CUDA环境下的正确性
   - 这个修复解决了训练过程中"unspecified launch failure"的CUDA错误
+
+## TASK-LASER-CENTER-POSITION
+- **Changes**: src/sim_env/urdf/pioneer3dx/pioneer3dx.xacro: 21 -> 将激光雷达位置从车辆前方(x=0.125)移动到车辆中心(x=0)
+- **Line Stats**: +1, -1
+- **Errors**: None
+- **Context**:
+  - 原始位置: xyz="0.125 0 0.25" (激光雷达位于车辆前方0.125m处)
+  - 修改后位置: xyz="0 0 0.25" (激光雷达位于车辆中心，高度保持0.25m不变)
+  - 这个修改使激光雷达位于车辆旋转中心，有助于提供更对称的扫描数据
+  - 保持y=0确保激光雷达仍在车辆横向中心，z=0.25保持原有高度
