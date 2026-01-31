@@ -5,6 +5,14 @@
 - **Issue**: The goal marker is not published/visible in the first episode of training.
 - **Hypothesis**: This is likely due to a race condition where the ROS publisher sends the message before the subscriber (RViz) is connected, or the `reset()` logic has a flaw handling the initial state. The `RobotAgent` initialization creates the publisher, and `reset()` is called shortly after. ROS publishers are asynchronous and may drop messages if sent immediately after creation if no subscribers are known yet (or latching is not used/configured). Although `queue_size=1` is set, without latching, late subscribers miss it. However, if the subscriber is already up (RViz open), the connection delay is the main suspect.
 
+## System Analysis (Laser Detection Issue)
+- **Current Issue**: pioneer3dx小车的激光雷达照射不到forklift，所以检测不到碰撞
+- **Analysis**:
+  - Pioneer3dx激光雷达位置：位于chassis上方，xyz="0.125 0 0.25"（相对chassis坐标系）
+  - Forklift高度：从base_footprint到front_axle高度约为0.0733m，整体高度较低
+  - 激光雷达扫描范围：min_angle=-1.5708, max_angle=1.5708 (180度)，高度固定在0.25m
+  - 可能原因：激光雷达安装高度过高，无法探测到低矮的叉车结构
+
 ## TASK-212
 - **Changes**: src/rl_training/envs/ros_gazebo_env.py: 261 -> Added `latch=True` to `goal_marker_pub`.
 - **Line Stats**: +1, -1
@@ -457,3 +465,24 @@
 - **Line Stats**: +6, -2
 - **Errors**: None
 - **Context**: Fixed two critical issues with robot2's local costmap: 1) Expanded the costmap size from 3x3m to 5x5m to provide adequate planning space for the forklift robot, and 2) Added the missing local_costmap_plugins.yaml file with proper obstacle and inflation layer configurations. The missing plugins were causing "Parameter 'plugins' not provided" errors, preventing the costmap from loading properly.
+
+## TASK-LASER-003
+- **Changes**: src/sim_env/urdf/forklift/forklift.urdf.xacro: 74-97 -> 添加了激光雷达检测元素laser_detection_element，位于front_axle上方0.25m高度处
+- **Line Stats**: +24, -0
+- **Errors**: None
+- **Context**: 为叉车添加了一个更高位置的碰撞检测元素(0.25m高度)，使其能够被pioneer3dx的激光雷达(安装高度0.25m)检测到。这个元素是一个0.3x0.2x0.1m的盒子，足够大以确保能被激光雷达扫描到，同时质量很小(0.001kg)不影响叉车动力学。
+
+## TASK-CUDA-FIX
+- **Changes**:
+  - src/rl_training/envs/movebase_gazebo_env.py: 134-135 -> 修复CUDA张量赋值错误，将Python值转换为张量后再赋值
+  - src/rl_training/test_cuda_fix.py: 创建测试脚本验证修复效果
+- **Line Stats**: +2, -2 (修复) +66 (测试脚本)
+- **Errors**:
+  - **原始错误**: `RuntimeError: CUDA error: unspecified launch failure` 在 movebase_gazebo_env.py:134
+  - **根本原因**: 直接将Python float/bool值赋给CUDA张量导致设备不匹配
+  - **修复方案**: 使用 `torch.tensor(value, dtype=tensor.dtype, device=tensor.device)` 确保设备一致性
+- **Context**:
+  - 错误发生在环境step()方法中，当尝试将compute_reward_and_done()返回的Python值赋给CUDA张量时
+  - 修复确保了无论使用CPU还是CUDA设备，都能正确处理张量赋值
+  - 测试脚本验证了修复在CPU和CUDA环境下的正确性
+  - 这个修复解决了训练过程中"unspecified launch failure"的CUDA错误

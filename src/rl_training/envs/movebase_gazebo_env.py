@@ -131,8 +131,8 @@ class MoveBaseGazeboEnv(VecEnv):
 
         for i, robot in enumerate(self.robots):
             rew, done = robot.compute_reward_and_done(actions_np[i], self.goal_reached_dist, self.collision_dist)
-            self.rew_buf[i] = rew
-            self.reset_buf[i] = done
+            self.rew_buf[i] = torch.tensor(rew, dtype=self.rew_buf.dtype, device=self.rew_buf.device)
+            self.reset_buf[i] = torch.tensor(done, dtype=self.reset_buf.dtype, device=self.reset_buf.device)
 
         obs = self.get_observations()
         return obs, self.rew_buf, self.reset_buf, {}
