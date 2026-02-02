@@ -339,7 +339,7 @@ while timestep < max_timesteps:
     # We check the distance in the *new* state to see if progress was made.
     current_dist_to_goal = next_state[state_dim - 4]
 
-    if last_dist_to_goal > 0 and round(current_dist_to_goal, 2) == round(last_dist_to_goal, 2):
+    if last_dist_to_goal > 0 and round(current_dist_to_goal, 1) == round(last_dist_to_goal, 1):
         stuck_counter += 1
     else:
         stuck_counter = 0  # Reset if distance changes

@@ -89,9 +89,10 @@ class TD3(object):
         noise_clip=0.5,
         policy_freq=2,
     ):
-        av_Q = 0
+        # Accumulate plain floats for logging to avoid holding computation graphs on GPU
+        av_Q = 0.0
         max_Q = -inf
-        av_loss = 0
+        av_loss = 0.0
         for it in range(iterations):
             (
                 batch_states,
@@ -114,8 +115,9 @@ class TD3(object):
 
             target_Q1, target_Q2 = self.critic_target(next_state, next_action)
             target_Q = torch.min(target_Q1, target_Q2)
-            av_Q += torch.mean(target_Q)
-            max_Q = max(max_Q, torch.max(target_Q))
+            target_Q_detached = target_Q.detach()
+            av_Q += torch.mean(target_Q_detached).item()
+            max_Q = max(max_Q, torch.max(target_Q_detached).item())
             target_Q = reward + ((1 - done) * discount * target_Q).detach()
 
             current_Q1, current_Q2 = self.critic(state, action)
@@ -139,7 +141,7 @@ class TD3(object):
                 for param, target_param in zip(self.critic.parameters(), self.critic_target.parameters()):
                     target_param.data.copy_(tau * param.data + (1 - tau) * target_param.data)
 
-            av_loss += loss
+            av_loss += loss.detach().item()
         self.iter_count += 1
         self.writer.add_scalar("loss", av_loss / iterations, self.iter_count)
         self.writer.add_scalar("Av. Q", av_Q / iterations, self.iter_count)

@@ -10,8 +10,8 @@
 	<arg name="robot1_z_pos" value="0" />
 	<arg name="robot1_yaw" value="-3.14" />
 	<arg name="robot2_type" value="forklift" />
-	<arg name="robot2_global_planner" value="diffusion" />
-	<arg name="robot2_local_planner" value="dwa" />
+	<arg name="robot2_global_planner" value="theta_star" />
+	<arg name="robot2_local_planner" value="pid" />
 	<arg name="robot2_x_pos" value="2.0" />
 	<arg name="robot2_y_pos" value="0.0" />
 	<arg name="robot2_z_pos" value="0.0" />

@@ -107,8 +107,6 @@ class MoveBaseGazeboEnv(VecEnv):
         actions_np = actions.detach().cpu().numpy()
         for i, robot in enumerate(self.robots):
             robot.set_action(actions_np[i])
-            if self.opponent_enabled and robot.model_name == self.agent_names[0]:
-                self.publish_opponent_goal(robot.goal_x, robot.goal_y)
 
         rospy.wait_for_service("/gazebo/unpause_physics")
         try:
@@ -221,8 +219,9 @@ class MoveBaseGazeboEnv(VecEnv):
         gx, gy, gyaw = self.change_goal(init_x, init_y, init_yaw)
         robot.set_absolute_goal(gx, gy, gyaw)
 
-
+        # Set opponent goal ONCE per episode, not every step
         if self.opponent_enabled and robot.model_name == self.agent_names[0]:
+            self.publish_opponent_goal(gx, gy)
             self.reset_opponent()
 
     def change_goal(self, current_x, current_y, current_yaw):
