@@ -1,6 +1,5 @@
 import math
 import threading
-from warnings import warn
 import numpy as np
 import rospy
 import tf.transformations
@@ -14,7 +13,7 @@ import os.path as osp
 from sensor_msgs.msg import LaserScan
 from std_srvs.srv import Empty
 from tensordict import TensorDict
-from visualization_msgs.msg import Marker, MarkerArray
+from visualization_msgs.msg import Marker
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), '..', 'third_party', 'rsl_rl')))
 from rsl_rl.env import VecEnv
@@ -47,11 +46,16 @@ class MoveBaseGazeboEnv(VecEnv):
 
         self.random_spawn_cfg = env_cfg.get("random_spawn", {})
         self.debug = env_cfg.get("debug", False)
-        # TD3-style expanding goal window used for initial goal sampling
-        self.goal_span_upper = 4.0
-        self.goal_span_lower = -4.0
+        self.ego_spawn_radius = self.random_spawn_cfg.get("ego_spawn_radius", [3.0, 6.0])
         self.goal_reached_dist = env_cfg.get("goal_reached_dist", 0.3)
         self.collision_dist = env_cfg.get("collision_dist", 0.35)
+
+        # Curriculum learning: goal sampling window grows over time (mirrors ros_gazebo_env)
+        curriculum_cfg = env_cfg.get("curriculum", {})
+        self.goal_span_upper = float(curriculum_cfg.get("initial_span", 4.0))
+        self.goal_span_lower = -self.goal_span_upper
+        self.goal_span_max = float(curriculum_cfg.get("max_span", 10.0))
+        self.goal_span_delta = float(curriculum_cfg.get("delta", 0.004))
 
         # Map subscription for spawn/goal validity checks (use raw map instead of inflated costmap)
         self.map_topic = env_cfg.get("map_topic", "/map")
@@ -67,12 +71,12 @@ class MoveBaseGazeboEnv(VecEnv):
         self.opponent_goal_topic = opponent_cfg.get("goal_topic", f"/{self.opponent_name}/move_base_simple/goal")
         self.opponent_frame_id = opponent_cfg.get("frame_id", "map")
         self.opponent_goal_offset = opponent_cfg.get("goal_offset", 0.5)
-        self.opponent_init_pose = env_cfg.get("init_poses", {}).get(
-            self.opponent_name, opponent_cfg.get("init_pose")
-        )
+        self.opponent_spawn_radius = opponent_cfg.get("spawn_radius", [1.0, 3.0])
         self.opponent_goal_pub = None
+        self.opponent_cmd_pub = None
         if self.opponent_enabled:
             self.opponent_goal_pub = rospy.Publisher(self.opponent_goal_topic, PoseStamped, queue_size=1)
+            self.opponent_cmd_pub = rospy.Publisher(f"/{self.opponent_name}/cmd_vel", Twist, queue_size=1)
 
         self.robots = []
         init_poses = env_cfg.get("init_poses", {})
@@ -111,7 +115,7 @@ class MoveBaseGazeboEnv(VecEnv):
         rospy.wait_for_service("/gazebo/unpause_physics")
         try:
             self.unpause_physics_srv()
-        except (rospy.ServiceException) as e:
+        except rospy.ServiceException:
             print("/gazebo/unpause_physics service call failed")
 
 
@@ -120,7 +124,7 @@ class MoveBaseGazeboEnv(VecEnv):
         rospy.wait_for_service("/gazebo/pause_physics")
         try:
             self.pause_physics_srv()
-        except (rospy.ServiceException) as e:
+        except rospy.ServiceException:
             print("/gazebo/pause_physics service call failed")
 
         self.rew_buf[:] = 0.0
@@ -146,7 +150,7 @@ class MoveBaseGazeboEnv(VecEnv):
             if self.debug:
                 rospy.loginfo("[env] reset_world_srv done")
 
-        except rospy.ServiceException as e:
+        except rospy.ServiceException:
             print("/gazebo/reset_simulation service call failed")
 
         for i in range(self.num_envs):
@@ -159,7 +163,7 @@ class MoveBaseGazeboEnv(VecEnv):
             self.unpause_physics_srv()
             if self.debug:
                 rospy.loginfo("[env] unpause done")
-        except (rospy.ServiceException) as e:
+        except rospy.ServiceException:
             print("/gazebo/unpause_physics service call failed")
 
         rospy.sleep(self.control_dt)
@@ -167,7 +171,7 @@ class MoveBaseGazeboEnv(VecEnv):
         rospy.wait_for_service("/gazebo/pause_physics")
         try:
             self.pause_physics_srv()
-        except (rospy.ServiceException) as e:
+        except rospy.ServiceException:
             print("/gazebo/pause_physics service call failed")
 
         self.reset_buf[:] = False
@@ -176,24 +180,17 @@ class MoveBaseGazeboEnv(VecEnv):
 
     def reset_robot(self, idx):
         robot = self.robots[idx]
-        x_range = self.random_spawn_cfg.get("x_range")
-        y_range = self.random_spawn_cfg.get("y_range")
 
-        if robot.spawned_once:
-            init_x = np.random.uniform(x_range[0], x_range[1])
-            init_y = np.random.uniform(y_range[0], y_range[1])
-            init_yaw = np.random.uniform(-math.pi, math.pi)
-        else:
+        if not robot.spawned_once:
+            # First episode: use init_pos directly
             init_x, init_y, init_yaw = robot.init_pos
+            gx, gy = init_x + 2.0, init_y
             robot.spawned_once = True
-
-        # Resample spawn if map grid reports collision
-        attempt = 0
-        while not self._check_pos(init_x, init_y) and attempt < 30:
-            init_x = np.random.uniform(x_range[0], x_range[1])
-            init_y = np.random.uniform(y_range[0], y_range[1])
+        else:
+            ref_x, ref_y, _ = robot.init_pos
+            gx, gy = self._curriculum_sample_goal(ref_x, ref_y)
+            init_x, init_y = self._sample_around(gx, gy, self.ego_spawn_radius)
             init_yaw = np.random.uniform(-math.pi, math.pi)
-            attempt += 1
 
         state = ModelState()
         state.model_name = robot.model_name
@@ -216,54 +213,55 @@ class MoveBaseGazeboEnv(VecEnv):
             self.set_model_state_srv(state)
         except rospy.ServiceException as e:
             rospy.logwarn(f"[env] reset_robot set_model_state failed: {e}")
-        gx, gy, gyaw = self.change_goal(init_x, init_y, init_yaw)
+
+        gyaw = math.atan2(gy - init_y, gx - init_x)
         robot.set_absolute_goal(gx, gy, gyaw)
 
         # Set opponent goal ONCE per episode, not every step
         if self.opponent_enabled and robot.model_name == self.agent_names[0]:
+            self.reset_opponent(gx, gy)
             self.publish_opponent_goal(gx, gy)
-            self.reset_opponent()
 
-    def change_goal(self, current_x, current_y, current_yaw):
-        """TD3-style expanding goal window anchored at current pose."""
-        if self.goal_span_upper < 9:
-            self.goal_span_upper += 0.004
-        if self.goal_span_lower > -9:
-            self.goal_span_lower -= 0.004
-        goal_ok = False
-        gx = current_x
-        gy = current_y
-        iter_cnt = 0
-        
-        # Constrain goal within workspace bounds if provided
-        x_range = self.random_spawn_cfg.get("x_range")
-        y_range = self.random_spawn_cfg.get("y_range")
+    def _curriculum_sample_goal(self, ref_x, ref_y, max_attempts=100):
+        """Sample goal within expanding curriculum window relative to ref point."""
+        if self.goal_span_upper < self.goal_span_max:
+            self.goal_span_upper += self.goal_span_delta
+            self.goal_span_lower -= self.goal_span_delta
+            if self.debug:
+                rospy.loginfo_throttle(10.0, f"[curriculum] goal_span={self.goal_span_upper:.2f}")
+        for _ in range(max_attempts):
+            gx = ref_x + np.random.uniform(self.goal_span_lower, self.goal_span_upper)
+            gy = ref_y + np.random.uniform(self.goal_span_lower, self.goal_span_upper)
+            if self._check_pos(gx, gy):
+                return gx, gy
+        return gx, gy
 
-        while not goal_ok:
-            gx = current_x + np.random.uniform(self.goal_span_lower, self.goal_span_upper)
-            gy = current_y + np.random.uniform(self.goal_span_lower, self.goal_span_upper)
-            
-            # Hard limit check
-            if not (x_range[0] <= gx <= x_range[1] and y_range[0] <= gy <= y_range[1]):
-                goal_ok = False
-                continue
+    def _sample_around(self, cx, cy, radius_range, max_attempts=50):
+        """Sample a collision-free position at [r_min, r_max] from (cx, cy)."""
+        r_min, r_max = radius_range
+        for _ in range(max_attempts):
+            r = np.random.uniform(r_min, r_max)
+            angle = np.random.uniform(-math.pi, math.pi)
+            x = cx + r * math.cos(angle)
+            y = cy + r * math.sin(angle)
+            if self._check_pos(x, y):
+                return x, y
+        return x, y
 
-            goal_ok = self._check_pos(gx, gy)
-            print("goal_ok:", goal_ok)
-            iter_cnt += 1
-            if iter_cnt > 100:
-                warn("Failed to sample valid goal after 100 attempts, using last sampled goal.")
-                break
+    def reset_opponent(self, goal_x, goal_y):
+        # Stop robot2 before teleporting to avoid residual velocity
+        if self.opponent_cmd_pub is not None:
+            self.opponent_cmd_pub.publish(Twist())
 
-        return gx, gy, current_yaw
+        ox, oy = self._sample_around(goal_x, goal_y, self.opponent_spawn_radius)
+        oyaw = np.random.uniform(-math.pi, math.pi)
 
-    def reset_opponent(self):
         state = ModelState()
         state.model_name = self.opponent_name
-        state.pose.position.x = self.opponent_init_pose[0]
-        state.pose.position.y = self.opponent_init_pose[1]
+        state.pose.position.x = ox
+        state.pose.position.y = oy
         state.pose.position.z = 0.0
-        q = tf.transformations.quaternion_from_euler(0, 0, self.opponent_init_pose[2])
+        q = tf.transformations.quaternion_from_euler(0, 0, oyaw)
         state.pose.orientation.x = q[0]
         state.pose.orientation.y = q[1]
         state.pose.orientation.z = q[2]
@@ -276,6 +274,7 @@ class MoveBaseGazeboEnv(VecEnv):
         state.twist.angular.z = 0.0
 
         self.set_model_state_srv(state)
+        rospy.loginfo(f"[env] Opponent spawned at ({ox:.2f}, {oy:.2f}), goal=({goal_x:.2f}, {goal_y:.2f})")
 
     def publish_opponent_goal(self, goal_x, goal_y):
         if not self.opponent_enabled or self.opponent_goal_pub is None:
@@ -381,6 +380,7 @@ class MoveBaseRobot:
         self.cmd_pub = rospy.Publisher(f"/{self.ns}/cmd_vel", Twist, queue_size=1)
         self.goal_pub = rospy.Publisher(f"/{self.ns}/move_base_simple/goal", PoseStamped, queue_size=1)
         self.goal_marker_pub = rospy.Publisher(f"/{self.ns}/rl_goal_marker", Marker, queue_size=3)
+        self.rl_goal_pub = rospy.Publisher(f"/{self.ns}/rl_goal", PoseStamped, queue_size=1)
         self.lock = threading.Lock()
 
     def scan_cb(self, msg):
@@ -486,7 +486,8 @@ class MoveBaseRobot:
             reward = -100.0
             done = True
         else:
-            r3 = lambda x: 1 - x if x < 1 else 0.0
+            def r3(x):
+                return 1 - x if x < 1 else 0.0
             reward = action[0]/ 2 - abs(action[1]) / 2 - r3(min_scan) / 2 - 0.1
 
         if self.debug:
@@ -499,13 +500,6 @@ class MoveBaseRobot:
 
         
         return float(reward), done
-
-    def reset_goal(self, init_x, init_y, init_yaw):
-        self.goal_x = init_x
-        self.goal_y = init_y
-        self.goal_yaw = init_yaw
-        self.last_cmd = np.zeros(2, dtype=np.float32)
-        self.past_distance = None
 
     def set_absolute_goal(self, goal_x, goal_y, goal_yaw):
         """Set goal state and publish for visualization (no move_base command)."""
@@ -528,6 +522,7 @@ class MoveBaseRobot:
         goal.pose.orientation.z = q[2]
         goal.pose.orientation.w = q[3]
         # self.goal_pub.publish(goal)
+        self.rl_goal_pub.publish(goal)
         self.publish_markers(np.zeros(2, dtype=np.float32))
 
     def _get_yaw(self, q):

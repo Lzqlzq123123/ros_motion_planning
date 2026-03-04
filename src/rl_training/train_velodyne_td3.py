@@ -267,6 +267,7 @@ while timestep < max_timesteps:
 
             writer.add_scalar('train/collisions_interval', collisions_since_last_eval, epoch)
             writer.add_scalar('train/collisions_total', train_collision_count_total, epoch)
+            writer.add_scalar('train/curriculum_span', env.goal_span_upper, epoch)
 
 
             collisions_since_last_eval = 0
