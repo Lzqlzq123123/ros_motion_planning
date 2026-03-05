@@ -225,7 +225,7 @@ count_rand_actions = 0
 random_action = []
 
 # Stuck detection
-STUCK_STEPS_THRESHOLD = 50  # If dist_to_goal is same for this many steps, reset
+STUCK_STEPS_THRESHOLD = 500  # If dist_to_goal is same for this many steps, reset
 last_dist_to_goal = -1.0
 stuck_counter = 0
 

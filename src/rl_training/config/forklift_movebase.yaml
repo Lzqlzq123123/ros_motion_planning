@@ -13,7 +13,7 @@ env:
   random_spawn:
     ego_spawn_radius: [1.0, 3.0]  # [min, max] 距离 goal 的随机生成半径
   goal_reached_dist: 0.3
-  collision_dist: 0.35
+  collision_dist: 0.4
   curriculum:
     initial_span: 1.0   # 初始目标采样半径 (m)，从 [-4, 4] 开始
     max_span: 5.0       # 最大扩展到 [-10, 10]
@@ -74,4 +74,3 @@ runner:
   experiment_name: "forklift_movebase"
   run_name: "run_12"
   resume_path: null #"/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_3/td3_model"
-
