@@ -18,6 +18,144 @@ from visualization_msgs.msg import Marker
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), '..', 'third_party', 'rsl_rl')))
 from rsl_rl.env import VecEnv
 
+
+class RuleBasedAdversary:
+    """Rule-based adversarial controller for opponent vehicle (robot2).
+
+    Three scripted attack behaviors are randomly selected per episode:
+      - head_on:   Drive straight toward the ego robot to force a head-on collision.
+      - cross:     Move perpendicular to ego's heading to simulate T-intersection crossing.
+      - follow_stop: Follow the ego robot closely, then suddenly brake.
+    """
+
+    BEHAVIORS = ["head_on", "cross", "follow_stop"]
+
+    def __init__(self, opponent_name, ego_name, cfg):
+        self.opponent_name = opponent_name
+        self.ego_name = ego_name
+
+        # Tuneable parameters
+        self.linear_speed = float(cfg.get("linear_speed", 0.5))
+        self.angular_gain = float(cfg.get("angular_gain", 2.0))
+        self.follow_dist = float(cfg.get("follow_dist", 1.0))
+        self.stop_prob = float(cfg.get("stop_prob", 0.1))
+
+        # ROS publishers / subscribers
+        self.cmd_pub = rospy.Publisher(
+            f"/{opponent_name}/cmd_vel", Twist, queue_size=1
+        )
+        self.ego_odom = None
+        self.adv_odom = None
+        self._ego_lock = threading.Lock()
+        self._adv_lock = threading.Lock()
+
+        self.ego_odom_sub = rospy.Subscriber(
+            f"/{ego_name}/odom", Odometry, self._ego_odom_cb, queue_size=1
+        )
+        self.adv_odom_sub = rospy.Subscriber(
+            f"/{opponent_name}/odom", Odometry, self._adv_odom_cb, queue_size=1
+        )
+
+        # Current episode behavior
+        self.behavior = "head_on"
+        self._follow_braking = False
+
+    # ---- ROS callbacks ----
+    def _ego_odom_cb(self, msg):
+        with self._ego_lock:
+            self.ego_odom = msg
+
+    def _adv_odom_cb(self, msg):
+        with self._adv_lock:
+            self.adv_odom = msg
+
+    # ---- Episode lifecycle ----
+    def on_reset(self):
+        """Called at the beginning of each episode to pick a new behavior."""
+        self.behavior = np.random.choice(self.BEHAVIORS)
+        self._follow_braking = False
+        # Stop opponent immediately
+        self.cmd_pub.publish(Twist())
+
+    # ---- Main control tick (called once per env.step) ----
+    def step(self):
+        """Compute and publish a cmd_vel for the adversary."""
+        with self._ego_lock:
+            ego = self.ego_odom
+        with self._adv_lock:
+            adv = self.adv_odom
+
+        if ego is None or adv is None:
+            return
+
+        ex = ego.pose.pose.position.x
+        ey = ego.pose.pose.position.y
+        ax = adv.pose.pose.position.x
+        ay = adv.pose.pose.position.y
+
+        dx = ex - ax
+        dy = ey - ay
+        dist = math.sqrt(dx * dx + dy * dy)
+        angle_to_ego = math.atan2(dy, dx)
+
+        adv_yaw = self._yaw(adv.pose.pose.orientation)
+
+        if self.behavior == "head_on":
+            cmd = self._head_on(angle_to_ego, adv_yaw)
+        elif self.behavior == "cross":
+            cmd = self._cross(angle_to_ego, adv_yaw)
+        elif self.behavior == "follow_stop":
+            cmd = self._follow_stop(angle_to_ego, adv_yaw, dist)
+        else:
+            cmd = Twist()
+
+        self.cmd_pub.publish(cmd)
+
+    # ---- Behavior implementations ----
+    def _head_on(self, angle_to_ego, adv_yaw):
+        """Drive directly toward ego at full speed."""
+        cmd = Twist()
+        err = self._angle_diff(angle_to_ego, adv_yaw)
+        cmd.linear.x = self.linear_speed
+        cmd.angular.z = np.clip(self.angular_gain * err, -1.0, 1.0)
+        return cmd
+
+    def _cross(self, angle_to_ego, adv_yaw):
+        """Move perpendicular to the ego-adv line (T-intersection crossing)."""
+        cmd = Twist()
+        perp_angle = angle_to_ego + math.pi / 2.0
+        err = self._angle_diff(perp_angle, adv_yaw)
+        cmd.linear.x = self.linear_speed
+        cmd.angular.z = np.clip(self.angular_gain * err, -1.0, 1.0)
+        return cmd
+
+    def _follow_stop(self, angle_to_ego, adv_yaw, dist):
+        """Follow ego; with probability stop_prob per tick, execute sudden brake."""
+        cmd = Twist()
+        if self._follow_braking:
+            # Stay stopped for the rest of this episode
+            return cmd
+        # Random sudden stop
+        if dist < self.follow_dist and np.random.random() < self.stop_prob:
+            self._follow_braking = True
+            return cmd
+        # Chase ego
+        err = self._angle_diff(angle_to_ego, adv_yaw)
+        cmd.linear.x = self.linear_speed
+        cmd.angular.z = np.clip(self.angular_gain * err, -1.0, 1.0)
+        return cmd
+
+    # ---- Helpers ----
+    @staticmethod
+    def _yaw(q):
+        _, _, yaw = tf.transformations.euler_from_quaternion([q.x, q.y, q.z, q.w])
+        return yaw
+
+    @staticmethod
+    def _angle_diff(target, current):
+        d = target - current
+        return math.atan2(math.sin(d), math.cos(d))
+
 class MoveBaseGazeboEnv(VecEnv):
     def __init__(self, env_cfg, device="cpu"):
         self.env_cfg = env_cfg
@@ -64,19 +202,26 @@ class MoveBaseGazeboEnv(VecEnv):
         self.obstacle_threshold = int(env_cfg.get("map_obstacle_threshold", 50))
         self.map_sub = rospy.Subscriber(self.map_topic, OccupancyGrid, self.map_cb, queue_size=1)
 
-        # Optional opponent (e.g., robot2) goal publishing (only marker/goal, no cmd control)
+        # Optional opponent (e.g., robot2) control
         opponent_cfg = env_cfg.get("opponent", {})
         self.opponent_enabled = opponent_cfg.get("enabled", False)
         self.opponent_name = opponent_cfg.get("model_name", "robot2")
+        self.opponent_mode = opponent_cfg.get("mode", "movebase")  # "movebase" or "rule_based"
         self.opponent_goal_topic = opponent_cfg.get("goal_topic", f"/{self.opponent_name}/move_base_simple/goal")
         self.opponent_frame_id = opponent_cfg.get("frame_id", "map")
         self.opponent_goal_offset = opponent_cfg.get("goal_offset", 0.5)
         self.opponent_spawn_radius = opponent_cfg.get("spawn_radius", [1.0, 3.0])
         self.opponent_goal_pub = None
         self.opponent_cmd_pub = None
+        self.rule_adversary = None
         if self.opponent_enabled:
-            self.opponent_goal_pub = rospy.Publisher(self.opponent_goal_topic, PoseStamped, queue_size=1)
             self.opponent_cmd_pub = rospy.Publisher(f"/{self.opponent_name}/cmd_vel", Twist, queue_size=1)
+            if self.opponent_mode == "movebase":
+                self.opponent_goal_pub = rospy.Publisher(self.opponent_goal_topic, PoseStamped, queue_size=1)
+            elif self.opponent_mode == "rule_based":
+                rule_cfg = opponent_cfg.get("rule_based", {})
+                ego_name = env_cfg.get("agent_names", ["robot1"])[0]
+                self.rule_adversary = RuleBasedAdversary(self.opponent_name, ego_name, rule_cfg)
 
         self.robots = []
         init_poses = env_cfg.get("init_poses", {})
@@ -111,6 +256,10 @@ class MoveBaseGazeboEnv(VecEnv):
         actions_np = actions.detach().cpu().numpy()
         for i, robot in enumerate(self.robots):
             robot.set_action(actions_np[i])
+
+        # Rule-based adversary publishes cmd_vel before physics step
+        if self.rule_adversary is not None:
+            self.rule_adversary.step()
 
         rospy.wait_for_service("/gazebo/unpause_physics")
         try:
@@ -220,7 +369,10 @@ class MoveBaseGazeboEnv(VecEnv):
         # Set opponent goal ONCE per episode, not every step
         if self.opponent_enabled and robot.model_name == self.agent_names[0]:
             self.reset_opponent(gx, gy)
-            self.publish_opponent_goal(gx, gy)
+            if self.opponent_mode == "movebase":
+                self.publish_opponent_goal(gx, gy)
+            elif self.rule_adversary is not None:
+                self.rule_adversary.on_reset()
 
     def _curriculum_sample_goal(self, ref_x, ref_y, max_attempts=100):
         """Sample goal within expanding curriculum window relative to ref point."""
