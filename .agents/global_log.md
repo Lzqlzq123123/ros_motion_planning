@@ -1,5 +1,11 @@
 # Global Change Log
 
+## 2026-03-07
+- [新增] `src/rl_training/train_velodyne_td3.py` — 新增实验参数自动记录功能：
+  - `get_git_info()`: 获取当前 git commit/branch/dirty 状态
+  - `save_experiment_config()`: 保存完整实验配置到 `logs/<experiment>/<run>/experiment_config.yaml`
+  - 记录内容包括：metadata（时间戳、git 信息）、environment（机器人、地图、碰撞阈值等）、opponent（是否对抗、模式、参数）、network（Actor/Critic 层结构）、hyperparameters（全部 TD3 超参数）、training（训练配置）、runner（实验名称、种子）
+
 ## 2026-02-27
 - [修改] `CLAUDE.md` — 全面更新项目分析文档：新增全局规划算法清单（20+种）、局部控制器清单（9种）、TD3 训练管线详细分析（观测/动作空间、奖励设计、课程学习、探索策略、网络结构）、数据流架构图、当前配置说明、项目亮点总结；标注 PPO 算法已废弃，主要使用 TD3
 

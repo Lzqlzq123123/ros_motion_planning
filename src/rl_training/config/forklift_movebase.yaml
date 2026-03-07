@@ -24,7 +24,7 @@ env:
   # Costmap subscription for spawn/goal validity checks (optional)
   costmap_topic: "/robot1/move_base/global_costmap/costmap"
   opponent:
-    enabled: false
+    enabled: true
     model_name: "robot2"
     mode: "rule_based"           # "movebase" (PID planner) or "rule_based" (scripted adversarial)
     goal_topic: "/robot2/move_base_simple/goal"
@@ -72,5 +72,5 @@ runner:
   save_interval: 10
   seed: 1
   experiment_name: "forklift_movebase"
-  run_name: "run_12"
+  run_name: "run_16"
   resume_path: null #"/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_3/td3_model"

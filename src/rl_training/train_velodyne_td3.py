@@ -7,6 +7,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.tensorboard import SummaryWriter
+import subprocess
+from datetime import datetime
 
 # Imports from third_party to ensure identical models/buffer
 import sys
@@ -19,6 +21,121 @@ from rl_training.third_party.drl_td3.td3_models import TD3, Actor, Critic
 
 # Use local environment
 from rl_training.envs.movebase_gazebo_env import MoveBaseGazeboEnv
+
+
+def get_git_info():
+    """Get current git commit hash and branch info."""
+    git_info = {
+        'commit': 'unknown',
+        'branch': 'unknown',
+        'is_dirty': False
+    }
+    try:
+        # Get commit hash
+        result = subprocess.run(
+            ['git', 'rev-parse', 'HEAD'],
+            cwd=proj_root,
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result.returncode == 0:
+            git_info['commit'] = result.stdout.strip()[:8]  # Short hash
+
+        # Get branch name
+        result = subprocess.run(
+            ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+            cwd=proj_root,
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result.returncode == 0:
+            git_info['branch'] = result.stdout.strip()
+
+        # Check if dirty (uncommitted changes)
+        result = subprocess.run(
+            ['git', 'status', '--porcelain'],
+            cwd=proj_root,
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        git_info['is_dirty'] = len(result.stdout.strip()) > 0
+    except Exception as e:
+        print(f"[Warning] Could not get git info: {e}")
+
+    return git_info
+
+
+def save_experiment_config(log_dir, cfg, env_cfg, runner_cfg, hyperparams, git_info, resume_path=None):
+    """Save complete experiment configuration to log_dir/experiment_config.yaml."""
+
+    # Build opponent config
+    opponent_cfg = env_cfg.get('opponent', {})
+    opponent_config = {
+        'enabled': opponent_cfg.get('enabled', False),
+        'mode': opponent_cfg.get('mode', 'none'),
+    }
+    if opponent_cfg.get('mode') == 'rule_based':
+        opponent_config['behaviors'] = ['head_on', 'cross', 'follow_stop']
+        opponent_config['params'] = opponent_cfg.get('rule_based', {})
+
+    # Build complete experiment config
+    exp_config = {
+        'metadata': {
+            'timestamp': datetime.now().isoformat(),
+            'git_commit': git_info['commit'],
+            'git_branch': git_info['branch'],
+            'git_dirty': git_info['is_dirty'],
+            'resume_from': resume_path,
+        },
+        'environment': {
+            'env_class': env_cfg.get('env_class', 'MoveBaseGazeboEnv'),
+            'robot': cfg.get('robot_type', 'unknown'),  # from user_config
+            'map': cfg.get('map', 'unknown'),  # from user_config
+            'num_observations': env_cfg.get('num_observations'),
+            'num_actions': env_cfg.get('num_actions'),
+            'control_dt': env_cfg.get('control_dt', 0.1),
+            'max_episode_length': env_cfg.get('max_episode_length', 500),
+            'collision_dist': env_cfg.get('collision_dist', 0.35),
+            'goal_reached_dist': env_cfg.get('goal_reached_dist', 0.3),
+            'curriculum': env_cfg.get('curriculum', {}),
+        },
+        'opponent': opponent_config,
+        'network': {
+            'actor': {
+                'layers': [env_cfg.get('num_observations', 24), 800, 600, env_cfg.get('num_actions', 2)],
+                'activation': 'ReLU',
+                'output_activation': 'Tanh',
+            },
+            'critic': {
+                'type': 'TwinQ',
+                'description': 'state->800->600, action->600, concat->1',
+            }
+        },
+        'hyperparameters': hyperparams,
+        'training': {
+            'max_timesteps': hyperparams.get('max_timesteps'),
+            'eval_freq': hyperparams.get('eval_freq'),
+            'eval_episodes': hyperparams.get('eval_episodes'),
+            'random_near_obstacle': hyperparams.get('random_near_obstacle'),
+            'stuck_threshold': hyperparams.get('stuck_threshold'),
+        },
+        'runner': {
+            'experiment_name': runner_cfg.get('experiment_name'),
+            'run_name': runner_cfg.get('run_name'),
+            'seed': runner_cfg.get('seed', 1),
+        }
+    }
+
+    config_path = os.path.join(log_dir, 'experiment_config.yaml')
+    with open(config_path, 'w') as f:
+        yaml.dump(exp_config, f, default_flow_style=False, allow_unicode=True)
+
+    print(f"[train] Saved experiment config to {config_path}")
+    return config_path
+
 
 def load_yaml(path):
     with open(path, 'r') as f:
@@ -101,6 +218,46 @@ experiment = runner_cfg.get('experiment_name')
 run_name = runner_cfg.get('run_name')
 log_dir = osp.join(os.path.dirname(__file__), 'logs', experiment, run_name)
 os.makedirs(log_dir, exist_ok=True)
+
+# Get git info for experiment tracking
+git_info = get_git_info()
+
+# Collect hyperparameters for config saving
+hyperparams = {
+    'batch_size': batch_size,
+    'discount': discount,
+    'tau': tau,
+    'policy_noise': policy_noise,
+    'noise_clip': noise_clip,
+    'policy_freq': policy_freq,
+    'buffer_size': buffer_size,
+    'expl_noise_initial': 1.0,
+    'expl_noise_min': expl_min,
+    'expl_decay_steps': expl_decay_steps,
+    'max_timesteps': max_timesteps,
+    'eval_freq': eval_freq,
+    'eval_episodes': eval_ep,
+    'random_near_obstacle': random_near_obstacle,
+    'stuck_threshold': 50,  # STUCK_STEPS_THRESHOLD
+}
+
+# Load user_config.yaml to get robot/map info
+user_config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'user_config/user_config.yaml')
+user_cfg = {}
+if os.path.exists(user_config_path):
+    with open(user_config_path, 'r') as f:
+        user_cfg = yaml.safe_load(f) or {}
+
+# Save complete experiment configuration
+save_experiment_config(
+    log_dir=log_dir,
+    cfg=user_cfg,
+    env_cfg=env_cfg,
+    runner_cfg=runner_cfg,
+    hyperparams=hyperparams,
+    git_info=git_info,
+    resume_path=resume_path
+)
 
 # Tensorboard writer
 writer = SummaryWriter(log_dir)
