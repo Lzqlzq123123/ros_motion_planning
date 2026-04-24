@@ -1,0 +1,20 @@
+[
+  {
+    "repeat": 1,
+    "seed": 202,
+    "robot2_classical_global_planner": "astar",
+    "output_dir": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/fixed_goal_m3_m4_multirun_astar_20260324/repeat_01"
+  },
+  {
+    "repeat": 2,
+    "seed": 404,
+    "robot2_classical_global_planner": "astar",
+    "output_dir": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/fixed_goal_m3_m4_multirun_astar_20260324/repeat_02"
+  },
+  {
+    "repeat": 3,
+    "seed": 808,
+    "robot2_classical_global_planner": "astar",
+    "output_dir": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/fixed_goal_m3_m4_multirun_astar_20260324/repeat_03"
+  }
+]

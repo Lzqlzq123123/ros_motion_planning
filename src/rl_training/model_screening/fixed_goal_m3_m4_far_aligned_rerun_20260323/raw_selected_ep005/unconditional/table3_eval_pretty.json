@@ -1,0 +1,13 @@
+{
+  "unconditional_diffusion": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "diffusion",
+    "robot2_local_planner": "pid",
+    "success_percent": 0.0,
+    "collision_percent": 100.0,
+    "avg_min_ttc_s": 3.05,
+    "avg_frechet_distance": 3.628,
+    "avg_smoothness": 8.392101497419862e-05,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/fixed_goal_m3_m4_far_aligned_rerun_20260323/raw_selected_ep005/unconditional/csv/unconditional_diffusion.csv"
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "key": "planner_based",
+    "label": "planner_based",
+    "opponent_mode": "movebase",
+    "robot2_global_planner": "theta_star",
+    "robot2_local_planner": "pid",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_far_scan_20260323/s56/configs/planner_based.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_far_scan_20260323/s56/csv/planner_based.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_far_scan_20260323/s56/configs/planner_based.yaml --robot1_mode movebase --opponent_mode movebase --episodes 1 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_far_scan_20260323/s56/csv/planner_based.csv --goal_x -6.125 --goal_y -4.975 --random_seed 123 --record_trajectory_output_dir /data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_far_scan_20260323/s56/trajectories --record_all_trajectory_episodes",
+    "goal_offset": 1.0,
+    "nomad_overrides": {},
+    "summary": {
+      "row_type": "summary",
+      "episode": "all",
+      "robot1_mode": "movebase",
+      "opponent_mode": "movebase",
+      "opponent_enabled": "True",
+      "collided": "",
+      "reached_goal": "",
+      "timed_out": "",
+      "steps": "",
+      "episode_reward": "",
+      "goal_x": "",
+      "goal_y": "",
+      "goal_yaw": "",
+      "model_path": "",
+      "avg_reward": "70.50807666778564",
+      "success_rate": "1.0",
+      "collision_rate": "0.0",
+      "timeout_rate": "0.0",
+      "min_ttc": "4.944229909464902",
+      "frechet_distance": "3.7186794609895295",
+      "smoothness": "0.0001221451747636392"
+    },
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_far_scan_20260323/s56/stack_logs/planner_based.log"
+  }
+]

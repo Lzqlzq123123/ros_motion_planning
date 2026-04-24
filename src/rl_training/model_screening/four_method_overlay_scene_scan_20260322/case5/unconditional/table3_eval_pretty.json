@@ -1,0 +1,13 @@
+{
+  "unconditional_diffusion": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "diffusion",
+    "robot2_local_planner": "pid",
+    "success_percent": 0.0,
+    "collision_percent": 100.0,
+    "avg_min_ttc_s": 0.897,
+    "avg_frechet_distance": 2.559,
+    "avg_smoothness": 8.881123685734717e-05,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/four_method_overlay_scene_scan_20260322/case5/unconditional/csv/unconditional_diffusion.csv"
+  }
+}

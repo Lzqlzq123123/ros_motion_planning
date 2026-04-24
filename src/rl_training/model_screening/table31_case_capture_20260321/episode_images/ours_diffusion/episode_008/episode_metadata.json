@@ -1,0 +1,20 @@
+{
+  "goal_x": -4.632906455056803,
+  "goal_y": -2.6141969477310987,
+  "goal_yaw": 3.0915550189427945,
+  "robot1_mode": "movebase",
+  "opponent_mode": "diffusion",
+  "opponent_enabled": true,
+  "model_path": null,
+  "episode_index_0based": 7,
+  "episode_index_1based": 8,
+  "image_topic": "/robot2/camera/rgb/image_raw",
+  "save_rate_hz": 2.0,
+  "collided": true,
+  "reached_goal": false,
+  "timed_out": false,
+  "steps": 92,
+  "episode_reward": -112.25026289373636,
+  "min_ttc": 1.0125439701024699,
+  "saved_frame_count": 19
+}

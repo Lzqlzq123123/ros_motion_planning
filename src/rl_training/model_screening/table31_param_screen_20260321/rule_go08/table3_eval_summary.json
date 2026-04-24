@@ -1,0 +1,37 @@
+[
+  {
+    "key": "rule_based",
+    "label": "rule_based",
+    "opponent_mode": "rule_based",
+    "robot2_global_planner": "theta_star",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/rule_go08/configs/rule_based.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/rule_go08/csv/rule_based.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/rule_go08/configs/rule_based.yaml --robot1_mode movebase --opponent_mode rule_based --episodes 10 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/rule_go08/csv/rule_based.csv",
+    "goal_offset": 0.8,
+    "nomad_overrides": {},
+    "summary": {
+      "row_type": "summary",
+      "episode": "all",
+      "robot1_mode": "movebase",
+      "opponent_mode": "rule_based",
+      "opponent_enabled": "True",
+      "collided": "",
+      "reached_goal": "",
+      "timed_out": "",
+      "steps": "",
+      "episode_reward": "",
+      "goal_x": "",
+      "goal_y": "",
+      "goal_yaw": "",
+      "model_path": "",
+      "avg_reward": "17.141612963544",
+      "success_rate": "0.6666666666666666",
+      "collision_rate": "0.3333333333333333",
+      "timeout_rate": "0.0",
+      "min_ttc": "3.213335189090797",
+      "frechet_distance": "3.181272131074601",
+      "smoothness": "0.00015649019592465116"
+    },
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/rule_go08/stack_logs/rule_based.log"
+  }
+]

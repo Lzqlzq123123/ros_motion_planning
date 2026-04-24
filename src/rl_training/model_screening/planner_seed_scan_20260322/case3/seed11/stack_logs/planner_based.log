@@ -1,0 +1,988 @@
+xacro: in-order processing became default in ROS Melodic. You can drop the option.
+xacro: in-order processing became default in ROS Melodic. You can drop the option.
+... logging to /data/lzq/.ros/log/79c3b202-2604-11f1-9841-ef63e69f4ffa/roslaunch-lzq-324624.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+]2;/data/lzq/ros_motion_planning/src/sim_env/launch/main.launch
+[1mstarted roslaunch server http://lzq:42507/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /gazebo/enable_ros_network: True
+ * /robot1/move_base/PIDController/base_frame: base_link
+ * /robot1/move_base/PIDController/convert_offset: 0.0
+ * /robot1/move_base/PIDController/goal_dist_tolerance: 0.2
+ * /robot1/move_base/PIDController/k: 1.0
+ * /robot1/move_base/PIDController/k_theta: 0.7
+ * /robot1/move_base/PIDController/k_v_d: 0.1
+ * /robot1/move_base/PIDController/k_v_i: 0.1
+ * /robot1/move_base/PIDController/k_v_p: 1.0
+ * /robot1/move_base/PIDController/k_w_d: 0.1
+ * /robot1/move_base/PIDController/k_w_i: 0.1
+ * /robot1/move_base/PIDController/k_w_p: 1.0
+ * /robot1/move_base/PIDController/l: 0.2
+ * /robot1/move_base/PIDController/lookahead_time: 0.5
+ * /robot1/move_base/PIDController/map_frame: map
+ * /robot1/move_base/PIDController/max_lookahead_dist: 0.9
+ * /robot1/move_base/PIDController/max_v: 0.5
+ * /robot1/move_base/PIDController/max_v_inc: 0.5
+ * /robot1/move_base/PIDController/max_w: 1.57
+ * /robot1/move_base/PIDController/max_w_inc: 1.57
+ * /robot1/move_base/PIDController/min_lookahead_dist: 0.3
+ * /robot1/move_base/PIDController/min_v: 0.0
+ * /robot1/move_base/PIDController/min_w: 0.0
+ * /robot1/move_base/PIDController/rotate_tolerance: 0.5
+ * /robot1/move_base/PathPlanner/convert_offset: 0.0
+ * /robot1/move_base/PathPlanner/default_tolerance: 0.0
+ * /robot1/move_base/PathPlanner/expand_zone: True
+ * /robot1/move_base/PathPlanner/hybrid_astar/analytic_expansion_max_length: 5.0
+ * /robot1/move_base/PathPlanner/hybrid_astar/analytic_expansion_ratio: 1.5
+ * /robot1/move_base/PathPlanner/hybrid_astar/cache_obstacle_heuristic: False
+ * /robot1/move_base/PathPlanner/hybrid_astar/change_penalty: 0.4
+ * /robot1/move_base/PathPlanner/hybrid_astar/cost_penalty: 2.0
+ * /robot1/move_base/PathPlanner/hybrid_astar/curve_sample_ratio: 0.15
+ * /robot1/move_base/PathPlanner/hybrid_astar/dim_3_size: 32
+ * /robot1/move_base/PathPlanner/hybrid_astar/downsample_obstacle_heuristic: True
+ * /robot1/move_base/PathPlanner/hybrid_astar/goal_tolerance: 0.2
+ * /robot1/move_base/PathPlanner/hybrid_astar/lookup_table_dim: 20.0
+ * /robot1/move_base/PathPlanner/hybrid_astar/max_approach_iterations: 500
+ * /robot1/move_base/PathPlanner/hybrid_astar/max_iterations: 20000
+ * /robot1/move_base/PathPlanner/hybrid_astar/minimum_turning_radius: 0.3
+ * /robot1/move_base/PathPlanner/hybrid_astar/motion_model: 2
+ * /robot1/move_base/PathPlanner/hybrid_astar/non_straight_penalty: 1.5
+ * /robot1/move_base/PathPlanner/hybrid_astar/retrospective_penalty: 0.025
+ * /robot1/move_base/PathPlanner/hybrid_astar/reverse_penalty: 2.5
+ * /robot1/move_base/PathPlanner/hybrid_astar/traverse_unknown: False
+ * /robot1/move_base/PathPlanner/obstacle_factor: 0.5
+ * /robot1/move_base/PathPlanner/outline_map: True
+ * /robot1/move_base/PathPlanner/planner_name: theta_star
+ * /robot1/move_base/PathPlanner/show_safety_corridor: False
+ * /robot1/move_base/base_global_planner: path_planner/Path...
+ * /robot1/move_base/base_local_planner: pid_controller/PI...
+ * /robot1/move_base/conservative_reset_dist: 3.0
+ * /robot1/move_base/controller_frequency: 20.0
+ * /robot1/move_base/controller_patience: 15.0
+ * /robot1/move_base/global_costmap/footprint: [[-0.21, -0.165],...
+ * /robot1/move_base/global_costmap/footprint_padding: 0.1
+ * /robot1/move_base/global_costmap/global_frame: map
+ * /robot1/move_base/global_costmap/inflation_layer/cost_scaling_factor: 5
+ * /robot1/move_base/global_costmap/inflation_layer/enabled: True
+ * /robot1/move_base/global_costmap/inflation_layer/inflation_radius: 0.2
+ * /robot1/move_base/global_costmap/map_type: costmap
+ * /robot1/move_base/global_costmap/meter_scoring: True
+ * /robot1/move_base/global_costmap/obstacle_layer/observation_sources: scan
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/clearing: True
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/data_type: LaserScan
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/expected_update_rate: 1
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/inf_is_valid: True
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/marking: True
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/max_obstacle_height: 0.2
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/min_obstacle_height: 0.0
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/observation_persistence: 0.0
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/obstacle_range: 2.5
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/raytrace_range: 3.0
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/sensor_frame: robot1/base_footp...
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/topic: /robot1/scan
+ * /robot1/move_base/global_costmap/origin_z: 0.0
+ * /robot1/move_base/global_costmap/plugins: [{'name': 'static...
+ * /robot1/move_base/global_costmap/publish_frequency: 0.5
+ * /robot1/move_base/global_costmap/publish_voxel_map: False
+ * /robot1/move_base/global_costmap/robot_base_frame: robot1/base_footp...
+ * /robot1/move_base/global_costmap/scan/sensor_frame: robot1/base_scan
+ * /robot1/move_base/global_costmap/scan/topic: /robot1/scan
+ * /robot1/move_base/global_costmap/static_map/clear_time: 20
+ * /robot1/move_base/global_costmap/static_map/enabled: True
+ * /robot1/move_base/global_costmap/static_map/publish_static_map: True
+ * /robot1/move_base/global_costmap/transform_tolerance: 0.2
+ * /robot1/move_base/global_costmap/update_frequency: 1.0
+ * /robot1/move_base/global_costmap/z_resolution: 1
+ * /robot1/move_base/global_costmap/z_voxels: 2
+ * /robot1/move_base/local_costmap/global_frame: robot1/odom
+ * /robot1/move_base/local_costmap/height: 3
+ * /robot1/move_base/local_costmap/inflation_radius: 0.2
+ * /robot1/move_base/local_costmap/plugins: [{'name': 'obstac...
+ * /robot1/move_base/local_costmap/publish_frequency: 0.5
+ * /robot1/move_base/local_costmap/resolution: 0.05
+ * /robot1/move_base/local_costmap/robot_base_frame: robot1/base_footp...
+ * /robot1/move_base/local_costmap/rolling_window: True
+ * /robot1/move_base/local_costmap/scan/sensor_frame: robot1/base_scan
+ * /robot1/move_base/local_costmap/scan/topic: /robot1/scan
+ * /robot1/move_base/local_costmap/static_map: False
+ * /robot1/move_base/local_costmap/transform_tolerance: 1.0
+ * /robot1/move_base/local_costmap/update_frequency: 1.0
+ * /robot1/move_base/local_costmap/width: 3
+ * /robot1/move_base/oscillation_distance: 0.2
+ * /robot1/move_base/oscillation_timeout: 10.0
+ * /robot1/move_base/planner_frequency: 2
+ * /robot1/move_base/planner_patience: 5.0
+ * /robot1/move_base/shutdown_costmaps: False
+ * /robot1/move_base/transform_tolerance: 2.0
+ * /robot1/robot_description: <?xml version="1....
+ * /robot1/tf_map2odom_node/odom_frame_id: robot1/odom
+ * /robot1/tf_prefix: robot1
+ * /robot2/move_base/DWAController/acc_lim_theta: 3.2
+ * /robot2/move_base/DWAController/acc_lim_x: 2.5
+ * /robot2/move_base/DWAController/acc_lim_y: 0.0
+ * /robot2/move_base/DWAController/controller_frequency: 10.0
+ * /robot2/move_base/DWAController/forward_point_distance: 0.05
+ * /robot2/move_base/DWAController/goal_distance_bias: 24.0
+ * /robot2/move_base/DWAController/latch_xy_goal_tolerance: False
+ * /robot2/move_base/DWAController/max_scaling_factor: 0.2
+ * /robot2/move_base/DWAController/max_vel_theta: 1.35
+ * /robot2/move_base/DWAController/max_vel_trans: 1.5
+ * /robot2/move_base/DWAController/max_vel_x: 1.5
+ * /robot2/move_base/DWAController/max_vel_y: 0.0
+ * /robot2/move_base/DWAController/min_vel_theta: 0.1
+ * /robot2/move_base/DWAController/min_vel_trans: 0
+ * /robot2/move_base/DWAController/min_vel_x: 0
+ * /robot2/move_base/DWAController/min_vel_y: 0.0
+ * /robot2/move_base/DWAController/occdist_scale: 0.02
+ * /robot2/move_base/DWAController/oscillation_reset_dist: 0.05
+ * /robot2/move_base/DWAController/path_distance_bias: 32.0
+ * /robot2/move_base/DWAController/publish_cost_grid_pc: True
+ * /robot2/move_base/DWAController/publish_traj_pc: True
+ * /robot2/move_base/DWAController/scaling_speed: 0.25
+ * /robot2/move_base/DWAController/sim_time: 2.0
+ * /robot2/move_base/DWAController/stop_time_buffer: 0.2
+ * /robot2/move_base/DWAController/vth_samples: 60
+ * /robot2/move_base/DWAController/vx_samples: 10
+ * /robot2/move_base/DWAController/vy_samples: 0
+ * /robot2/move_base/DWAController/xy_goal_tolerance: 0.1
+ * /robot2/move_base/DWAController/yaw_goal_tolerance: 0.3
+ * /robot2/move_base/PathPlanner/convert_offset: 0.0
+ * /robot2/move_base/PathPlanner/default_tolerance: 0.0
+ * /robot2/move_base/PathPlanner/expand_zone: True
+ * /robot2/move_base/PathPlanner/hybrid_astar/analytic_expansion_max_length: 5.0
+ * /robot2/move_base/PathPlanner/hybrid_astar/analytic_expansion_ratio: 1.5
+ * /robot2/move_base/PathPlanner/hybrid_astar/cache_obstacle_heuristic: False
+ * /robot2/move_base/PathPlanner/hybrid_astar/change_penalty: 0.4
+ * /robot2/move_base/PathPlanner/hybrid_astar/cost_penalty: 2.0
+ * /robot2/move_base/PathPlanner/hybrid_astar/curve_sample_ratio: 0.15
+ * /robot2/move_base/PathPlanner/hybrid_astar/dim_3_size: 32
+ * /robot2/move_base/PathPlanner/hybrid_astar/downsample_obstacle_heuristic: True
+ * /robot2/move_base/PathPlanner/hybrid_astar/goal_tolerance: 0.2
+ * /robot2/move_base/PathPlanner/hybrid_astar/lookup_table_dim: 20.0
+ * /robot2/move_base/PathPlanner/hybrid_astar/max_approach_iterations: 500
+ * /robot2/move_base/PathPlanner/hybrid_astar/max_iterations: 20000
+ * /robot2/move_base/PathPlanner/hybrid_astar/minimum_turning_radius: 0.3
+ * /robot2/move_base/PathPlanner/hybrid_astar/motion_model: 2
+ * /robot2/move_base/PathPlanner/hybrid_astar/non_straight_penalty: 1.5
+ * /robot2/move_base/PathPlanner/hybrid_astar/retrospective_penalty: 0.025
+ * /robot2/move_base/PathPlanner/hybrid_astar/reverse_penalty: 2.5
+ * /robot2/move_base/PathPlanner/hybrid_astar/traverse_unknown: False
+ * /robot2/move_base/PathPlanner/obstacle_factor: 0.5
+ * /robot2/move_base/PathPlanner/outline_map: True
+ * /robot2/move_base/PathPlanner/planner_name: theta_star
+ * /robot2/move_base/PathPlanner/show_safety_corridor: False
+ * /robot2/move_base/base_global_planner: path_planner/Path...
+ * /robot2/move_base/base_local_planner: dwa_controller/DW...
+ * /robot2/move_base/conservative_reset_dist: 3.0
+ * /robot2/move_base/controller_frequency: 20.0
+ * /robot2/move_base/controller_patience: 15.0
+ * /robot2/move_base/global_costmap/footprint: [[-0.21, -0.165],...
+ * /robot2/move_base/global_costmap/footprint_padding: 0.1
+ * /robot2/move_base/global_costmap/global_frame: map
+ * /robot2/move_base/global_costmap/inflation_layer/cost_scaling_factor: 5
+ * /robot2/move_base/global_costmap/inflation_layer/enabled: True
+ * /robot2/move_base/global_costmap/inflation_layer/inflation_radius: 0.2
+ * /robot2/move_base/global_costmap/map_type: costmap
+ * /robot2/move_base/global_costmap/meter_scoring: True
+ * /robot2/move_base/global_costmap/obstacle_layer/observation_sources: scan
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/clearing: True
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/data_type: LaserScan
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/expected_update_rate: 1
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/inf_is_valid: True
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/marking: True
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/max_obstacle_height: 0.2
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/min_obstacle_height: 0.0
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/observation_persistence: 0.0
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/obstacle_range: 2.5
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/raytrace_range: 3.0
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/sensor_frame: robot2/base_footp...
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/topic: /robot2/scan
+ * /robot2/move_base/global_costmap/origin_z: 0.0
+ * /robot2/move_base/global_costmap/plugins: [{'name': 'static...
+ * /robot2/move_base/global_costmap/publish_frequency: 0.5
+ * /robot2/move_base/global_costmap/publish_voxel_map: False
+ * /robot2/move_base/global_costmap/robot_base_frame: robot2/base_footp...
+ * /robot2/move_base/global_costmap/scan/sensor_frame: robot2/base_scan
+ * /robot2/move_base/global_costmap/scan/topic: /robot2/scan
+ * /robot2/move_base/global_costmap/static_map/clear_time: 20
+ * /robot2/move_base/global_costmap/static_map/enabled: True
+ * /robot2/move_base/global_costmap/static_map/publish_static_map: True
+ * /robot2/move_base/global_costmap/transform_tolerance: 0.2
+ * /robot2/move_base/global_costmap/update_frequency: 1.0
+ * /robot2/move_base/global_costmap/z_resolution: 1
+ * /robot2/move_base/global_costmap/z_voxels: 2
+ * /robot2/move_base/local_costmap/global_frame: robot2/odom
+ * /robot2/move_base/local_costmap/height: 3
+ * /robot2/move_base/local_costmap/inflation_radius: 0.2
+ * /robot2/move_base/local_costmap/plugins: [{'name': 'obstac...
+ * /robot2/move_base/local_costmap/publish_frequency: 0.5
+ * /robot2/move_base/local_costmap/resolution: 0.05
+ * /robot2/move_base/local_costmap/robot_base_frame: robot2/base_footp...
+ * /robot2/move_base/local_costmap/rolling_window: True
+ * /robot2/move_base/local_costmap/scan/sensor_frame: robot2/base_scan
+ * /robot2/move_base/local_costmap/scan/topic: /robot2/scan
+ * /robot2/move_base/local_costmap/static_map: False
+ * /robot2/move_base/local_costmap/transform_tolerance: 1.0
+ * /robot2/move_base/local_costmap/update_frequency: 1.0
+ * /robot2/move_base/local_costmap/width: 3
+ * /robot2/move_base/oscillation_distance: 0.2
+ * /robot2/move_base/oscillation_timeout: 10.0
+ * /robot2/move_base/planner_frequency: 2
+ * /robot2/move_base/planner_patience: 5.0
+ * /robot2/move_base/shutdown_costmaps: False
+ * /robot2/move_base/transform_tolerance: 2.0
+ * /robot2/robot_description: <?xml version="1....
+ * /robot2/tf_map2odom_node/odom_frame_id: robot2/odom
+ * /robot2/tf_prefix: robot2
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+ * /use_sim_time: True
+
+NODES
+  /
+    gazebo (gazebo_ros/gzserver)
+    map_server (map_server/map_server)
+    rviz (rviz/rviz)
+  /robot1/
+    ground_truth_odom_publisher (sim_env/ground_truth_odom_publisher.py)
+    joint_state_publisher (joint_state_publisher/joint_state_publisher)
+    move_base (move_base/move_base)
+    robot_state_publisher (robot_state_publisher/robot_state_publisher)
+    tf_map2odom_node (sim_env/tf_map2odom.py)
+    urdf_spawner (gazebo_ros/spawn_model)
+  /robot2/
+    ground_truth_odom_publisher (sim_env/ground_truth_odom_publisher.py)
+    joint_state_publisher (joint_state_publisher/joint_state_publisher)
+    move_base (move_base/move_base)
+    robot_state_publisher (robot_state_publisher/robot_state_publisher)
+    tf_map2odom_node (sim_env/tf_map2odom.py)
+    urdf_spawner (gazebo_ros/spawn_model)
+[33m[WARN] [1774193610.095916913]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774193610.096260059]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774193610.096464284]: The root link base_footprint has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.[0m
+[33m[WARN] [1774193610.125562834]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774193610.126630267]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774193610.126849928]: The root link base_footprint has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.[0m
+[33m[WARN] [1774193611.351515685]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774193611.351538245]: link 'base_scan' material 'dark' undefined.[0m
+Warning: Warning: TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot1/odom (parent map) at time 83.408000 according to authority unknown_publisher
+         at line TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot1/odom (parent map) at time 83.408000 according to authority unknown_publisher277 in 
+/tmp/binarydeb/ros-noetic-tf2-0.7.10/src/buffer_core.cpp[33m[WARN] [1774193611.765770154]: TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot1/odom (parent map) at time 83.408000 according to authority unknown_publisher[0m
+         at line 
+277 in /tmp/binarydeb/ros-noetic-tf2-0.7.10/src/buffer_core.cpp
+Warning: Warning: TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot2/odom (parent map) at time 83.414000 according to authority unknown_publisherTF_REPEATED_DATA ignoring data with redundant timestamp for frame robot2/odom (parent map) at time 83.414000 according to authority unknown_publisher
+
+         at line          at line 277277 in  in /tmp/binarydeb/ros-noetic-tf2-0.7.10/src/buffer_core.cpp/tmp/binarydeb/ros-noetic-tf2-0.7.10/src/buffer_core.cpp
+
+[33m[WARN] [1774193611.768764668]: TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot2/odom (parent map) at time 83.414000 according to authority unknown_publisher[0m
+[33m[WARN] [1774193611.852690594, 83.532000000]: Timed out waiting for transform from robot2/base_footprint to map to become available before running costmap, tf error: canTransform: source_frame robot2/base_footprint does not exist.. canTransform returned after 83.532 timeout was 0.1.[0m
+[33m[WARN] [1774193611.953682397, 83.732000000]: Timed out waiting for transform from robot1/base_footprint to map to become available before running costmap, tf error: Could not find a connection between 'map' and 'robot1/base_footprint' because they are not part of the same tree.Tf has two or more unconnected trees.. canTransform returned after 83.732 timeout was 0.1.[0m
+[33m[WARN] [1774193612.102910557, 83.918000000]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774193612.102939054, 83.918000000]: link 'base_scan' material 'dark' undefined.[0m
+[INFO] [1774193610.677440, 0.000000]: Loading model XML from ros parameter robot_description
+[INFO] [1774193610.681281, 0.000000]: Waiting for service /gazebo/spawn_urdf_model
+[INFO] [1774193611.885883, 83.598000]: Calling service /gazebo/spawn_urdf_model
+[INFO] [1774193613.661241, 83.918000]: Spawn status: SpawnModel: Successfully spawned entity
+[33m[WARN] [1774193613.874732639, 83.918000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot2//) missing <covariance_x>, defaults to 0.000100[0m
+[33m[WARN] [1774193613.874763510, 83.918000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot2//) missing <covariance_y>, defaults to 0.000100[0m
+[33m[WARN] [1774193613.874776571, 83.918000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot2//) missing <covariance_yaw>, defaults to 0.010000[0m
+[INFO] [1774193610.701834, 0.000000]: Loading model XML from ros parameter robot_description
+[INFO] [1774193610.707058, 0.000000]: Waiting for service /gazebo/spawn_urdf_model
+[INFO] [1774193611.912893, 83.650000]: Calling service /gazebo/spawn_urdf_model
+[INFO] [1774193614.190884, 84.318000]: Spawn status: SpawnModel: Successfully spawned entity
+[33m[WARN] [1774193615.192849080, 84.318000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot1//) missing <covariance_x>, defaults to 0.000100[0m
+[33m[WARN] [1774193615.192902511, 84.318000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot1//) missing <covariance_y>, defaults to 0.000100[0m
+[33m[WARN] [1774193615.192917947, 84.318000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot1//) missing <covariance_yaw>, defaults to 0.010000[0m
+[33m[WARN] [1774193615.196521574, 84.322000000]: global_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[WARN] [1774193615.196677117, 84.324000000]: global_costmap: Pre-Hydro parameter "map_type" unused since "plugins" is provided[0m
+[33m[WARN] [1774193615.247511406, 84.424000000]: global_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[WARN] [1774193615.247757189, 84.424000000]: global_costmap: Pre-Hydro parameter "map_type" unused since "plugins" is provided[0m
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I20260322 23:33:35.515914 324744 path_planner_factory.cpp:308] Using path planner: theta_star
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I20260322 23:33:35.516302 324801 path_planner_factory.cpp:308] Using path planner: theta_star
+[33m[WARN] [1774193615.523777179, 84.976000000]: local_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[WARN] [1774193615.524227187, 84.976000000]: local_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[WARN] [1774193616.002524025, 85.934000000]: The /robot2/scan observation buffer has not been updated for 1.08 seconds, and it should be updated every 1.00 seconds.[0m
+[33m[WARN] [1774193616.004071150, 85.936000000]: The /robot1/scan observation buffer has not been updated for 1.07 seconds, and it should be updated every 1.00 seconds.[0m
+[33m[WARN] [1774193621.648191477, 97.140000000]: Received an empty transformed plan.[0m
+[31m[ERROR] [1774193621.673678075, 97.192000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.673730319, 97.192000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.673752879, 97.192000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.673773064, 97.192000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.677009796, 97.198000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.701629625, 97.240000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.701662871, 97.240000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.701684243, 97.240000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.701702053, 97.240000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.703834545, 97.244000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.727405938, 97.290000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.727446308, 97.292000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.727466493, 97.292000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.727484303, 97.292000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.729583549, 97.296000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.764820715, 97.340000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.764855149, 97.340000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.764874146, 97.340000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.764891957, 97.340000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.767132497, 97.344000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.790673019, 97.392000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.790712202, 97.392000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.790745448, 97.392000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.790775132, 97.392000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.793323198, 97.396000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.814757350, 97.440000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.814795345, 97.440000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.814820280, 97.440000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.814842839, 97.440000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.816955146, 97.440000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.844768962, 97.490000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.844804583, 97.490000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.844827142, 97.490000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.844848515, 97.490000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.847232726, 97.494000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.870808868, 97.542000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.870850426, 97.542000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.870874173, 97.542000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.870896732, 97.542000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.873354559, 97.546000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.902250057, 97.590000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.902304675, 97.590000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.902327235, 97.590000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.902345045, 97.590000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.904745879, 97.596000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.927197596, 97.640000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.927234404, 97.640000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.927258151, 97.640000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.927285460, 97.640000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.929552123, 97.646000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.956283070, 97.690000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.956324627, 97.690000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.956342438, 97.690000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.956359061, 97.690000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.958636410, 97.696000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193621.982161496, 97.740000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193621.982200678, 97.742000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.982226800, 97.742000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193621.982248173, 97.742000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193621.984634758, 97.746000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193622.011410825, 97.790000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193622.011455944, 97.792000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.011478504, 97.792000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.011496314, 97.792000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193622.014104936, 97.796000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193622.036554276, 97.842000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193622.036585147, 97.842000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.036606520, 97.842000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.036625517, 97.842000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193622.039382558, 97.846000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193622.066142001, 97.890000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193622.066178809, 97.890000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.066200181, 97.890000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.066219179, 97.890000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193622.068592704, 97.896000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193622.091118035, 97.940000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193622.091161967, 97.940000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.091188089, 97.940000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.091213023, 97.940000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193622.093543803, 97.946000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193622.122498667, 97.990000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193622.122550911, 97.990000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.122573471, 97.990000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.122592468, 97.990000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193622.125102539, 97.994000000]: DWA planner failed to produce path.[0m
+[31m[ERROR] [1774193622.148662057, 98.040000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[31m[ERROR] [1774193622.148705989, 98.040000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.148735673, 98.040000000]: None of the 33 first of 33 (2) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1774193622.148758233, 98.040000000]: None of the points of the global plan were in the local costmap, global plan points too far from robot[0m
+[33m[WARN] [1774193622.151144819, 98.046000000]: DWA planner failed to produce path.[0m
+[33m[WARN] [1774193622.681806285, 98.994000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193622.791810071, 99.196000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0560 seconds[0m
+[33m[WARN] [1774193622.850949900, 99.296000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0560 seconds[0m
+[33m[WARN] [1774193622.911692660, 99.396000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0560 seconds[0m
+[33m[WARN] [1774193622.973143084, 99.494000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193623.034575696, 99.592000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193623.060934998, 99.642000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+E20260322 23:33:43.193667 325027 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774193624.007508241, 101.292000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193624.068245059, 101.392000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193624.133455833, 101.500000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0600 seconds[0m
+[33m[WARN] [1774193624.196166036, 101.602000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0620 seconds[0m
+[33m[WARN] [1774193624.227182148, 101.642000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193624.258282561, 101.704000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0640 seconds[0m
+[33m[WARN] [1774193624.289961218, 101.742000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193624.319193920, 101.800000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0600 seconds[0m
+[33m[WARN] [1774193624.348229522, 101.844000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193624.381815072, 101.904000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0640 seconds[0m
+[33m[WARN] [1774193624.415221331, 101.950000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0600 seconds[0m
+[33m[WARN] [1774193624.440000261, 101.998000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0580 seconds[0m
+[33m[WARN] [1774193624.465065345, 102.048000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0580 seconds[0m
+[33m[WARN] [1774193624.504426194, 102.104000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0640 seconds[0m
+[33m[WARN] [1774193624.544066071, 102.162000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0720 seconds[0m
+[33m[WARN] [1774193624.568900808, 102.210000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0700 seconds[0m
+[33m[WARN] [1774193624.594214049, 102.260000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0700 seconds[0m
+[33m[WARN] [1774193624.627634556, 102.304000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0640 seconds[0m
+[33m[WARN] [1774193624.660749912, 102.368000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0780 seconds[0m
+[33m[WARN] [1774193624.688195644, 102.402000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0620 seconds[0m
+E20260322 23:33:44.701187 325027 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774193624.705407556, 102.434000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 4.4980 seconds[0m
+[33m[WARN] [1774193624.706100972, 102.438000000]: Clearing both costmaps outside a square (3.00m) large centered on the robot.[0m
+[33m[WARN] [1774193624.716003520, 102.458000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0680 seconds[0m
+[33m[WARN] [1774193624.750734868, 102.504000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0640 seconds[0m
+[33m[WARN] [1774193624.785755931, 102.574000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0840 seconds[0m
+[33m[WARN] [1774193624.811468124, 102.602000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0600 seconds[0m
+[33m[WARN] [1774193624.836655505, 102.652000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0620 seconds[0m
+[33m[WARN] [1774193624.895777518, 102.746000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0560 seconds[0m
+E20260322 23:33:46.326925 325027 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774193627.262924555, 106.742000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193627.323806222, 106.842000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193627.567913507, 107.240000000]: Clearing both costmaps outside a square (3.00m) large centered on the robot.[0m
+[0m[INFO] [1774193615.196979893, 84.324000000]: global_costmap: Using plugin "static_map"[0m
+[0m[INFO] [1774193615.200494468, 84.330000000]: Requesting the map...[0m
+[0m[INFO] [1774193615.401750189, 84.732000000]: Resizing costmap to 480 X 480 at 0.050000 m/pix[0m
+[0m[INFO] [1774193615.451495672, 84.832000000]: Received a 480 X 480 map at 0.050000 m/pix[0m
+[0m[INFO] [1774193615.453888195, 84.836000000]: global_costmap: Using plugin "obstacle_layer"[0m
+[0m[INFO] [1774193615.457234165, 84.842000000]:     Subscribed to Topics: scan[0m
+[0m[INFO] [1774193615.474698990, 84.878000000]: global_costmap: Using plugin "voronoi_layer"[0m
+[0m[INFO] [1774193615.478164884, 84.884000000]: global_costmap: Using plugin "inflation_layer"[0m
+[0m[INFO] [1774193615.524803055, 84.978000000]: local_costmap: Using plugin "obstacle_layer"[0m
+[0m[INFO] [1774193615.527386743, 84.982000000]:     Subscribed to Topics: [0m
+[0m[INFO] [1774193615.536014074, 85.000000000]: local_costmap: Using plugin "inflation_layer"[0m
+[0m[INFO] [1774193615.576865071, 85.082000000]: Created local_planner dwa_controller/DWAController[0m
+[0m[INFO] [1774193615.579181603, 85.086000000]: Sim period is set to 0.10[0m
+[0m[INFO] [1774193615.582830349, 85.094000000]: Using local controller: DWAController[0m
+[0m[INFO] [1774193616.071837138, 86.070000000]: Recovery behavior will clear layer 'obstacles'[0m
+[0m[INFO] [1774193616.076657805, 86.080000000]: Recovery behavior will clear layer 'obstacles'[0m
+[0m[INFO] [1774193616.095612762, 86.118000000]: odom received![0m
+[0m[INFO] [1774193621.648088177, 97.140000000]: Got new plan[0m
+[0m[INFO] [1774193621.672746001, 97.190000000]: Got new plan[0m
+[0m[INFO] [1774193621.701518013, 97.240000000]: Got new plan[0m
+[0m[INFO] [1774193621.727278891, 97.290000000]: Got new plan[0m
+[0m[INFO] [1774193621.764705542, 97.340000000]: Got new plan[0m
+[0m[INFO] [1774193621.790551909, 97.392000000]: Got new plan[0m
+[0m[INFO] [1774193621.814635052, 97.440000000]: Got new plan[0m
+[0m[INFO] [1774193621.844645477, 97.490000000]: Got new plan[0m
+[0m[INFO] [1774193621.870659261, 97.542000000]: Got new plan[0m
+[0m[INFO] [1774193621.902090951, 97.590000000]: Got new plan[0m
+[0m[INFO] [1774193621.927066986, 97.640000000]: Got new plan[0m
+[0m[INFO] [1774193621.956179770, 97.690000000]: Got new plan[0m
+[0m[INFO] [1774193621.982051072, 97.740000000]: Got new plan[0m
+[0m[INFO] [1774193622.011254094, 97.790000000]: Got new plan[0m
+[0m[INFO] [1774193622.036443852, 97.842000000]: Got new plan[0m
+[0m[INFO] [1774193622.066009017, 97.890000000]: Got new plan[0m
+[0m[INFO] [1774193622.090983864, 97.940000000]: Got new plan[0m
+[0m[INFO] [1774193622.122351435, 97.990000000]: Got new plan[0m
+[0m[INFO] [1774193622.148536197, 98.040000000]: Got new plan[0m
+[0m[INFO] [1774193622.179908518, 98.090000000]: Got new plan[0m
+[0m[INFO] [1774193622.453944352, 98.592000000]: Got new plan[0m
+[0m[INFO] [1774193622.735120945, 99.090000000]: Got new plan[0m
+[0m[INFO] [1774193623.034642188, 99.592000000]: Got new plan[0m
+[0m[INFO] [1774193623.323083012, 100.090000000]: Got new plan[0m
+[0m[INFO] [1774193623.592504769, 100.590000000]: Got new plan[0m
+[0m[INFO] [1774193623.881890729, 101.090000000]: Got new plan[0m
+[0m[INFO] [1774193624.196236090, 101.602000000]: Got new plan[0m
+[0m[INFO] [1774193624.504495060, 102.104000000]: Got new plan[0m
+[0m[INFO] [1774193624.811557175, 102.602000000]: Got new plan[0m
+[0m[INFO] [1774193625.099732016, 103.090000000]: Got new plan[0m
+[0m[INFO] [1774193625.403744988, 103.590000000]: Got new plan[0m
+[0m[INFO] [1774193625.709556804, 104.092000000]: Got new plan[0m
+[0m[INFO] [1774193626.018055605, 104.590000000]: Got new plan[0m
+[0m[INFO] [1774193626.313016163, 105.090000000]: Got new plan[0m
+[0m[INFO] [1774193626.620392901, 105.590000000]: Got new plan[0m
+[0m[INFO] [1774193626.890058031, 106.090000000]: Got new plan[0m
+[0m[INFO] [1774193627.177345888, 106.590000000]: Got new plan[0m
+[0m[INFO] [1774193627.507843992, 107.140000000]: Got new plan[0m
+[0m[IE20260322 23:33:47.826570 325027 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774193627.830938932, 107.678000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 4.2440 seconds[0m
+[33m[WARN] [1774193627.835297715, 107.686000000]: Rotate recovery behavior started.[0m
+[33m[WARN] [1774193628.227538309, 108.342000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193628.290958540, 108.442000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193628.352912386, 108.544000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193628.413057890, 108.642000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193628.439373255, 108.692000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193628.497658172, 108.792000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193628.941358756, 109.542000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193630.691974551, 112.498000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0580 seconds[0m
+[33m[WARN] [1774193633.630801790, 117.390000000]: Rotate recovery behavior started.[0m
+[33m[WARN] [1774193642.959835161, 133.292000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193642.987884049, 133.348000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0580 seconds[0m
+[33m[WARN] [1774193643.584437305, 134.392000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193643.691125898, 134.592000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193643.751906599, 134.694000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193643.814761608, 134.794000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193643.877208168, 134.900000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0600 seconds[0m
+[33m[WARN] [1774193643.994904729, 135.094000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193644.024353506, 135.144000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193644.056743360, 135.210000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0700 seconds[0m
+[33m[WARN] [1774193644.089316068, 135.266000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0760 seconds[0m
+[33m[WARN] [1774193644.118335022, 135.324000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0840 seconds[0m
+[33m[WARN] [1774193644.155788945, 135.392000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1020 seconds[0m
+[33m[WARN] [1774193644.192146940, 135.454000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0620 seconds[0m
+[33m[WARN] [1774193644.223425431, 135.514000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0720 seconds[0m
+[33m[WARN] [1774193644.255172926, 135.558000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0660 seconds[0m
+[33m[WARN] [1774193644.291726835, 135.632000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0900 seconds[0m
+[33m[WARN] [1774193644.325007206, 135.674000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0820 seconds[0m
+[33m[WARN] [1774193644.359300390, 135.742000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1000 seconds[0m
+[33m[WARN] [1774193644.393806112, 135.784000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0920 seconds[0m
+[33m[WARN] [1774193644.428540992, 135.852000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1100 seconds[0m
+[33m[WARN] [1774193644.466162333, 135.906000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193644.504872478, 135.978000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0760 seconds[0m
+[33m[WARN] [1774193644.543539878, 136.036000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0840 seconds[0m
+[33m[WARN] [1774193644.597405421, 136.120000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1180 seconds[0m
+[33m[WARN] [1774193644.649700093, 136.202000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0820 seconds[0m
+[33m[WARN] [1774193644.700318221, 136.296000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1260 seconds[0m
+[33m[WARN] [1774193644.801733766, 136.464000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1180 seconds[0m
+[33m[WARN] [1774193644.876676046, 136.600000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1360 seconds[0m
+[33m[WARN] [1774193644.935498796, 136.694000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0940 seconds[0m
+[33m[WARN] [1774193644.997333865, 136.796000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1460 seconds[0m
+[33m[WARN] [1774193645.089858493, 136.942000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1460 seconds[0m
+[33m[WARN] [1774193645.137299257, 137.036000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0940 seconds[0m
+[33m[WARN] [1774193645.177944789, 137.092000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1000 seconds[0m
+[33m[WARN] [1774193645.218980960, 137.154000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1120 seconds[0m
+[33m[WARN] [1774193645.323816083, 137.340000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1860 seconds[0m
+[33m[WARN] [1774193645.393960259, 137.454000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0640 seconds[0m
+[33m[WARN] [1774193645.431978175, 137.512000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0720 seconds[0m
+[33m[WARN] [1774193645.469965219, 137.572000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0820 seconds[0m
+[33m[WARN] [1774193645.499735767, 137.626000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0860 seconds[0m
+[33m[WARN] [1774193645.530422954, 137.680000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0900 seconds[0m
+[33m[WARN] [1774193645.561799994, 137.730000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0900 seconds[0m
+[33m[WARN] [1774193645.592724651, 137.786000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0960 seconds[0m
+[33m[WARN] [1774193645.624552886, 137.832000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0920 seconds[0m
+[33m[WARN] [1774193645.656534289, 137.890000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1000 seconds[0m
+[33m[WARN] [1774193645.689102245, 137.934000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0940 seconds[0m
+[33m[WARN] [1774193645.722947796, 137.996000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1060 seconds[0m
+[33m[WARN] [1774193645.756830154, 138.050000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0540 seconds[0m
+[33m[WARN] [1774193645.796703905, 138.108000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0620 seconds[0m
+[33m[WARN] [1774193645.840028110, 138.192000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0960 seconds[0m
+[33m[WARN] [1774193645.880804250, 138.254000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1080 seconds[0m
+[33m[WARN] [1774193645.938593999, 138.344000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0900 seconds[0m
+[33m[WARN] [1774193645.980819900, 138.418000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1140 seconds[0m
+[33m[WARN] [1774193646.022688407, 138.494000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0760 seconds[0m
+[33m[WARN] [1774193646.074962890, 138.580000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1120 seconds[0m
+[33m[WARN] [1774193646.105780684, 138.632000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+[33m[WARN] [1774193646.140069116, 138.690000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0600 seconds[0m
+E20260322 23:34:06.144048 324957 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774193646.173930101, 138.742000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0620 seconds[0m
+[33m[WARN] [1774193646.215083819, 138.818000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0880 seconds[0m
+[33m[WARN] [1774193646.256163921, 138.880000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1000 seconds[0m
+[33m[WARN] [1774193646.281864216, 138.932000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.1020 seconds[0m
+[33m[WARN] [1774193646.406734760, 139.134000000]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0520 seconds[0m
+E20260322 23:34:06.449359 324957 path_planner_node.cpp:250] Failed to get a path.
+E20260322 23:34:06.913434 325027 path_planner_node.cpp:250] Failed to get a path.
+E20260322 23:34:08.442237 325027 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774193648.446302730, 139.586000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 1.9080 seconds[0m
+[0m[INFO] [1774193615.248144267, 84.424000000]: global_costmap: Using plugin "static_map"[0m
+[0m[INFO] [1774193615.251775203, 84.432000000]: Requesting the map...[0m
+[0m[INFO] [1774193615.403391115, 84.734000000]: Resizing costmap to 480 X 480 at 0.050000 m/pix[0m
+[0m[INFO] [1774193615.453137786, 84.834000000]: Received a 480 X 480 map at 0.050000 m/pix[0m
+[0m[INFO] [1774193615.457496571, 84.844000000]: global_costmap: Using plugin "obstacle_layer"[0m
+[0m[INFO] [1774193615.459962710, 84.848000000]:     Subscribed to Topics: scan[0m
+[0m[INFO] [1774193615.476026455, 84.880000000]: global_costmap: Using plugin "voronoi_layer"[0m
+[0m[INFO] [1774193615.479626519, 84.888000000]: global_costmap: Using plugin "inflation_layer"[0m
+[0m[INFO] [1774193615.525329054, 84.978000000]: local_costmap: Using plugin "obstacle_layer"[0m
+[0m[INFO] [1774193615.528062349, 84.984000000]:     Subscribed to Topics: [0m
+[0m[INFO] [1774193615.536961585, 85.002000000]: local_costmap: Using plugin "inflation_layer"[0m
+[0m[INFO] [1774193615.576540923, 85.082000000]: Created local_planner pid_controller/PIDController[0m
+[0m[INFO] [1774193615.590332067, 85.108000000]: PID Controller initialized![0m
+[0m[INFO] [1774193616.069786574, 86.066000000]: Recovery behavior will clear layer 'obstacles'[0m
+[0m[INFO] [1774193616.074100240, 86.074000000]: Recovery behavior will clear layer 'obstacles'[0m
+[0m[INFO] [1774193616.094709183, 86.114000000]: odom received![0m
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+NFO] [1774193627.626539198, 107.340000000]: Got new plan[0m
+[0m[INFO] [1774193627.922770214, 107.840000000]: Got new plan[0m
+[0m[INFO] [1774193628.227605988, 108.342000000]: Got new plan[0m
+[0m[INFO] [1774193628.529625350, 108.840000000]: Got new plan[0m
+[0m[INFO] [1774193628.831935615, 109.340000000]: Got new plan[0m
+[0m[INFO] [1774193629.102081596, 109.840000000]: Got new plan[0m
+[0m[INFO] [1774193629.393876626, 110.340000000]: Got new plan[0m
+[0m[INFO] [1774193629.698929669, 110.840000000]: Got new plan[0m
+[0m[INFO] [1774193629.995157098, 111.340000000]: Got new plan[0m
+[0m[INFO] [1774193630.297563512, 111.840000000]: Got new plan[0m
+[0m[INFO] [1774193630.603195972, 112.340000000]: Got new plan[0m
+[0m[INFO] [1774193630.896134413, 112.840000000]: Got new plan[0m
+[0m[INFO] [1774193631.201722932, 113.340000000]: Got new plan[0m
+[0m[INFO] [1774193631.501280867, 113.840000000]: Got new plan[0m
+[0m[INFO] [1774193631.794871154, 114.340000000]: Got new plan[0m
+[0m[INFO] [1774193632.099628515, 114.842000000]: Got new plan[0m
+[0m[INFO] [1774193632.403580841, 115.340000000]: Got new plan[0m
+[0m[INFO] [1774193632.707228016, 115.840000000]: Got new plan[0m
+[0m[INFO] [1774193633.000903779, 116.340000000]: Got new plan[0m
+[0m[INFO] [1774193633.302759222, 116.840000000]: Got new plan[0m
+[0m[INFO] [1774193633.606444380, 117.340000000]: Got new plan[0m
+[0m[INFO] [1774193642.903555721, 133.190000000]: Got new plan[0m
+[0m[INFO] [1774193642.929178842, 133.240000000]: Got new plan[0m
+[0m[INFO] [1774193643.201777735, 133.740000000]: Got new plan[0m
+[0m[INFO] [1774193643.503907330, 134.240000000]: Got new plan[0m
+[0m[INFO] [1774193643.787186477, 134.740000000]: Got new plan[0m
+[0m[INFO] [1774193644.089425305, 135.266000000]: Got new plan[0m
+[0m[INFO] [1774193644.359375194, 135.742000000]: Got new plan[0m
+[0m[INFO] [1774193644.700409647, 136.296000000]: Got new plan[0m
+[0m[INFO] [1774193644.997424104, 136.796000000]: Got new plan[0m
+[0m[INFO] [1774193645.323887325, 137.340000000]: Got new plan[0m
+[0m[INFO] [1774193645.592801829, 137.786000000]: Got new plan[0m
+[0m[INFO] [1774193645.880873117, 138.254000000]: Got new plan[0m
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+QFileSystemWatcher::removePaths: list is empty
+QFileSystemWatcher::removePaths: list is empty
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+[INFO] [1774193610.707771, 0.000000]: Ground Truth Odom Publisher initialized
+[INFO] [1774193610.639345, 0.000000]: Ground Truth Odom Publisher initialized
+[31mWARNING: disk usage in log directory [/data/lzq/.ros/log] is over 1GB.
+It's recommended that you use the 'rosclean' command.[0m
+
+auto-starting new master
+[1mprocess[master]: started with pid [324696][0m
+[1mROS_MASTER_URI=http://localhost:11311[0m
+]2;/data/lzq/ros_motion_planning/src/sim_env/launch/main.launch http://localhost:11311
+[1msetting /run_id to 79c3b202-2604-11f1-9841-ef63e69f4ffa[0m
+[1mprocess[rosout-1]: started with pid [324715][0m
+started core service [/rosout]
+[1mprocess[gazebo-2]: started with pid [324722][0m
+[1mprocess[map_server-3]: started with pid [324724][0m
+[1mprocess[robot2/robot_state_publisher-4]: started with pid [324726][0m
+[1mprocess[robot2/joint_state_publisher-5]: started with pid [324729][0m
+[1mprocess[robot2/urdf_spawner-6]: started with pid [324730][0m
+[1mprocess[robot2/tf_map2odom_node-7]: started with pid [324740][0m
+[1mprocess[robot2/ground_truth_odom_publisher-8]: started with pid [324743][0m
+[1mprocess[robot2/move_base-9]: started with pid [324744][0m
+[1mprocess[robot1/robot_state_publisher-10]: started with pid [324745][0m
+[1mprocess[robot1/joint_state_publisher-11]: started with pid [324746][0m
+[1mprocess[robot1/urdf_spawner-12]: started with pid [324747][0m
+[1mprocess[robot1/tf_map2odom_node-13]: started with pid [324758][0m
+[1mprocess[robot1/ground_truth_odom_publisher-14]: started with pid [324791][0m
+[1mprocess[robot1/move_base-15]: started with pid [324801][0m
+[1mprocess[rviz-16]: started with pid [324842][0m
+[1m[robot2/urdf_spawner-6] process has finished cleanly
+log file: /data/lzq/.ros/log/79c3b202-2604-11f1-9841-ef63e69f4ffa/robot2-urdf_spawner-6*.log[0m
+[1m[robot1/urdf_spawner-12] process has finished cleanly
+log file: /data/lzq/.ros/log/79c3b202-2604-11f1-9841-ef63e69f4ffa/robot1-urdf_spawner-12*.log[0m
+[rviz-16] killing on exit
+[robot1/move_base-15] killing on exit
+[robot1/ground_truth_odom_publisher-14] killing on exit
+[robot1/tf_map2odom_node-13] killing on exit
+[robot1/joint_state_publisher-11] killing on exit
+[robot1/robot_state_publisher-10] killing on exit
+[robot2/move_base-9] killing on exit
+[robot2/ground_truth_odom_publisher-8] killing on exit
+[robot2/tf_map2odom_node-7] killing on exit
+[robot2/joint_state_publisher-5] killing on exit
+[robot2/robot_state_publisher-4] killing on exit
+[map_server-3] killing on exit
+[gazebo-2] killing on exit
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

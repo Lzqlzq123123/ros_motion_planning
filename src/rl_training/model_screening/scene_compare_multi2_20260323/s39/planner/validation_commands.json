@@ -1,0 +1,14 @@
+[
+  {
+    "key": "planner_based",
+    "label": "planner_based",
+    "opponent_mode": "movebase",
+    "robot2_global_planner": "theta_star",
+    "robot2_local_planner": "pid",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/planner/configs/planner_based.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/planner/csv/planner_based.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/planner/configs/planner_based.yaml --robot1_mode movebase --opponent_mode movebase --episodes 1 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/planner/csv/planner_based.csv --goal_x -2.125 --goal_y -4.975 --random_seed 123 --record_trajectory_output_dir /data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/planner/trajectories --record_all_trajectory_episodes",
+    "goal_offset": 1.0,
+    "nomad_overrides": {}
+  }
+]

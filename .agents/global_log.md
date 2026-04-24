@@ -1,5 +1,50 @@
 # Global Change Log
 
+## 2026-03-23
+- [修改] `CLAUDE.md` — 删除“每次修改都必须追加记录到 .agents/global_log.md”的规则
+
+## 2026-03-19
+- [修改] `src/rl_training/envs/movebase_gazebo_env.py` — 重构 goal/spawn 配置逻辑：新增统一的 `goal_range(x_min/x_max/y_min/y_max)`、`goal_mode(fixed/random)`、`ego_spawn_radius`、`adv_spawn_radius`、`goal_offset` 语义；课程学习改为在基础范围上按 `delta` 向四边扩展，累计上限为 `max_span`；删除旧的 `random_spawn` / 固定起点分支依赖
+- [修改] `src/rl_training/eval_velodyne_td3_with_goal.py` — 评估脚本改为直接复用 env 内部 goal 采样逻辑，仅保留 fixed goal 或 goal_range 覆盖入口，删除旧的随机 goal 采样辅助逻辑与起点模式分支
+- [修改] `src/rl_training/train_velodyne_td3_with_goal.py` — 训练脚本同步统一 goal 配置覆盖逻辑，删除旧的 `goal_random_range` / `start_pose_mode` 流程，避免 reset 后再次手动覆盖 goal
+- [修改] `src/rl_training/config/forklift_movebase.yaml` — 配置项重构为 `goal_range`、`curriculum(delta/max_span)`、`ego_spawn_radius`、`adv_spawn_radius`、`goal_offset`
+- [修改] `src/rl_training/config/forklift_td3_noadv_nocurriculum.yaml` — 同步切换到新的 goal/spawn 配置结构，并清理旧字段与脏内容
+- [修改] `src/rl_training/train_velodyne_td3.py` — 新增 fixed-point / goal_range CLI 覆盖、对手模式与 goal_offset 覆盖，并将评估/实验记录切换到新的 `goal_mode`、`goal_range`、`curriculum_expansion` 语义
+- [修改] `src/rl_training/eval_velodyne_td3.py` — 对齐新的 goal 配置覆盖逻辑，支持 fixed 单点与随机 goal_range 评估入口
+- [错误] 重构过程中一度误删 `append_episode_result` / `if __name__ == "__main__"` 结构，已修复并通过 `python -m py_compile` 完成语法检查
+
+## 2026-03-11
+- [修改] `src/rl_training/envs/movebase_gazebo_env.py` — 修复一系列 AttributeError：
+  - 新增 `MoveBaseGazeboEnv.publish_global_goal_marker()` 方法
+  - 新增 `MoveBaseRobot.publish_goal_marker()` 辅助方法
+  - `set_absolute_goal()` 新增 `publish_move_base` 参数
+  - 新增 `MoveBaseGazeboEnv.robot1_mode` 属性从 env_cfg 读取
+  - 新增 `opponent_mode="diffusion"` 支持：使用 NoMaD diffusion planner（通过 move_base 调用 `/nomad/make_plan`）
+
+## 2026-03-10
+
+### 2D Diffusion Ablation Study (无视觉编码器 baseline)
+
+论文消融实验：对比 NoMaD（有视觉编码）vs 纯位置条件 diffusion（无视觉）
+
+- [新增] `/data/lzq/visualnav-transformer/train/vint_train/models/diffusion_2d/diffusion_2d.py` — 无视觉编码器的 2D diffusion 模型：
+  - `PositionEncoder`: 位置历史 → 潜在向量 (MLP: history_len*2 → 128 → 256)
+  - `Diffusion2D`: 仅用位置条件生成轨迹，复用 NoMaD 的 `ConditionalUnet1D`
+- [新增] `/data/lzq/visualnav-transformer/train/vint_train/data/position_dataset.py` — 纯位置数据集：
+  - 加载 traj_data.pkl 中的 position/yaw，不加载图像
+  - 输出：(positions_history, actions, distance)
+- [新增] `/data/lzq/visualnav-transformer/train/train_diffusion_2d.py` — 训练脚本
+- [新增] `/data/lzq/visualnav-transformer/train/config/diffusion_2d.yaml` — 配置文件
+- [新增] `/data/lzq/visualnav-transformer/train/scripts/generate_gazebo_split.py` — 生成 gazebo 数据集的 train/test split
+- [新增] `/data/lzq/visualnav-transformer/train/scripts/train_diffusion_2d.sh` — 启动脚本
+
+**启动命令**:
+```bash
+conda activate rl
+cd /data/lzq/visualnav-transformer/train
+python train_diffusion_2d.py --config config/diffusion_2d.yaml
+```
+
 ## 2026-03-07
 - [新增] `src/rl_training/train_velodyne_td3.py` — 新增实验参数自动记录功能：
   - `get_git_info()`: 获取当前 git commit/branch/dirty 状态

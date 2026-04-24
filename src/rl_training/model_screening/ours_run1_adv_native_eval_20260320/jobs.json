@@ -1,0 +1,32 @@
+[
+  {
+    "model_key": "ours_run1",
+    "model_label": "扩散模型对抗训练 TD3（本文）",
+    "scenario": "adv",
+    "repeat_idx": 1,
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/csv/ours_run1__adv__repeat1.csv",
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/stack_logs/ours_run1__adv__repeat1.log",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/configs/ours_run1__adv.yaml",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/configs/ours_run1__adv.yaml --model_path /data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase_with_goal/run_1/td3_model --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/csv/ours_run1__adv__repeat1.csv"
+  },
+  {
+    "model_key": "ours_run1",
+    "model_label": "扩散模型对抗训练 TD3（本文）",
+    "scenario": "adv",
+    "repeat_idx": 2,
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/csv/ours_run1__adv__repeat2.csv",
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/stack_logs/ours_run1__adv__repeat2.log",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/configs/ours_run1__adv.yaml",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/configs/ours_run1__adv.yaml --model_path /data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase_with_goal/run_1/td3_model --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/csv/ours_run1__adv__repeat2.csv"
+  },
+  {
+    "model_key": "ours_run1",
+    "model_label": "扩散模型对抗训练 TD3（本文）",
+    "scenario": "adv",
+    "repeat_idx": 3,
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/csv/ours_run1__adv__repeat3.csv",
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/stack_logs/ours_run1__adv__repeat3.log",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/configs/ours_run1__adv.yaml",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/configs/ours_run1__adv.yaml --model_path /data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase_with_goal/run_1/td3_model --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/ours_run1_adv_native_eval_20260320/csv/ours_run1__adv__repeat3.csv"
+  }
+]

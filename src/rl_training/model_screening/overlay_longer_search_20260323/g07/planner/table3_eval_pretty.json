@@ -1,0 +1,13 @@
+{
+  "planner_based": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "movebase",
+    "robot2_local_planner": "pid",
+    "success_percent": 0.0,
+    "collision_percent": 0.0,
+    "avg_min_ttc_s": 7.115,
+    "avg_frechet_distance": 2.57,
+    "avg_smoothness": 2.8713264936457444e-05,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_longer_search_20260323/g07/planner/csv/planner_based.csv"
+  }
+}

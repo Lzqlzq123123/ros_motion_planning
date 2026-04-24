@@ -1,0 +1,27 @@
+{
+  "case_name": "collision_sequence_alt_ep08",
+  "episode": 8,
+  "selected_frame_indices": [
+    108,
+    115,
+    122
+  ],
+  "selected_frame_paths": [
+    "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_20260321/selected_collision_sequences/collision_sequence_alt_ep08/collision_sequence_alt_ep08_step1.png",
+    "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_20260321/selected_collision_sequences/collision_sequence_alt_ep08/collision_sequence_alt_ep08_step2.png",
+    "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_20260321/selected_collision_sequences/collision_sequence_alt_ep08/collision_sequence_alt_ep08_step3.png"
+  ],
+  "triptych_plain_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_20260321/selected_collision_sequences/collision_sequence_alt_ep08_triptych_plain.png",
+  "source_episode_dir": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_20260321/episode_images/ours_diffusion/episode_008",
+  "collided": true,
+  "reached_goal": false,
+  "timed_out": false,
+  "steps": 178,
+  "episode_reward": -141.79162117093801,
+  "min_ttc": 0.8074830153959229,
+  "frechet_distance": 3.117492195665594,
+  "smoothness": 0.00012335177010390697,
+  "goal_x": -4.38087796545645,
+  "goal_y": -1.5999945275197436,
+  "goal_yaw": -0.07626406211541886
+}

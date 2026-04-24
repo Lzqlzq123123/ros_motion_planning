@@ -1,0 +1,32 @@
+{
+  "rule_based": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "rule_based",
+    "success_percent": 60.0,
+    "collision_percent": 40.0,
+    "avg_min_ttc_s": 3.075,
+    "avg_frechet_distance": 2.804,
+    "avg_smoothness": 0.00020053987967390968,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table3_movebase_eval_20260320/csv/rule_based.csv"
+  },
+  "planner_based": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "movebase",
+    "success_percent": 68.4,
+    "collision_percent": 31.6,
+    "avg_min_ttc_s": 3.839,
+    "avg_frechet_distance": 2.561,
+    "avg_smoothness": 7.394806757280794e-05,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table3_movebase_eval_20260320/csv/planner_based.csv"
+  },
+  "ours_diffusion": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "diffusion",
+    "success_percent": 90.0,
+    "collision_percent": 10.0,
+    "avg_min_ttc_s": 5.776,
+    "avg_frechet_distance": 2.66,
+    "avg_smoothness": 5.063269367360179e-14,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table3_movebase_eval_20260320/csv/ours_diffusion.csv"
+  }
+}

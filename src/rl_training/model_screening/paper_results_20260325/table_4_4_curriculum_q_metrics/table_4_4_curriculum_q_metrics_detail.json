@@ -1,0 +1,142 @@
+{
+  "无课程学习训练": {
+    "runs": [
+      {
+        "run": "run_noadv_nocurr_seed1",
+        "num_points_used": 961,
+        "max_round_used": 1000,
+        "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/paper_results_20260325/table_4_4_curriculum_q_metrics/source_csv/run_noadv_nocurr_seed1__Max._Q.csv",
+        "raw_full_variance": 1327.9981331772904,
+        "smoothed_full_variance": 1423.3548132548399,
+        "tail_variance": 3.699310580096126,
+        "max_q_convergence_value": 111.72995917450568,
+        "max_q_peak": 161.7781992925481,
+        "max_q_peak_step": 460.0,
+        "max_q_peak_gap_to_convergence": 50.048240118042415,
+        "episodes_to_90_convergence_stable": 728.0,
+        "stable_band_lower": 100.55696325705512,
+        "stable_band_upper": 122.90295509195626
+      },
+      {
+        "run": "run_noadv_nocurr_seed2",
+        "num_points_used": 1000,
+        "max_round_used": 1000,
+        "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/paper_results_20260325/table_4_4_curriculum_q_metrics/source_csv/run_noadv_nocurr_seed2__Max._Q.csv",
+        "raw_full_variance": 1483.7472719006478,
+        "smoothed_full_variance": 1563.5344102675042,
+        "tail_variance": 2.222425843828002,
+        "max_q_convergence_value": 94.70007081028993,
+        "max_q_peak": 167.4754226341089,
+        "max_q_peak_step": 503.0,
+        "max_q_peak_gap_to_convergence": 72.77535182381897,
+        "episodes_to_90_convergence_stable": 654.0,
+        "stable_band_lower": 85.23006372926093,
+        "stable_band_upper": 104.17007789131893
+      }
+    ],
+    "table_metric_mode": "seedwise_average",
+    "table_metrics": {
+      "max_q_convergence_value": 103.21501499239781,
+      "max_q_peak_gap_to_convergence": 61.41179597093069,
+      "episodes_to_90_convergence_stable": 691.0
+    },
+    "group_curve_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/paper_results_20260325/table_4_4_curriculum_q_metrics/无课程学习训练_group_curve.csv",
+    "group_curve_metrics": {
+      "convergence_value": 96.40385045496592,
+      "tail_variance": 8.565919401157698,
+      "stable_band_lower": 86.76346540946933,
+      "stable_band_upper": 106.04423550046252,
+      "episodes_to_90_convergence_stable": 656.0,
+      "max_q_peak": 163.3676637029904,
+      "max_q_peak_step": 466.0,
+      "max_q_peak_gap_to_convergence": 66.96381324802448
+    },
+    "seedwise_average_metrics": {
+      "convergence_value": 103.21501499239781,
+      "max_q_peak_gap_to_convergence": 61.41179597093069,
+      "episodes_to_90_convergence_stable": 691.0
+    },
+    "across_runs_variance": {
+      "convergence_value_variance": 72.50427442441276,
+      "peak_gap_variance": 129.13040162171137,
+      "stable_episode_variance": 1369.0,
+      "raw_full_variance_variance": 6064.448553266908,
+      "smoothed_full_variance_variance": 4912.579854658241,
+      "tail_variance_variance": 0.5452971310554414
+    },
+    "tail_window_points": 50,
+    "smooth_weight": 0.9,
+    "source_metric": "Max._Q.csv",
+    "stable_hold_rounds": 100
+  },
+  "课程学习训练": {
+    "runs": [
+      {
+        "run": "run_1",
+        "num_points_used": 1810,
+        "max_round_used": "full",
+        "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/paper_results_20260325/table_4_4_curriculum_q_metrics/source_csv/run_1__Max._Q.csv",
+        "raw_full_variance": 571.9605681268906,
+        "smoothed_full_variance": 600.0752084380995,
+        "tail_variance": 6.766748728740993,
+        "max_q_convergence_value": 106.32602293264758,
+        "max_q_peak": 130.01776283582637,
+        "max_q_peak_step": 794.0,
+        "max_q_peak_gap_to_convergence": 23.6917399031788,
+        "episodes_to_90_convergence_stable": 514.0,
+        "stable_band_lower": 95.69342063938282,
+        "stable_band_upper": 116.95862522591234
+      },
+      {
+        "run": "run_13",
+        "num_points_used": 3628,
+        "max_round_used": "full",
+        "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/paper_results_20260325/table_4_4_curriculum_q_metrics/source_csv/run_13__Max._Q.csv",
+        "raw_full_variance": 404.3475054832815,
+        "smoothed_full_variance": 421.86349320102914,
+        "tail_variance": 0.25615064154368783,
+        "max_q_convergence_value": 114.40163435015718,
+        "max_q_peak": 123.98194519767597,
+        "max_q_peak_step": 880.0,
+        "max_q_peak_gap_to_convergence": 9.580310847518788,
+        "episodes_to_90_convergence_stable": 453.0,
+        "stable_band_lower": 102.96147091514146,
+        "stable_band_upper": 125.84179778517291
+      }
+    ],
+    "table_metric_mode": "seedwise_average",
+    "table_metrics": {
+      "max_q_convergence_value": 110.36382864140238,
+      "max_q_peak_gap_to_convergence": 16.636025375348794,
+      "episodes_to_90_convergence_stable": 483.5
+    },
+    "group_curve_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/paper_results_20260325/table_4_4_curriculum_q_metrics/课程学习训练_group_curve.csv",
+    "group_curve_metrics": {
+      "convergence_value": 114.40163435015718,
+      "tail_variance": 0.25615064154368783,
+      "stable_band_lower": 102.96147091514146,
+      "stable_band_upper": 125.84179778517291,
+      "episodes_to_90_convergence_stable": 517.0,
+      "max_q_peak": 126.61580559019902,
+      "max_q_peak_step": 868.0,
+      "max_q_peak_gap_to_convergence": 12.214171240041836
+    },
+    "seedwise_average_metrics": {
+      "convergence_value": 110.36382864140238,
+      "max_q_peak_gap_to_convergence": 16.636025375348794,
+      "episodes_to_90_convergence_stable": 483.5
+    },
+    "across_runs_variance": {
+      "convergence_value_variance": 16.303874941652875,
+      "peak_gap_variance": 49.783107498231395,
+      "stable_episode_variance": 930.25,
+      "raw_full_variance_variance": 7023.534692192608,
+      "smoothed_full_variance_variance": 7939.853861934662,
+      "tail_variance_variance": 10.5969718632543
+    },
+    "tail_window_points": 50,
+    "smooth_weight": 0.9,
+    "source_metric": "Max._Q.csv",
+    "stable_hold_rounds": 100
+  }
+}

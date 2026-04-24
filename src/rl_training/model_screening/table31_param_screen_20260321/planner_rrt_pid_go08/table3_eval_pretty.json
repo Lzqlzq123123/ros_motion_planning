@@ -1,0 +1,13 @@
+{
+  "planner_based": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "movebase",
+    "robot2_local_planner": "pid",
+    "success_percent": 75.0,
+    "collision_percent": 25.0,
+    "avg_min_ttc_s": 5.343,
+    "avg_frechet_distance": 2.57,
+    "avg_smoothness": 5.495740561985989e-05,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/planner_rrt_pid_go08/csv/planner_based.csv"
+  }
+}

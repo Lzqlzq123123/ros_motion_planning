@@ -1,0 +1,13 @@
+{
+  "planner_based": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "movebase",
+    "robot2_local_planner": "apf",
+    "success_percent": 90.0,
+    "collision_percent": 10.0,
+    "avg_min_ttc_s": 6.279,
+    "avg_frechet_distance": 2.834,
+    "avg_smoothness": 6.063392584864478e-14,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/planner_go08_apf/csv/planner_based.csv"
+  }
+}

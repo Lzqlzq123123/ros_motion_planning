@@ -1,0 +1,2 @@
+﻿method_key,opponent_mode,robot2_global_planner,robot2_local_planner,robot1_mode,valid_success_rate,collision_rate,avg_min_ttc_s,avg_frechet_distance,avg_smoothness,source_csv
+planner_based,movebase,dijkstra,dwa,movebase,0.7777777777777778,0.1111111111111111,6.4719604558727175,2.7531412615921735,5.063095310363607e-05,/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/planner_dijkstra_dwa_go08/csv/planner_based.csv

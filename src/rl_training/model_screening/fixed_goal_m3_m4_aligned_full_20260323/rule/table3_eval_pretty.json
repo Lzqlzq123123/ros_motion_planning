@@ -1,0 +1,13 @@
+{
+  "rule_based": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "rule_based",
+    "robot2_local_planner": "pid",
+    "success_percent": 83.3,
+    "collision_percent": 8.3,
+    "avg_min_ttc_s": 4.27,
+    "avg_frechet_distance": 2.961,
+    "avg_smoothness": 0.00014167808629490987,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/fixed_goal_m3_m4_aligned_full_20260323/rule/csv/rule_based.csv"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "unconditional_diffusion_repeats": [
+    {
+      "repeat": "repeat1",
+      "collision_percent": 50.0,
+      "success_percent": 50.0,
+      "ttc": 3.141882125770187,
+      "fid": 2.6923846652898753,
+      "sm": 0.00013072805748389526
+    },
+    {
+      "repeat": "repeat2",
+      "collision_percent": 68.42105263157895,
+      "success_percent": 31.57894736842105,
+      "ttc": 3.0646584651253037,
+      "fid": 2.707309317919437,
+      "sm": 0.00010928340720132834
+    },
+    {
+      "repeat": "repeat3",
+      "collision_percent": 45.0,
+      "success_percent": 55.00000000000001,
+      "ttc": 1.4424553087302088,
+      "fid": 2.6234980658501152,
+      "sm": 0.0001071406366937786
+    }
+  ],
+  "collision_percent_mean": 54.47368421052632,
+  "collision_percent_std_sample": 12.334780679218909,
+  "representative_run": "repeat1"
+}

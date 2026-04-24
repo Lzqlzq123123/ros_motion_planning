@@ -4,7 +4,7 @@ import argparse
 import pandas as pd
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
-def extract_tensorboard_data(log_dir, base_output_dir='/data/lzq/data'):
+def extract_tensorboard_data(log_dir, base_output_dir='src/rl_training/data'):
     if not os.path.exists(log_dir):
         print(f"Error: Log directory '{log_dir}' does not exist.")
         return
@@ -54,8 +54,8 @@ def extract_tensorboard_data(log_dir, base_output_dir='/data/lzq/data'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Extract TensorBoard logs to CSV')
-    parser.add_argument('log_dir', type=str, help='Path to the TensorBoard log directory (e.g., src/rl_training/logs/experiment_name/run8)')
-    parser.add_argument('--out_base', type=str, default='src/rl_training/data/', help='Base directory to save the CSV files (default: /data/lzq/data)')
+    parser.add_argument('--log_dir', '--logdir', type=str, help='Path to the TensorBoard log directory (e.g., src/rl_training/runs/run_name)')
+    parser.add_argument('--out_base', type=str, default='src/rl_training/data/', help='Base directory to save the CSV files (default: src/rl_training/data/)')
     
     args = parser.parse_args()
     extract_tensorboard_data(args.log_dir, args.out_base)

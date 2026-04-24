@@ -504,7 +504,7 @@ class RobotAgent:
             # Base motion shaping: encourage forward, penalize spin (DRL baseline)
             base_motion = 0.5 * lin_v - 0.5 * abs(ang_v)
 
-            reward = distance_component + base_motion - avoid_term
+            reward = distance_component + base_motion - 2*avoid_term
 
             # Update tracker
             self.past_distance = current_distance

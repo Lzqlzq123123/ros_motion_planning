@@ -1,0 +1,2 @@
+﻿method_key,opponent_mode,robot2_global_planner,robot2_local_planner,robot1_mode,valid_success_rate,collision_rate,avg_min_ttc_s,avg_frechet_distance,avg_smoothness,source_csv
+ours_diffusion,diffusion,diffusion,pid,movebase,1.0,0.0,5.050148847933957,3.1581685590049355,7.397176000634653e-05,/data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi_20260323/s07/ours/csv/ours_diffusion.csv

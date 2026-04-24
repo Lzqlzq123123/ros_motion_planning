@@ -1,0 +1,38 @@
+[
+  {
+    "key": "rule_based",
+    "label": "rule_based",
+    "opponent_mode": "rule_based",
+    "robot2_global_planner": "theta_star",
+    "robot2_local_planner": "pid",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/rule/configs/rule_based.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/rule/csv/rule_based.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/rule/configs/rule_based.yaml --robot1_mode movebase --opponent_mode rule_based --episodes 1 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/rule/csv/rule_based.csv --goal_x -2.125 --goal_y -4.975 --random_seed 123 --record_trajectory_output_dir /data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/rule/trajectories --record_all_trajectory_episodes",
+    "goal_offset": 0.8,
+    "nomad_overrides": {},
+    "summary": {
+      "row_type": "summary",
+      "episode": "all",
+      "robot1_mode": "movebase",
+      "opponent_mode": "rule_based",
+      "opponent_enabled": "True",
+      "collided": "",
+      "reached_goal": "",
+      "timed_out": "",
+      "steps": "",
+      "episode_reward": "",
+      "goal_x": "",
+      "goal_y": "",
+      "goal_yaw": "",
+      "model_path": "",
+      "avg_reward": "-114.30525297671556",
+      "success_rate": "0.0",
+      "collision_rate": "0.0",
+      "timeout_rate": "0.0",
+      "min_ttc": "3.1532118498116692",
+      "frechet_distance": "2.585493115456491",
+      "smoothness": "1.7256559432198156e-05"
+    },
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi2_20260323/s39/rule/stack_logs/rule_based.log"
+  }
+]

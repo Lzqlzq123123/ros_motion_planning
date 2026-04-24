@@ -1,0 +1,38 @@
+[
+  {
+    "key": "planner_based",
+    "label": "planner_based",
+    "opponent_mode": "movebase",
+    "robot2_global_planner": "theta_star",
+    "robot2_local_planner": "pid",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_longer_search_20260323/g07/planner/configs/planner_based.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_longer_search_20260323/g07/planner/csv/planner_based.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_longer_search_20260323/g07/planner/configs/planner_based.yaml --robot1_mode movebase --opponent_mode movebase --episodes 1 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_longer_search_20260323/g07/planner/csv/planner_based.csv --goal_x -1.975 --goal_y -4.825 --random_seed 123 --record_trajectory_output_dir /data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_longer_search_20260323/g07/planner/trajectories --record_all_trajectory_episodes",
+    "goal_offset": 1.0,
+    "nomad_overrides": {},
+    "summary": {
+      "row_type": "summary",
+      "episode": "all",
+      "robot1_mode": "movebase",
+      "opponent_mode": "movebase",
+      "opponent_enabled": "True",
+      "collided": "",
+      "reached_goal": "",
+      "timed_out": "",
+      "steps": "",
+      "episode_reward": "",
+      "goal_x": "",
+      "goal_y": "",
+      "goal_yaw": "",
+      "model_path": "",
+      "avg_reward": "-81.42554002255201",
+      "success_rate": "0.0",
+      "collision_rate": "0.0",
+      "timeout_rate": "0.0",
+      "min_ttc": "7.115217937169392",
+      "frechet_distance": "2.570470804146085",
+      "smoothness": "2.8713264936457444e-05"
+    },
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_longer_search_20260323/g07/planner/stack_logs/planner_based.log"
+  }
+]

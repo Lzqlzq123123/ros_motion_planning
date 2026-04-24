@@ -1,0 +1,38 @@
+[
+  {
+    "key": "planner_based",
+    "label": "planner_based",
+    "opponent_mode": "movebase",
+    "robot2_global_planner": "theta_star",
+    "robot2_local_planner": "dwa",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_seed_scan_longego_20260322/case3/seed05/configs/planner_based.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_seed_scan_longego_20260322/case3/seed05/csv/planner_based.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_seed_scan_longego_20260322/case3/seed05/configs/planner_based.yaml --robot1_mode movebase --opponent_mode movebase --episodes 1 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_seed_scan_longego_20260322/case3/seed05/csv/planner_based.csv --goal_x -2.4 --goal_y -4.4 --random_seed 5 --ego_spawn_radius_min 3.0 --ego_spawn_radius_max 4.0 --record_trajectory_output_dir /data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_seed_scan_longego_20260322/case3/seed05/trajectories --record_all_trajectory_episodes",
+    "goal_offset": 1.0,
+    "nomad_overrides": {},
+    "summary": {
+      "row_type": "summary",
+      "episode": "all",
+      "robot1_mode": "movebase",
+      "opponent_mode": "movebase",
+      "opponent_enabled": "True",
+      "collided": "",
+      "reached_goal": "",
+      "timed_out": "",
+      "steps": "",
+      "episode_reward": "",
+      "goal_x": "",
+      "goal_y": "",
+      "goal_yaw": "",
+      "model_path": "",
+      "avg_reward": "-148.5693365558982",
+      "success_rate": "0.0",
+      "collision_rate": "0.0",
+      "timeout_rate": "0.0",
+      "min_ttc": "4.310007954286837",
+      "frechet_distance": "3.095616604076923",
+      "smoothness": "6.471440180016611e-05"
+    },
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_seed_scan_longego_20260322/case3/seed05/stack_logs/planner_based.log"
+  }
+]

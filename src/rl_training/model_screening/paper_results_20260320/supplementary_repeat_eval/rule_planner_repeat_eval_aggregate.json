@@ -1,0 +1,134 @@
+[
+  {
+    "model_key": "planner_run18",
+    "model_label": "规划器驱动对抗训练 TD3",
+    "scenario": "adv",
+    "repeats": 3,
+    "avg_success_rate": 0.8541666666666666,
+    "avg_collision_rate": 0.125,
+    "avg_reward": 41.48940260472887,
+    "avg_timeout_rate": 0.0,
+    "per_repeat": [
+      {
+        "repeat_idx": 1,
+        "success_rate": 0.8125,
+        "collision_rate": 0.125,
+        "avg_reward": 29.491361368913203,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 2,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "avg_reward": 77.82993168226983,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 3,
+        "success_rate": 0.75,
+        "collision_rate": 0.25,
+        "avg_reward": 17.146914763003586,
+        "timeout_rate": 0.0
+      }
+    ]
+  },
+  {
+    "model_key": "planner_run18",
+    "model_label": "规划器驱动对抗训练 TD3",
+    "scenario": "noadv",
+    "repeats": 3,
+    "avg_success_rate": 0.8269980506822612,
+    "avg_collision_rate": 0.1730019493177388,
+    "avg_reward": 33.54910543618059,
+    "avg_timeout_rate": 0.0,
+    "per_repeat": [
+      {
+        "repeat_idx": 1,
+        "success_rate": 0.75,
+        "collision_rate": 0.25,
+        "avg_reward": 11.64617479071021,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 2,
+        "success_rate": 0.8421052631578947,
+        "collision_rate": 0.15789473684210525,
+        "avg_reward": 43.473028792166396,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 3,
+        "success_rate": 0.8888888888888888,
+        "collision_rate": 0.1111111111111111,
+        "avg_reward": 45.528112725665174,
+        "timeout_rate": 0.0
+      }
+    ]
+  },
+  {
+    "model_key": "rule_run10",
+    "model_label": "规则对抗训练 TD3",
+    "scenario": "adv",
+    "repeats": 3,
+    "avg_success_rate": 0.8574074074074075,
+    "avg_collision_rate": 0.1259259259259259,
+    "avg_reward": 44.68733562965084,
+    "avg_timeout_rate": 0.0,
+    "per_repeat": [
+      {
+        "repeat_idx": 1,
+        "success_rate": 0.8333333333333334,
+        "collision_rate": 0.16666666666666666,
+        "avg_reward": 36.21343769133091,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 2,
+        "success_rate": 0.8888888888888888,
+        "collision_rate": 0.1111111111111111,
+        "avg_reward": 56.36217729602423,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 3,
+        "success_rate": 0.85,
+        "collision_rate": 0.1,
+        "avg_reward": 41.48639190159738,
+        "timeout_rate": 0.0
+      }
+    ]
+  },
+  {
+    "model_key": "rule_run10",
+    "model_label": "规则对抗训练 TD3",
+    "scenario": "noadv",
+    "repeats": 3,
+    "avg_success_rate": 0.8771929824561404,
+    "avg_collision_rate": 0.03508771929824561,
+    "avg_reward": 51.03516166186646,
+    "avg_timeout_rate": 0.0,
+    "per_repeat": [
+      {
+        "repeat_idx": 1,
+        "success_rate": 0.8947368421052632,
+        "collision_rate": 0.0,
+        "avg_reward": 59.75614133104682,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 2,
+        "success_rate": 0.9473684210526315,
+        "collision_rate": 0.0,
+        "avg_reward": 65.45175830941452,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 3,
+        "success_rate": 0.7894736842105263,
+        "collision_rate": 0.10526315789473684,
+        "avg_reward": 27.89758534513806,
+        "timeout_rate": 0.0
+      }
+    ]
+  }
+]

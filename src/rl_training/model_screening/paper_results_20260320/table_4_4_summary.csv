@@ -1,0 +1,4 @@
+﻿指标,有对抗训练（本文，run_1）,历史参考对照项,结果来源
+评估平均奖励,37.1,-37.8,本文：ours_run1_adv_native_repeat_aggregate.csv；对照：baseline_adv_historical.csv
+碰撞率,19.5%,47.1%,本文：ours_run1_adv_native_repeat_aggregate.csv；对照：baseline_adv_historical.csv
+任务成功次数（/10）,8.1,5.0,本文：ours_run1_adv_native_repeat_aggregate.csv；对照：baseline_adv_historical.csv

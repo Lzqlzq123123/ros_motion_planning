@@ -1,0 +1,8 @@
+{
+  "source_metric": "Max._Q.csv",
+  "data_basis": "无课程学习组仅使用前1000回合，课程学习组使用完整训练序列；两组均先对每条 Max.Q 曲线做指数滑动平均(weight=0.9)。",
+  "max_q_convergence_value": "单次运行末尾50个点均值；表中各训练组均对组内 seeds 的单次结果做算术平均",
+  "max_q_peak_gap_to_convergence": "单次运行峰值 Max.Q 与该运行最终收敛均值之差，表示最大超调波动幅度；表中各训练组均对组内 seeds 的单次结果做算术平均",
+  "episodes_to_90_convergence_stable": "单次运行进入最终收敛均值±10%区间后，连续100个回合保持稳定时的起始回合数；表中各训练组均对组内 seeds 的单次结果做算术平均",
+  "all_variance_saved": "summary.csv 与 all_runs.csv 额外保存了跨运行方差、全序列方差与尾部方差，便于后续审查"
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "model_key": "ours_run1",
+    "model_label": "扩散模型对抗训练 TD3（本文）",
+    "scenario": "adv",
+    "repeats": 3,
+    "avg_success_rate": 0.8052287581699346,
+    "avg_collision_rate": 0.19477124183006536,
+    "avg_reward": 37.123579590650756,
+    "avg_timeout_rate": 0.0,
+    "per_repeat": [
+      {
+        "repeat_idx": 1,
+        "success_rate": 0.7333333333333333,
+        "collision_rate": 0.26666666666666666,
+        "avg_reward": 19.575100883841515,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 2,
+        "success_rate": 0.8,
+        "collision_rate": 0.2,
+        "avg_reward": 35.442743892222644,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 3,
+        "success_rate": 0.8823529411764706,
+        "collision_rate": 0.11764705882352941,
+        "avg_reward": 56.352893995888095,
+        "timeout_rate": 0.0
+      }
+    ]
+  }
+]

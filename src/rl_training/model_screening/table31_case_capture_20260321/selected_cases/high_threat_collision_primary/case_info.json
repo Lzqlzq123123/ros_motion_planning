@@ -1,0 +1,23 @@
+{
+  "case_name": "high_threat_collision_primary",
+  "episode": 7,
+  "source_episode_dir": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/episode_images/ours_diffusion/episode_007",
+  "triptych_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/selected_cases/high_threat_collision_primary_triptych.png",
+  "selected_frames": [
+    "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/selected_cases/high_threat_collision_primary/high_threat_collision_primary_frame1_frame_000000.png",
+    "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/selected_cases/high_threat_collision_primary/high_threat_collision_primary_frame2_frame_000012.png",
+    "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/selected_cases/high_threat_collision_primary/high_threat_collision_primary_frame3_frame_000024.png"
+  ],
+  "collided": true,
+  "reached_goal": false,
+  "timed_out": false,
+  "steps": 118,
+  "episode_reward": -141.60211055725813,
+  "min_ttc": 0.4523937228569643,
+  "goal_x": -1.4271391200260926,
+  "goal_y": -3.807941926137562,
+  "goal_yaw": 0.6978823701574665,
+  "frechet_distance": 3.5686022741585384,
+  "smoothness": 0.00010741904862023716,
+  "frame_count": 25
+}

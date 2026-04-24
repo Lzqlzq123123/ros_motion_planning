@@ -2,20 +2,20 @@
 <launch>
 	<arg name="agent_number" default="2" />
 	<arg name="agent_id" default="2" />
-	<arg name="robot1_type" value="pioneer3dx" />
+	<arg name="robot1_type" value="forklift" />
 	<arg name="robot1_global_planner" value="theta_star" />
-	<arg name="robot1_local_planner" value="ppo" />
-	<arg name="robot1_x_pos" value="-4" />
-	<arg name="robot1_y_pos" value="-3" />
+	<arg name="robot1_local_planner" value="dwa" />
+	<arg name="robot1_x_pos" value="-3.5" />
+	<arg name="robot1_y_pos" value="-2" />
 	<arg name="robot1_z_pos" value="0" />
-	<arg name="robot1_yaw" value="-3.14" />
+	<arg name="robot1_yaw" value="-1.75" />
 	<arg name="robot2_type" value="forklift" />
 	<arg name="robot2_global_planner" value="theta_star" />
 	<arg name="robot2_local_planner" value="pid" />
-	<arg name="robot2_x_pos" value="0" />
-	<arg name="robot2_y_pos" value="0" />
+	<arg name="robot2_x_pos" value="-3.5" />
+	<arg name="robot2_y_pos" value="-7" />
 	<arg name="robot2_z_pos" value="0.0" />
-	<arg name="robot2_yaw" value="-1.75" />
+	<arg name="robot2_yaw" value="1.75" />
 	<include file="$(find sim_env)/launch/app/environment_single.launch.xml">
 		<arg name="agent_number" value="$(arg agent_number)" />
 		<arg name="agent_id" value="$(arg agent_id)" />

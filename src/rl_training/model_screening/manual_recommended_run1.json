@@ -1,0 +1,20 @@
+{
+  "selection_rule": "manual extra validation",
+  "top_k": 1,
+  "recommended": {
+    "no_adversarial": [
+      {
+        "group": "forklift_movebase",
+        "run_name": "run_1",
+        "model_path": "logs/forklift_movebase/run_1/td3_model"
+      }
+    ],
+    "ours_diffusion": [
+      {
+        "group": "forklift_movebase_with_goal",
+        "run_name": "run_1",
+        "model_path": "logs/forklift_movebase_with_goal/run_1/td3_model"
+      }
+    ]
+  }
+}

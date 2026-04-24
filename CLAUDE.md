@@ -210,14 +210,3 @@ warehouse, warehouse_2, museum, workshop (plus turtlebot3 stage variants)
 5. **配置驱动** — 单一 YAML 文件控制全部仿真参数，自动生成 launch 文件
 6. **NoMaD 扩散模型集成** — 前沿视觉导航 Transformer 作为全局规划器接入 `move_base`
 
-## Change Log 规则
-
-每次对项目文件进行添加、删除、修改后，必须将变更记录追加写入 `.agents/global_log.md`。遇到的错误和排查过程也要记录。格式示例：
-
-```markdown
-## 2026-02-14
-- [修改] `src/rl_training/envs/movebase_gazebo_env.py` — 修复 CUDA 张量赋值错误
-- [新增] `src/rl_training/config/new_config.yaml` — 新增训练配置
-- [删除] `src/rl_training/old_script.py` — 移除废弃脚本
-- [错误] catkin_make 编译失败：ppo_controller 缺少头文件，已在 CMakeLists.txt 中补充 include 路径
-```

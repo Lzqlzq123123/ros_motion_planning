@@ -1,0 +1,4 @@
+﻿对抗方法,对抗诱发碰撞率（%，3次均值±标准差）,轨迹平滑度,最小碰撞时间TTC（s）,Fréchet距离FID,结果口径,主来源/支撑文件,备注
+规则对抗（Rule-based）,37.9 ± 1.8,1.56E-04,3.21,3.18,第一列为3次独立随机验证均值±标准差；其余列为代表性随机验证结果,table_3_1_collision_repeat_stats.csv + table_3_1_random_selected/rule_selected.csv,rule_based，代表性随机验证结果；goal_offset=0.8
+规划器驱动对抗（Planner-based）,31.9 ± 14.8,7.39E-05,3.84,2.56,第一列为3次独立随机验证均值±标准差；其余列为代表性随机验证结果,table_3_1_collision_repeat_stats.csv + table_3_1_movebase_repeats/planner_run1_20260320.csv,planner_based，代表性随机验证结果
+扩散模型对抗（Ours）,55.2 ± 21.5,9.08E-05,2.31,2.87,第一列为3次独立随机验证均值±标准差；其余列为代表性随机验证结果,table_3_1_collision_repeat_stats.csv + table_3_1_random_selected/ours_selected.csv,"diffusion 代表性随机验证结果；goal_offset=0.0, opponent_guidance=true, classical_guidance_weight=0.15, max_step=0.25, max_turn=60"

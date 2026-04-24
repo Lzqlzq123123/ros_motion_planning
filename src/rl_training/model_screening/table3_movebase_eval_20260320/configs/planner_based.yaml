@@ -1,0 +1,75 @@
+env:
+  env_class: MoveBaseGazeboEnv
+  debug: false
+  agent_names:
+  - robot1
+  num_observations: 24
+  lidar_beams: 20
+  num_actions: 2
+  control_dt: 0.1
+  max_episode_length: 400
+  scan_dim: 180
+  goal_reached_dist: 0.3
+  collision_dist: 0.2
+  goal_range:
+    x_min: -6.5
+    x_max: -1
+    y_min: -5
+    y_max: -1
+  curriculum:
+    delta: 0.0
+    max_span: 0.0
+  ego_spawn_radius:
+  - 1.0
+  - 2.0
+  adv_spawn_radius:
+  - 1.0
+  - 2.0
+  map_topic: /map
+  map_obstacle_threshold: 50
+  opponent:
+    enabled: true
+    model_name: robot2
+    mode: movebase
+    goal_topic: /robot2/move_base_simple/goal
+    frame_id: map
+    goal_offset: 0.5
+    rule_based:
+      linear_speed: 0.5
+      angular_gain: 2.0
+      follow_dist: 1.0
+      stop_prob: 0.1
+  robot1_mode: movebase
+runner:
+  algorithm:
+    class_name: TD3
+    learning_rate: 0.001
+    num_learning_epochs: 5
+    num_mini_batches: 4
+    schedule: adaptive
+    value_loss_coef: 1.0
+    clip_param: 0.2
+    use_clipped_value_loss: true
+    desired_kl: 0.01
+    entropy_coef: 0.01
+    gamma: 0.99
+    lam: 0.95
+    max_grad_norm: 1.0
+    normalize_advantage_per_mini_batch: false
+  policy:
+    class_name: ResActorCritic
+    init_noise_std: 0.2
+    actor_obs_normalization: false
+    critic_obs_normalization: false
+  obs_groups:
+    actor:
+    - policy
+    critic:
+    - privileged
+  num_steps_per_env: 500
+  max_iterations: 500
+  save_interval: 10
+  seed: 1
+  experiment_name: forklift_movebase
+  run_name: run_19
+  resume_path: null

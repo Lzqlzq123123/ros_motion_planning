@@ -1,0 +1,28 @@
+[INFO] [1774258235.295474, 101.216000]: [capture_path_once] received path with 3 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258236.177238, 102.714000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258237.055581, 104.214000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258237.911741, 105.714000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258238.763840, 107.214000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258239.581659, 108.716000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258240.148444, 109.718000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258240.996808, 111.216000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258241.830076, 112.716000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258242.682864, 114.216000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258243.520500, 115.716000]: [capture_path_once] received path with 3 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258244.359281, 117.214000]: [capture_path_once] received path with 3 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258244.944128, 118.216000]: [capture_path_once] received path with 4 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258245.531616, 119.218000]: [capture_path_once] received path with 4 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258246.411564, 120.716000]: [capture_path_once] received path with 3 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258247.270442, 122.216000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+Traceback (most recent call last):
+  File "/data/lzq/ros_motion_planning/src/rl_training/model_screening/capture_path_once.py", line 72, in <module>
+    main()
+  File "/data/lzq/ros_motion_planning/src/rl_training/model_screening/capture_path_once.py", line 68, in main
+    cap.run()
+  File "/data/lzq/ros_motion_planning/src/rl_training/model_screening/capture_path_once.py", line 43, in run
+    rate.sleep()
+  File "/opt/ros/noetic/lib/python3/dist-packages/rospy/timer.py", line 103, in sleep
+    sleep(self._remaining(curr_time))
+  File "/opt/ros/noetic/lib/python3/dist-packages/rospy/timer.py", line 165, in sleep
+    raise rospy.exceptions.ROSInterruptException("ROS shutdown request")
+rospy.exceptions.ROSInterruptException: ROS shutdown request

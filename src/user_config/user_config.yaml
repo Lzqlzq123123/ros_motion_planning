@@ -1,69 +1,20 @@
-map: "warehouse"
-world: "warehouse"
-rviz_file: "sim_env.rviz"
-
+map: warehouse
+world: warehouse
+rviz_file: sim_env.rviz
 robots_config:
-  - robot1_type: "forklift" #pioneer3dx
-    robot1_global_planner: "theta_star"
-    robot1_local_planner: "pid"
-    robot1_x_pos: "-4"
-    robot1_y_pos: "-3"
-    robot1_z_pos: "0"
-    robot1_yaw: "-3.14"
-
-  - robot2_type: "forklift"
-    robot2_global_planner: "theta_star"
-    robot2_local_planner: "pid"
-    robot2_x_pos: "0"
-    robot2_y_pos: "0"
-    robot2_z_pos: "0.0"
-    robot2_yaw: "-1.75"
-
-  # - robot3_type: "forklift"
-  #   robot3_global_planner: "theta_star"
-  #   robot3_local_planner: "dwa"
-  #   robot3_x_pos: "1"
-  #   robot3_y_pos: "2.0"
-  #   robot3_z_pos: "0.0"
-  #   robot3_yaw: "0.0"
-
-# * global planner
-#   * graph_planner
-#     * astar
-#     * jps
-#     * gbfs
-#     * dijkstra
-#     * d_star
-#     * lpa_star
-#     * voronoi
-#     * d_star_lite
-#     * theta_star
-#     * lazy_theta_star
-#     * hybrid_astar
-#
-#   * sample_planner
-#     * rrt
-#     * rrt_star
-#     * rrt_connect
-#     * informed_rrt
-#     * quick_informed_rrt
-#
-#   * evolutionary_planner
-#     * aco
-#     * pso
-#     * ga
-#   * lazy_planner
-#
-# * local planner
-#   * dwa
-#   * pid
-#   * apf
-#   * rpp
-#   * lqr
-#   * MPC
-#   * static
-
+- robot1_type: forklift
+  robot1_global_planner: theta_star
+  robot1_local_planner: dwa
+  robot1_x_pos: '-3.5'
+  robot1_y_pos: '-2'
+  robot1_z_pos: '0'
+  robot1_yaw: '-1.75'
+- robot2_type: forklift
+  robot2_global_planner: theta_star
+  robot2_local_planner: pid
+  robot2_x_pos: '-3.5'
+  robot2_y_pos: '-7'
+  robot2_z_pos: '0.0'
+  robot2_yaw: '1.75'
 plugins:
-  # pedestrians: "pedestrian_config.yaml"
-  # obstacles: "obstacles_config.yaml"
-  map_layers: "map_layers_config.yaml"
+  map_layers: map_layers_config.yaml

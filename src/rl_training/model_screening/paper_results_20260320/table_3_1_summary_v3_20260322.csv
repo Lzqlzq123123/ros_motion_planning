@@ -1,0 +1,5 @@
+method,collision_rate_mean_std_percent,avg_smoothness,avg_ttc_s,avg_fid,source_note
+规则对抗（Rule-based),37.9 ± 1.8,2.05E-04,2.70,2.77,碰撞率来自 table_3_1_collision_repeat_stats.csv；其余来自 table31_variance_repeat_20260321/rule_repeat1
+规划器驱动对抗（Planner-based),31.9 ± 14.8,9.64E-05,4.72,2.71,碰撞率来自 table_3_1_collision_repeat_stats.csv；其余来自 table31_variance_repeat_20260321/planner_repeat3
+无视觉条件扩散对抗（Unconditional Diffusion),54.5 ± 12.3,1.31E-04,3.14,2.69,碰撞率来自 table31_unconditional_repeat_20260322/repeat1-3；其余来自 repeat1
+扩散模型对抗（Ours),55.2 ± 21.5,8.80E-05,1.81,2.51,碰撞率来自 table_3_1_collision_repeat_stats.csv；其余来自 table31_variance_repeat_20260321/ours_repeat2

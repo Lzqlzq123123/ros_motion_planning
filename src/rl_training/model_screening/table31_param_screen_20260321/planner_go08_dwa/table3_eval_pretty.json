@@ -1,0 +1,13 @@
+{
+  "planner_based": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "movebase",
+    "robot2_local_planner": "dwa",
+    "success_percent": 55.6,
+    "collision_percent": 33.3,
+    "avg_min_ttc_s": 5.553,
+    "avg_frechet_distance": 2.906,
+    "avg_smoothness": 5.7083141744605835e-05,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/planner_go08_dwa/csv/planner_based.csv"
+  }
+}

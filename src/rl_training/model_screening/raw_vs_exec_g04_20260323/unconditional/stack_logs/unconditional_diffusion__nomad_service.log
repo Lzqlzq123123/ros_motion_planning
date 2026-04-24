@@ -1,0 +1,191 @@
+[nomad-env] python= /data/lzq/miniconda3/envs/nomad_train/bin/python
+[nomad-env] import PIL: OK
+[nomad-env] import torch: OK
+[nomad-env] import torchvision: OK
+[nomad-env] import cv2: OK
+[nomad-env] import diffusers: OK
+[nomad-env] import rospy: OK
+[nomad-env] import cv_bridge: OK
+[INFO] [1774240575.085973, 0.000000]: [nomad_plan_service] Loaded parameter defaults from /tmp/nomad_params_jolzkwaq.yaml
+[INFO] [1774240575.098137, 97.522000]: [nomad_plan_service] Loading model 'diffusion'
+[INFO] [1774240575.098583, 97.524000]: [nomad_plan_service] Loading config from /data/lzq/visualnav-transformer/train/config/diffusion_2d.yaml
+[INFO] [1774240575.098968, 97.524000]: [nomad_plan_service] Loading weights from /data/lzq/visualnav-transformer/train/logs/diffusion_2d_ablation/diffusion_2d_gazebo_20260310_212252/latest.pth
+[INFO] [1774240575.351583, 98.026000]: [nomad_plan_service] Loaded diffusion_2d unconditional model
+[INFO] [1774240575.361862, 98.048000]: [nomad_plan_service] Ready on /nomad/make_plan
+[INFO] [1774240575.362381, 98.048000]: [nomad_plan_service] adversarial_selection_enabled: True, num_samples: 96
+[INFO] [1774240583.037902, 112.988000]: [nomad_plan_service] Adversarial selection: best=12/96, score=12.83
+[INFO] [1774240583.127201, 113.150000]: [nomad_plan_service] Saved adversarial debug dump to /data/lzq/ros_motion_planning/src/rl_training/model_screening/raw_vs_exec_g04_20260323/unconditional/nomad_debug/step_000
+published_points: [[ 0.0288292  -0.01343312]
+ [ 0.09660426  0.03349302]
+ [ 0.19247447  0.0506722 ]
+ [ 0.2546546   0.11976513]
+ [ 0.34861568  0.15639166]
+ [ 0.45343338  0.17565532]
+ [ 0.56407879  0.1974723 ]
+ [ 0.67800518  0.22575807]
+ [ 0.79578982  0.25068668]
+ [ 0.91446486  0.28638099]
+ [ 1.00806432  0.36930714]
+ [ 1.07060013  0.45919913]
+ [ 1.13735982  0.55408208]
+ [ 1.20862456  0.64755121]
+ [ 1.27852817  0.7476637 ]
+ [ 1.35418478  0.84660322]]
+[INFO] [1774240583.129848, 113.156000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774240583.238657, 113.298000]: [nomad_plan_service] Adversarial selection: best=2/96, score=9.39
+[INFO] [1774240583.310179, 113.444000]: [nomad_plan_service] Saved adversarial debug dump to /data/lzq/ros_motion_planning/src/rl_training/model_screening/raw_vs_exec_g04_20260323/unconditional/nomad_debug/step_001
+published_points: [[-0.00483034 -0.01589056]
+ [ 0.05195528 -0.130442  ]
+ [ 0.11255813 -0.24847881]
+ [ 0.17705943 -0.36434703]
+ [ 0.2469896  -0.48377507]
+ [ 0.37191963 -0.5469652 ]
+ [ 0.44997614 -0.66338391]
+ [ 0.52506521 -0.78765555]
+ [ 0.607089   -0.90857135]
+ [ 0.69011474 -1.03971481]
+ [ 0.80493993 -1.13301215]
+ [ 0.8908777  -1.264673  ]
+ [ 0.98274776 -1.39577518]
+ [ 1.06386241 -1.53774748]
+ [ 1.18807462 -1.64294766]
+ [ 1.30525896 -1.75277375]]
+[INFO] [1774240583.311491, 113.446000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774240583.524392, 113.776000]: [nomad_plan_service] Adversarial selection: best=82/96, score=9.72
+[INFO] [1774240583.602704, 113.926000]: [nomad_plan_service] Saved adversarial debug dump to /data/lzq/ros_motion_planning/src/rl_training/model_screening/raw_vs_exec_g04_20260323/unconditional/nomad_debug/step_002
+published_points: [[-0.01301017 -0.00393932]
+ [ 0.06761504 -0.09710245]
+ [ 0.15152126 -0.19177704]
+ [ 0.23884871 -0.28462948]
+ [ 0.33065649 -0.38091812]
+ [ 0.44989665 -0.43783176]
+ [ 0.56923782 -0.5017653 ]
+ [ 0.67459571 -0.59814717]
+ [ 0.7852672  -0.69555243]
+ [ 0.89760561 -0.79328586]
+ [ 1.01485375 -0.89499411]
+ [ 1.15514016 -0.96281635]
+ [ 1.27803152 -1.06625515]
+ [ 1.40560772 -1.16566832]
+ [ 1.53559849 -1.26537334]
+ [ 1.68783511 -1.33291777]]
+[INFO] [1774240583.604564, 113.926000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774240583.854409, 114.326000]: [nomad_plan_service] Adversarial selection: best=84/96, score=9.68
+[INFO] [1774240583.947454, 114.512000]: [nomad_plan_service] Saved adversarial debug dump to /data/lzq/ros_motion_planning/src/rl_training/model_screening/raw_vs_exec_g04_20260323/unconditional/nomad_debug/step_003
+published_points: [[ 0.01947366 -0.01433359]
+ [ 0.10187507 -0.08970241]
+ [ 0.18411845 -0.16313406]
+ [ 0.2763107  -0.23555991]
+ [ 0.36386223 -0.31060396]
+ [ 0.45643458 -0.37691071]
+ [ 0.56971521 -0.39005456]
+ [ 0.66253337 -0.4660438 ]
+ [ 0.75628901 -0.53974384]
+ [ 0.85087646 -0.61601822]
+ [ 0.94091021 -0.69937817]
+ [ 1.03387463 -0.78326716]
+ [ 1.1404215  -0.82731042]
+ [ 1.2354406  -0.91290444]
+ [ 1.32850124 -0.99450307]
+ [ 1.42075585 -1.07959811]]
+[INFO] [1774240583.949793, 114.516000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774240584.226952, 114.954000]: [nomad_plan_service] Adversarial selection: best=27/96, score=10.07
+[INFO] [1774240584.332719, 115.168000]: [nomad_plan_service] Saved adversarial debug dump to /data/lzq/ros_motion_planning/src/rl_training/model_screening/raw_vs_exec_g04_20260323/unconditional/nomad_debug/step_004
+published_points: [[ 0.021655   -0.00360165]
+ [ 0.10813003 -0.05304067]
+ [ 0.19714003 -0.10363585]
+ [ 0.28819825 -0.15174038]
+ [ 0.38407493 -0.20073623]
+ [ 0.48187069 -0.2474511 ]
+ [ 0.58172115 -0.29752083]
+ [ 0.68572369 -0.34619443]
+ [ 0.79006943 -0.39341225]
+ [ 0.89654352 -0.43978781]
+ [ 1.00451801 -0.48470131]
+ [ 1.11642477 -0.53065104]
+ [ 1.22972197 -0.57853884]
+ [ 1.3434875  -0.62559888]
+ [ 1.46711134 -0.63234281]
+ [ 1.59029958 -0.63672517]]
+[INFO] [1774240584.334939, 115.172000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774240584.505466, 115.440000]: [nomad_plan_service] Adversarial selection: best=37/96, score=11.00
+[INFO] [1774240584.634273, 115.686000]: [nomad_plan_service] Saved adversarial debug dump to /data/lzq/ros_motion_planning/src/rl_training/model_screening/raw_vs_exec_g04_20260323/unconditional/nomad_debug/step_005
+published_points: [[ 0.00314387 -0.00297346]
+ [ 0.08929301 -0.02522781]
+ [ 0.17586804 -0.04916439]
+ [ 0.26544382 -0.07344027]
+ [ 0.35676752 -0.09666145]
+ [ 0.44967212 -0.11977831]
+ [ 0.54521685 -0.1438017 ]
+ [ 0.64205352 -0.16590339]
+ [ 0.73922767 -0.19013191]
+ [ 0.840792   -0.21415419]
+ [ 0.94393037 -0.24096358]
+ [ 1.04680392 -0.26716165]
+ [ 1.15179871 -0.29212227]
+ [ 1.25542762 -0.31588171]
+ [ 1.35987308 -0.33712884]
+ [ 1.4635632  -0.33073236]]
+[INFO] [1774240584.635675, 115.688000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774240584.805512, 115.946000]: [nomad_plan_service] Adversarial selection: best=37/96, score=15.68
+[INFO] [1774240584.937946, 116.216000]: [nomad_plan_service] Saved adversarial debug dump to /data/lzq/ros_motion_planning/src/rl_training/model_screening/raw_vs_exec_g04_20260323/unconditional/nomad_debug/step_006
+published_points: [[ 0.01492318  0.01722587]
+ [ 0.08694827  0.00442027]
+ [ 0.16418326 -0.01033727]
+ [ 0.24460822 -0.02485583]
+ [ 0.32776497 -0.04039933]
+ [ 0.41417576 -0.05913595]
+ [ 0.49794092 -0.08393648]
+ [ 0.58864817 -0.1046292 ]
+ [ 0.68329345 -0.12852238]
+ [ 0.77871405 -0.15267006]
+ [ 0.87263223 -0.17909392]
+ [ 0.96976721 -0.20569992]
+ [ 1.06975513 -0.23381204]
+ [ 1.16288716 -0.26349938]
+ [ 1.25143207 -0.30869961]
+ [ 1.34149684 -0.36355528]]
+[INFO] [1774240584.939623, 116.218000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774240585.112375, 116.430000]: [nomad_plan_service] Adversarial selection: best=18/96, score=20.67
+[INFO] [1774240585.245809, 116.718000]: [nomad_plan_service] Saved adversarial debug dump to /data/lzq/ros_motion_planning/src/rl_training/model_screening/raw_vs_exec_g04_20260323/unconditional/nomad_debug/step_007
+published_points: [[ 0.01527863 -0.00301177]
+ [ 0.07289699 -0.01519308]
+ [ 0.13300101 -0.02281537]
+ [ 0.19798141 -0.03165218]
+ [ 0.26419146 -0.04295184]
+ [ 0.3317256  -0.05634957]
+ [ 0.40230685 -0.07021878]
+ [ 0.47603891 -0.08477146]
+ [ 0.549937   -0.09906881]
+ [ 0.62675841 -0.11576643]
+ [ 0.69409129 -0.14698001]
+ [ 0.75065405 -0.20059995]
+ [ 0.81550901 -0.24094218]
+ [ 0.89530231 -0.26278448]
+ [ 0.97602113 -0.28452364]
+ [ 1.05601049 -0.30891093]]
+[INFO] [1774240585.247036, 116.720000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774240585.392641, 116.884000]: [nomad_plan_service] Adversarial selection: best=35/96, score=15.96
+[INFO] [1774240585.528027, 116.958000]: [nomad_plan_service] Saved adversarial debug dump to /data/lzq/ros_motion_planning/src/rl_training/model_screening/raw_vs_exec_g04_20260323/unconditional/nomad_debug/step_008
+published_points: [[ 0.01781026 -0.0164342 ]
+ [ 0.06704123 -0.02568781]
+ [ 0.11637223 -0.0326082 ]
+ [ 0.16852392 -0.04096948]
+ [ 0.22072711 -0.04851757]
+ [ 0.27374815 -0.05654123]
+ [ 0.32993515 -0.06227994]
+ [ 0.38578955 -0.06936894]
+ [ 0.4416833  -0.07901482]
+ [ 0.50166759 -0.08992046]
+ [ 0.5417294  -0.12930678]
+ [ 0.58310835 -0.17050859]
+ [ 0.62889718 -0.21069269]
+ [ 0.68201305 -0.23716177]
+ [ 0.74348923 -0.24645459]
+ [ 0.80636945 -0.25338002]]/data/lzq/visualnav-transformer/deployment/src/nomad_plan_service.py:161: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint = torch.load(model_weights_path, map_location=self.device)
+[WARN] [1774240583.035490, 112.982000]: [nomad_plan_service] No feasible adversarial candidate; fallback to unconstrained scoring
+[WARN] [1774240583.128528, 113.154000]: [nomad_plan_service] Opponent pose frame robot1/world != start frame map
+[WARN] [1774240584.333874, 115.170000]: [nomad_plan_service] Opponent pose frame robot1/world != start frame map
+
+[INFO] [1774240585.529880, 116.958000]: [nomad_plan_service] Generated plan with 17 poses using goal 

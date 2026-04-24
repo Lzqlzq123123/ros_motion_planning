@@ -1,0 +1,875 @@
+header: 
+  seq: 0
+  stamp: 
+    secs: 95
+    nsecs: 290000000
+  frame_id: "map"
+poses: 
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.72499986179173
+        y: -1.5249998439103365
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -1.5749998446553946
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -1.6249998454004526
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -1.6749998461455107
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -1.7249998468905687
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -1.7749998476356268
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -1.8249998483806849
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -1.874999849125743
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -1.924999849870801
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -1.974999850615859
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.024999851360917
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.074999852105975
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.124999852851033
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.1749998535960913
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.2249998543411493
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.2749998550862074
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.3249998558312654
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.3749998565763235
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.4249998573213816
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.4749998580664396
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.5249998588114977
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.5749998595565557
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.624999860301614
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.674999861046672
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.72499986179173
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.774999862536788
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.824999863281846
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.874999864026904
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.924999864771962
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -2.9749998655170202
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.0249998662620783
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.0749998670071363
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.1249998677521944
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.1749998684972525
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.2249998692423105
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.2749998699873686
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.3249998707324266
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.3749998714774847
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.4249998722225428
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.474999872967601
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.524999873712659
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.574999874457717
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.774999862536788
+        y: -3.624999875202775
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.824999863281846
+        y: -3.674999875947833
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.874999864026904
+        y: -3.724999876692891
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.874999864026904
+        y: -3.774999877437949
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.874999864026904
+        y: -3.8249998781830072
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.924999864771962
+        y: -3.8749998789280653
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -2.9749998655170202
+        y: -3.9249998796731234
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -3.0249998662620783
+        y: -3.9749998804181814
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 95
+        nsecs: 290000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -3.0249998662620783
+        y: -4.0249998811632395
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+---

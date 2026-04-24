@@ -1,0 +1,2 @@
+﻿method_key,opponent_mode,robot2_global_planner,robot2_local_planner,robot1_mode,valid_success_rate,collision_rate,avg_min_ttc_s,avg_frechet_distance,avg_smoothness,source_csv
+unconditional_diffusion,diffusion,diffusion,pid,movebase,0.16666666666666666,0.5833333333333334,4.956483944116609,5.207499191930788,7.871684829297643e-05,/data/lzq/ros_motion_planning/src/rl_training/model_screening/fixed_goal_m3_m4_far_aligned_rerun_20260323/unconditional/csv/unconditional_diffusion.csv

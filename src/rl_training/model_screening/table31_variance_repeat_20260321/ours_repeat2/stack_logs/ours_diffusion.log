@@ -1,0 +1,1193 @@
+xacro: in-order processing became default in ROS Melodic. You can drop the option.
+xacro: in-order processing became default in ROS Melodic. You can drop the option.
+... logging to /data/lzq/.ros/log/a199c896-24e4-11f1-aa32-cd86210345d0/roslaunch-lzq-82225.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+]2;/data/lzq/ros_motion_planning/src/sim_env/launch/main.launch
+[1mstarted roslaunch server http://lzq:40343/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /gazebo/enable_ros_network: True
+ * /robot1/move_base/PIDController/base_frame: base_link
+ * /robot1/move_base/PIDController/convert_offset: 0.0
+ * /robot1/move_base/PIDController/goal_dist_tolerance: 0.2
+ * /robot1/move_base/PIDController/k: 1.0
+ * /robot1/move_base/PIDController/k_theta: 0.7
+ * /robot1/move_base/PIDController/k_v_d: 0.1
+ * /robot1/move_base/PIDController/k_v_i: 0.1
+ * /robot1/move_base/PIDController/k_v_p: 1.0
+ * /robot1/move_base/PIDController/k_w_d: 0.1
+ * /robot1/move_base/PIDController/k_w_i: 0.1
+ * /robot1/move_base/PIDController/k_w_p: 1.0
+ * /robot1/move_base/PIDController/l: 0.2
+ * /robot1/move_base/PIDController/lookahead_time: 0.5
+ * /robot1/move_base/PIDController/map_frame: map
+ * /robot1/move_base/PIDController/max_lookahead_dist: 0.9
+ * /robot1/move_base/PIDController/max_v: 0.5
+ * /robot1/move_base/PIDController/max_v_inc: 0.5
+ * /robot1/move_base/PIDController/max_w: 1.57
+ * /robot1/move_base/PIDController/max_w_inc: 1.57
+ * /robot1/move_base/PIDController/min_lookahead_dist: 0.3
+ * /robot1/move_base/PIDController/min_v: 0.0
+ * /robot1/move_base/PIDController/min_w: 0.0
+ * /robot1/move_base/PIDController/rotate_tolerance: 0.5
+ * /robot1/move_base/PathPlanner/convert_offset: 0.0
+ * /robot1/move_base/PathPlanner/default_tolerance: 0.0
+ * /robot1/move_base/PathPlanner/expand_zone: True
+ * /robot1/move_base/PathPlanner/hybrid_astar/analytic_expansion_max_length: 5.0
+ * /robot1/move_base/PathPlanner/hybrid_astar/analytic_expansion_ratio: 1.5
+ * /robot1/move_base/PathPlanner/hybrid_astar/cache_obstacle_heuristic: False
+ * /robot1/move_base/PathPlanner/hybrid_astar/change_penalty: 0.4
+ * /robot1/move_base/PathPlanner/hybrid_astar/cost_penalty: 2.0
+ * /robot1/move_base/PathPlanner/hybrid_astar/curve_sample_ratio: 0.15
+ * /robot1/move_base/PathPlanner/hybrid_astar/dim_3_size: 32
+ * /robot1/move_base/PathPlanner/hybrid_astar/downsample_obstacle_heuristic: True
+ * /robot1/move_base/PathPlanner/hybrid_astar/goal_tolerance: 0.2
+ * /robot1/move_base/PathPlanner/hybrid_astar/lookup_table_dim: 20.0
+ * /robot1/move_base/PathPlanner/hybrid_astar/max_approach_iterations: 500
+ * /robot1/move_base/PathPlanner/hybrid_astar/max_iterations: 20000
+ * /robot1/move_base/PathPlanner/hybrid_astar/minimum_turning_radius: 0.3
+ * /robot1/move_base/PathPlanner/hybrid_astar/motion_model: 2
+ * /robot1/move_base/PathPlanner/hybrid_astar/non_straight_penalty: 1.5
+ * /robot1/move_base/PathPlanner/hybrid_astar/retrospective_penalty: 0.025
+ * /robot1/move_base/PathPlanner/hybrid_astar/reverse_penalty: 2.5
+ * /robot1/move_base/PathPlanner/hybrid_astar/traverse_unknown: False
+ * /robot1/move_base/PathPlanner/obstacle_factor: 0.5
+ * /robot1/move_base/PathPlanner/outline_map: True
+ * /robot1/move_base/PathPlanner/planner_name: theta_star
+ * /robot1/move_base/PathPlanner/show_safety_corridor: False
+ * /robot1/move_base/base_global_planner: path_planner/Path...
+ * /robot1/move_base/base_local_planner: pid_controller/PI...
+ * /robot1/move_base/conservative_reset_dist: 3.0
+ * /robot1/move_base/controller_frequency: 20.0
+ * /robot1/move_base/controller_patience: 15.0
+ * /robot1/move_base/global_costmap/footprint: [[-0.21, -0.165],...
+ * /robot1/move_base/global_costmap/footprint_padding: 0.1
+ * /robot1/move_base/global_costmap/global_frame: map
+ * /robot1/move_base/global_costmap/inflation_layer/cost_scaling_factor: 5
+ * /robot1/move_base/global_costmap/inflation_layer/enabled: True
+ * /robot1/move_base/global_costmap/inflation_layer/inflation_radius: 0.2
+ * /robot1/move_base/global_costmap/map_type: costmap
+ * /robot1/move_base/global_costmap/meter_scoring: True
+ * /robot1/move_base/global_costmap/obstacle_layer/observation_sources: scan
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/clearing: True
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/data_type: LaserScan
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/expected_update_rate: 1
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/inf_is_valid: True
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/marking: True
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/max_obstacle_height: 0.2
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/min_obstacle_height: 0.0
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/observation_persistence: 0.0
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/obstacle_range: 2.5
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/raytrace_range: 3.0
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/sensor_frame: robot1/base_footp...
+ * /robot1/move_base/global_costmap/obstacle_layer/scan/topic: /robot1/scan
+ * /robot1/move_base/global_costmap/origin_z: 0.0
+ * /robot1/move_base/global_costmap/plugins: [{'name': 'static...
+ * /robot1/move_base/global_costmap/publish_frequency: 0.5
+ * /robot1/move_base/global_costmap/publish_voxel_map: False
+ * /robot1/move_base/global_costmap/robot_base_frame: robot1/base_footp...
+ * /robot1/move_base/global_costmap/scan/sensor_frame: robot1/base_scan
+ * /robot1/move_base/global_costmap/scan/topic: /robot1/scan
+ * /robot1/move_base/global_costmap/static_map/clear_time: 20
+ * /robot1/move_base/global_costmap/static_map/enabled: True
+ * /robot1/move_base/global_costmap/static_map/publish_static_map: True
+ * /robot1/move_base/global_costmap/transform_tolerance: 0.2
+ * /robot1/move_base/global_costmap/update_frequency: 1.0
+ * /robot1/move_base/global_costmap/z_resolution: 1
+ * /robot1/move_base/global_costmap/z_voxels: 2
+ * /robot1/move_base/local_costmap/global_frame: robot1/odom
+ * /robot1/move_base/local_costmap/height: 3
+ * /robot1/move_base/local_costmap/inflation_radius: 0.2
+ * /robot1/move_base/local_costmap/plugins: [{'name': 'obstac...
+ * /robot1/move_base/local_costmap/publish_frequency: 0.5
+ * /robot1/move_base/local_costmap/resolution: 0.05
+ * /robot1/move_base/local_costmap/robot_base_frame: robot1/base_footp...
+ * /robot1/move_base/local_costmap/rolling_window: True
+ * /robot1/move_base/local_costmap/scan/sensor_frame: robot1/base_scan
+ * /robot1/move_base/local_costmap/scan/topic: /robot1/scan
+ * /robot1/move_base/local_costmap/static_map: False
+ * /robot1/move_base/local_costmap/transform_tolerance: 1.0
+ * /robot1/move_base/local_costmap/update_frequency: 1.0
+ * /robot1/move_base/local_costmap/width: 3
+ * /robot1/move_base/oscillation_distance: 0.2
+ * /robot1/move_base/oscillation_timeout: 10.0
+ * /robot1/move_base/planner_frequency: 2
+ * /robot1/move_base/planner_patience: 5.0
+ * /robot1/move_base/shutdown_costmaps: False
+ * /robot1/move_base/transform_tolerance: 2.0
+ * /robot1/robot_description: <?xml version="1....
+ * /robot1/tf_map2odom_node/odom_frame_id: robot1/odom
+ * /robot1/tf_prefix: robot1
+ * /robot2/move_base/NoMaDPlanner/connect_timeout: 5.0
+ * /robot2/move_base/NoMaDPlanner/log_plan_summary: False
+ * /robot2/move_base/NoMaDPlanner/request_timeout: 3.0
+ * /robot2/move_base/NoMaDPlanner/retry_count: 1
+ * /robot2/move_base/NoMaDPlanner/service_name: /nomad/make_plan
+ * /robot2/move_base/PIDController/base_frame: base_link
+ * /robot2/move_base/PIDController/convert_offset: 0.0
+ * /robot2/move_base/PIDController/goal_dist_tolerance: 0.2
+ * /robot2/move_base/PIDController/k: 1.0
+ * /robot2/move_base/PIDController/k_theta: 0.7
+ * /robot2/move_base/PIDController/k_v_d: 0.1
+ * /robot2/move_base/PIDController/k_v_i: 0.1
+ * /robot2/move_base/PIDController/k_v_p: 1.0
+ * /robot2/move_base/PIDController/k_w_d: 0.1
+ * /robot2/move_base/PIDController/k_w_i: 0.1
+ * /robot2/move_base/PIDController/k_w_p: 1.0
+ * /robot2/move_base/PIDController/l: 0.2
+ * /robot2/move_base/PIDController/lookahead_time: 0.5
+ * /robot2/move_base/PIDController/map_frame: map
+ * /robot2/move_base/PIDController/max_lookahead_dist: 0.9
+ * /robot2/move_base/PIDController/max_v: 0.5
+ * /robot2/move_base/PIDController/max_v_inc: 0.5
+ * /robot2/move_base/PIDController/max_w: 1.57
+ * /robot2/move_base/PIDController/max_w_inc: 1.57
+ * /robot2/move_base/PIDController/min_lookahead_dist: 0.3
+ * /robot2/move_base/PIDController/min_v: 0.0
+ * /robot2/move_base/PIDController/min_w: 0.0
+ * /robot2/move_base/PIDController/rotate_tolerance: 0.5
+ * /robot2/move_base/PathPlanner/convert_offset: 0.0
+ * /robot2/move_base/PathPlanner/default_tolerance: 0.0
+ * /robot2/move_base/PathPlanner/expand_zone: True
+ * /robot2/move_base/PathPlanner/obstacle_factor: 0.5
+ * /robot2/move_base/PathPlanner/outline_map: True
+ * /robot2/move_base/PathPlanner/show_safety_corridor: False
+ * /robot2/move_base/base_global_planner: nomad_planner/NoM...
+ * /robot2/move_base/base_local_planner: pid_controller/PI...
+ * /robot2/move_base/conservative_reset_dist: 3.0
+ * /robot2/move_base/controller_frequency: 20.0
+ * /robot2/move_base/controller_patience: 15.0
+ * /robot2/move_base/global_costmap/footprint: [[-0.21, -0.165],...
+ * /robot2/move_base/global_costmap/footprint_padding: 0.1
+ * /robot2/move_base/global_costmap/global_frame: map
+ * /robot2/move_base/global_costmap/inflation_layer/cost_scaling_factor: 5
+ * /robot2/move_base/global_costmap/inflation_layer/enabled: True
+ * /robot2/move_base/global_costmap/inflation_layer/inflation_radius: 0.2
+ * /robot2/move_base/global_costmap/map_type: costmap
+ * /robot2/move_base/global_costmap/meter_scoring: True
+ * /robot2/move_base/global_costmap/obstacle_layer/observation_sources: scan
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/clearing: True
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/data_type: LaserScan
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/expected_update_rate: 1
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/inf_is_valid: True
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/marking: True
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/max_obstacle_height: 0.2
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/min_obstacle_height: 0.0
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/observation_persistence: 0.0
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/obstacle_range: 2.5
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/raytrace_range: 3.0
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/sensor_frame: robot2/base_footp...
+ * /robot2/move_base/global_costmap/obstacle_layer/scan/topic: /robot2/scan
+ * /robot2/move_base/global_costmap/origin_z: 0.0
+ * /robot2/move_base/global_costmap/plugins: [{'name': 'static...
+ * /robot2/move_base/global_costmap/publish_frequency: 0.5
+ * /robot2/move_base/global_costmap/publish_voxel_map: False
+ * /robot2/move_base/global_costmap/robot_base_frame: robot2/base_footp...
+ * /robot2/move_base/global_costmap/scan/sensor_frame: robot2/base_scan
+ * /robot2/move_base/global_costmap/scan/topic: /robot2/scan
+ * /robot2/move_base/global_costmap/static_map/clear_time: 20
+ * /robot2/move_base/global_costmap/static_map/enabled: True
+ * /robot2/move_base/global_costmap/static_map/publish_static_map: True
+ * /robot2/move_base/global_costmap/transform_tolerance: 0.2
+ * /robot2/move_base/global_costmap/update_frequency: 1.0
+ * /robot2/move_base/global_costmap/z_resolution: 1
+ * /robot2/move_base/global_costmap/z_voxels: 2
+ * /robot2/move_base/local_costmap/global_frame: robot2/odom
+ * /robot2/move_base/local_costmap/height: 3
+ * /robot2/move_base/local_costmap/inflation_radius: 0.2
+ * /robot2/move_base/local_costmap/plugins: [{'name': 'obstac...
+ * /robot2/move_base/local_costmap/publish_frequency: 0.5
+ * /robot2/move_base/local_costmap/resolution: 0.05
+ * /robot2/move_base/local_costmap/robot_base_frame: robot2/base_footp...
+ * /robot2/move_base/local_costmap/rolling_window: True
+ * /robot2/move_base/local_costmap/scan/sensor_frame: robot2/base_scan
+ * /robot2/move_base/local_costmap/scan/topic: /robot2/scan
+ * /robot2/move_base/local_costmap/static_map: False
+ * /robot2/move_base/local_costmap/transform_tolerance: 1.0
+ * /robot2/move_base/local_costmap/update_frequency: 1.0
+ * /robot2/move_base/local_costmap/width: 3
+ * /robot2/move_base/oscillation_distance: 0.2
+ * /robot2/move_base/oscillation_timeout: 10.0
+ * /robot2/move_base/planner_frequency: 2
+ * /robot2/move_base/planner_patience: 5.0
+ * /robot2/move_base/shutdown_costmaps: False
+ * /robot2/move_base/transform_tolerance: 2.0
+ * /robot2/robot_description: <?xml version="1....
+ * /robot2/tf_map2odom_node/odom_frame_id: robot2/odom
+ * /robot2/tf_prefix: robot2
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+ * /use_sim_time: True
+
+NODES
+  /
+    gazebo (gazebo_ros/gzserver)
+    map_server (map_server/map_server)
+    rviz (rviz/rviz)
+  /robot1/
+    ground_truth_odom_publisher (sim_env/ground_truth_odom_publisher.py)
+    joint_state_publisher (joint_state_publisher/joint_state_publisher)
+    move_base (move_base/move_base)
+    robot_state_publisher (robot_state_publisher/robot_state_publisher)
+    tf_map2odom_node (sim_env/tf_map2odom.py)
+    urdf_spawner (gazebo_ros/spawn_model)
+  /robot2/
+    ground_truth_odom_publisher (sim_env/ground_truth_odom_publisher.py)
+    joint_state_publisher (joint_state_publisher/joint_state_publisher)
+    move_base (move_base/move_base)
+    robot_state_publisher (robot_state_publisher/robot_state_publisher)
+    tf_map2odom_node (sim_env/tf_map2odom.py)
+    urdf_spawner (gazebo_ros/spawn_model)
+[33m[WARN] [1774069981.720130473]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774069981.720436802]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774069981.720616088]: The root link base_footprint has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.[0m
+[33m[WARN] [1774069981.750940298]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774069981.751573141]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774069981.751903216]: The root link base_footprint has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.[0m
+[33m[WARN] [1774069983.007231708]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774069983.007261391]: link 'base_scan' material 'dark' undefined.[0m
+[ERROR] [1774069983.215735, 0.000000]: Spawn service failed. Exiting.
+[INFO] [1774069982.288853, 0.000000]: Loading model XML from ros parameter robot_description
+[INFO] [1774069982.291836, 0.000000]: Waiting for service /gazebo/spawn_urdf_model
+[INFO] [1774069983.195026, 0.000000]: Calling service /gazebo/spawn_urdf_model
+[INFO] [1774069983.215108, 0.000000]: Spawn status: SpawnModel: Entity pushed to spawn queue, but spawn service timed out waiting for entity to appear in simulation under the name robot1
+Warning: TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot2/odom (parent map) at time 83.410000 according to authority unknown_publisher
+         at line 277 in /tmp/binarydeb/ros-noetic-tf2-0.7.10/src/buffer_core.cpp
+Warning: [33m[WARN] [1774069983.290956607]: TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot2/odom (parent map) at time 83.410000 according to authority unknown_publisher[0m
+TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot2/odom (parent map) at time 83.410000 according to authority unknown_publisher
+         at line 277 in /tmp/binarydeb/ros-noetic-tf2-0.7.10/src/buffer_core.cpp
+Warning: TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot1/odom (parent map) at time 83.420000 according to authority unknown_publisher
+         at line 277 in /tmp/binarydeb/ros-noetic-tf2-0.7.10/src/buffer_core.cpp
+Warning: TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot1/odom (parent map) at time 83.420000 according to authority unknown_publisher
+[33m[WARN] [1774069983.296170139]: TF_REPEATED_DATA ignoring data with redundant timestamp for frame robot1/odom (parent map) at time 83.420000 according to authority unknown_publisher[0m
+         at line 277 in /tmp/binarydeb/ros-noetic-tf2-0.7.10/src/buffer_core.cpp
+[33m[WARN] [1774069983.664001383]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774069983.664028692]: link 'base_scan' material 'dark' undefined.[0m
+[33m[WARN] [1774069985.392393513, 83.508000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot1//) missing <covariance_x>, defaults to 0.000100[0m
+[33m[WARN] [1774069985.392420821, 83.508000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot1//) missing <covariance_y>, defaults to 0.000100[0m
+[33m[WARN] [1774069985.392430320, 83.508000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot1//) missing <covariance_yaw>, defaults to 0.010000[0m
+[33m[WARN] [1774069985.395392689, 83.512000000]: Timed out waiting for transform from robot2/base_footprint to map to become available before running costmap, tf error: canTransform: source_frame robot2/base_footprint does not exist.. canTransform returned after 83.512 timeout was 0.1.[0m
+[33m[WARN] [1774069985.395504297, 83.512000000]: Timed out waiting for transform from robot1/base_footprint to map to become available before running costmap, tf error: canTransform: source_frame robot1/base_footprint does not exist.. canTransform returned after 83.512 timeout was 0.1.[0m
+[INFO] [1774069982.269428, 0.000000]: Loading model XML from ros parameter robot_description
+[INFO] [1774069982.273552, 0.000000]: Waiting for service /gazebo/spawn_urdf_model
+[INFO] [1774069983.478163, 83.508000]: Calling service /gazebo/spawn_urdf_model
+[INFO] [1774069985.683001, 83.908000]: Spawn status: SpawnModel: Successfully spawned entity
+[33m[WARN] [1774069986.484294250, 83.908000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot2//) missing <covariance_x>, defaults to 0.000100[0m
+[33m[WARN] [1774069986.484315622, 83.908000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot2//) missing <covariance_y>, defaults to 0.000100[0m
+[33m[WARN] [1774069986.484326308, 83.908000000]: GazeboRosSkidSteerDrive Plugin (ns = /robot2//) missing <covariance_yaw>, defaults to 0.010000[0m
+[33m[WARN] [1774069986.487710176, 83.912000000]: global_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[WARN] [1774069986.487833658, 83.912000000]: global_costmap: Pre-Hydro parameter "map_type" unused since "plugins" is provided[0m
+[33m[WARN] [1774069986.537083785, 84.010000000]: global_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[WARN] [1774069986.537283256, 84.012000000]: global_costmap: Pre-Hydro parameter "map_type" unused since "plugins" is provided[0m
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I20260321 13:13:06.715197 82416 path_planner_factory.cpp:308] Using path planner: theta_star
+[33m[WARN] [1774069986.718245417, 84.374000000]: local_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[WARN] [1774069987.211599194, 85.356000000]: The /robot1/scan observation buffer has not been updated for 1.03 seconds, and it should be updated every 1.00 seconds.[0m
+[33m[WARN] [1774069991.770285148, 94.422000000]: Timed out waiting for NoMaD service /nomad/make_plan (5.00s).[0m
+[33m[WARN] [1774069991.770325517, 94.422000000]: NoMaD service /nomad/make_plan not available yet.[0m
+[33m[WARN] [1774069991.772158743, 94.426000000]: local_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[WARN] [1774069992.287740397, 95.456000000]: The /robot2/scan observation buffer has not been updated for 11.03 seconds, and it should be updated every 1.00 seconds.[0m
+[33m[WARN] [1774070002.149346613, 114.640000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 2.1840 seconds[0m
+[0m[INFO] [1774069986.488112678, 83.914000000]: global_costmap: Using plugin "static_map"[0m
+[0m[INFO] [1774069986.491056050, 83.920000000]: Requesting the map...[0m
+[0m[INFO] [1774069986.642110751, 84.220000000]: Resizing costmap to 480 X 480 at 0.050000 m/pix[0m
+[0m[INFO] [1774069986.691651773, 84.320000000]: Received a 480 X 480 map at 0.050000 m/pix[0m
+[0m[INFO] [1774069986.692886588, 84.322000000]: global_costmap: Using plugin "obstacle_layer"[0m
+[0m[INFO] [1774069986.693849507, 84.324000000]:     Subscribed to Topics: scan[0m
+[0m[INFO] [1774069986.699139027, 84.336000000]: global_costmap: Using plugin "voronoi_layer"[0m
+[0m[INFO] [1774069986.700735976, 84.338000000]: global_costmap: Using plugin "inflation_layer"[0m
+[0m[INFO] [1774069986.718652669, 84.374000000]: local_costmap: Using plugin "obstacle_layer"[0m
+[0m[INFO] [1774069986.719445800, 84.376000000]:     Subscribed to Topics: [0m
+[0m[INFO] [1774069986.721660156, 84.380000000]: local_costmap: Using plugin "inflation_layer"[0m
+[0m[INFO] [1774069986.732953966, 84.402000000]: Created local_planner pid_controller/PIDController[0m
+[0m[INFO] [1774069986.737811301, 84.412000000]: PID Controller initialized![0m
+[0m[INFO] [1774069987.236671878, 85.406000000]: Recovery behavior will clear layer 'obstacles'[0m
+[0m[INFO] [1774069987.238432677, 85.410000000]: Recovery behavior will clear layer 'obstacles'[0m
+[0m[INFO] [1774069987.247716350, 85.428000000]: odom received![0m
+[0m[INFO] [1774070000.647742364, 112.108000000]: Got new plan[0m
+[0m[INFO] [1774070000.923471866, 112.608000000]: Got new plan[0m
+[0m[INFO] [1774070001.223959416, 113.108000000]: Got new plan[0m
+[0m[INFO] [1774070001.530695844, 113.608000000]: Got new plan[0m
+[0m[INFO] [1774070001.821179015, 114.108000000]: Got new plan[0m
+[0m[INFO] [1774070002.131079658, 114.608000000]: Got new plan[0m
+[0m[INFO] [1774070002.433395687, 115.108000000]: Got new plan[0m
+[0m[INFO] [1774070002.742252675, 115.608000000]: Got new plan[0m
+[0m[INFO] [1774070003.035892939, 116.108000000]: Got new plan[0m
+[0m[INFO] [1774070003.342713671, 116.608000000]: Got new plan[0m
+[0m[INFO] [1774070003.649148523, 117.108000000]: Got new plan[0m
+[0m[INFO] [1774070003.954277321, 117.612000000]: Got new plan[0m
+[0m[INFO] [1774070004.247961519, 118.108000000]: Got new plan[0m
+[0m[INFO] [1774070004.387177447, 118.308000000]: Got new plan[0m
+[0m[INFO] [1774070004.657630495, 118.808000000]: Got new plan[0m
+[0m[INFO] [1774070004.924032399, 119.308000000]: Got new plan[0m
+[0m[INFO] [1774070005.204847212, 119.808000000]: Got new plan[0m
+[0m[INFO] [1774070005.474039326, 120.308000000]: Got new plan[0m
+[0m[INFO] [1774070005.740245324, 120.810000000]: Got new plan[0m
+[0m[INFO] [1774070006.016937753, 121.308000000]: Got new plan[0m
+[0m[INFO] [1774070006.293458023, 121.808000000]: Got new plan[0m
+[0m[INFO] [1774070006.561538804, 122.308000000]: Got new plan[0m
+[0m[INFO] [1774070006.866811274, 122.808000000]: Got new plan[0m
+[0m[INFO] [1774070007.176403224, 123.308000000]: Got new plan[0m
+[0m[INFO] [1774070007.481033354, 123.810000000]: Got new plan[0m
+[0m[INFO] [1774070007.774989455, 124.308000000]: Got new plan[0m
+[0m[INFO] [1774070008.058518491, 124.808000000]: Got new plan[0m
+[0m[INFO] [1774070008.355846590, 125.308000000]: Got new plan[0m
+[0m[INFO] [1774070008.520816732, 125.558000000]: Got new plan[0m
+[0m[INFO] [1774070008.817114235, 126.058000000]: Got new plan[0m
+[0m[INFO] [1774070009.122834330, 126.558000000]: Got new plan[0m
+[0m[INFO] [1774070009.429273944, 127.060000000]: Got new plan[0m
+[0m[INFO] [1774070009.707854223, 127.558000000]: Got new plan[0m
+[0m[INFO] [1774070010.002211643, 128.058000000]: Got new plan[0m
+[0m[INFO] [1774070010.310144910, 128.558000000]: Got new plan[0m
+[0m[INFO] [1774070010.616599961, 129.058000000]: Got new plan[0m
+[0m[INFO] [1774070010.926275030, 129.558000000]: Got new plan[0m
+[0m[INFO] [1774070011.219505684, 130.058000000]: Got new plan[0m
+[0m[INFO] [1774070011.527218112, 130.560000000]: Got new plan[0m
+[0m[[0m[INFO] [1774069986.537590772, 84.012000000]: global_costmap: Using plugin "static_map"[0m
+[0m[INFO] [1774069986.540484276, 84.018000000]: Requesting the map...[0m
+[0m[INFO] [1774069986.691638713, 84.320000000]: Resizing costmap to 480 X 480 at 0.050000 m/pix[0m
+[0m[INFO] [1774069986.741190420, 84.420000000]: Received a 480 X 480 map at 0.050000 m/pix[0m
+[0m[INFO] [1774069986.742429985, 84.422000000]: global_costmap: Using plugin "obstacle_layer"[0m
+[0m[INFO] [1774069986.743502137, 84.424000000]:     Subscribed to Topics: scan[0m
+[0m[INFO] [1774069986.748833214, 84.434000000]: global_costmap: Using plugin "voronoi_layer"[0m
+[0m[INFO] [1774069986.750482404, 84.438000000]: global_costmap: Using plugin "inflation_layer"[0m
+[0m[INFO] [1774069986.762920792, 84.462000000]: waitForService: Service [/nomad/make_plan] has not been advertised, waiting...[0m
+[0m[INFO] [1774069991.770346889, 94.422000000]: NoMaDPlanner initialized for frame map[0m
+[0m[INFO] [1774069991.772516127, 94.426000000]: local_costmap: Using plugin "obstacle_layer"[0m
+[0m[INFO] [1774069991.773349627, 94.428000000]:     Subscribed to Topics: [0m
+[0m[INFO] [1774069991.775948676, 94.434000000]: local_costmap: Using plugin "inflation_layer"[0m
+[0m[INFO] [1774069991.789780980, 94.462000000]: Created local_planner pid_controller/PIDController[0m
+[0m[INFO] [1774069991.794747550, 94.472000000]: PID Controller initialized![0m
+[0m[INFO] [1774069992.287804513, 95.456000000]: Recovery behavior will clear layer 'obstacles'[0m
+[0m[INFO] [1774069992.289718476, 95.460000000]: Recovery behavior will clear layer 'obstacles'[0m
+[0m[INFO] [1774069992.300767698, 95.482000000]: odom received![0m
+[0m[INFO] [1774070002.165291166, 114.662000000]: Got new plan[0m
+[0m[INFO] [1774070002.288462804, 114.862000000]: Got new plan[0m
+[0m[INFO] [1774070002.590287281, 115.364000000]: Got new plan[0m
+[0m[INFO] [1774070002.895277160, 115.866000000]: Got new plan[0m
+[0m[INFO] [1774070003.194813668, 116.362000000]: Got new plan[0m
+[0m[INFO] [1774070003.502820535, 116.862000000]: Got new plan[0m
+[0m[INFO] [1774070003.776879480, 117.312000000]: Got new plan[0m
+[0m[INFO] [1774070004.102027721, 117.862000000]: Got new plan[0m
+[0m[INFO] [1774070004.388890753, 118.312000000]: Got new plan[0m
+[0m[INFO] [1774070004.688890319, 118.862000000]: Got new plan[0m
+[0m[INFO] [1774070004.950707972, 119.362000000]: Got new plan[0m
+[0m[INFO] [1774070005.232568816, 119.862000000]: Got new plan[0m
+[0m[INFO] [1774070005.504827783, 120.362000000]: Got new plan[0m
+[0m[INFO] [1774070005.772991676, 120.862000000]: Got new plan[0m
+[0m[INFO] [1774070006.044152371, 121.364000000]: Got new plan[0m
+[0m[INFO] [1774070006.320755753, 121.862000000]: Got new plan[0m
+[0m[INFO] [1774070006.593879093, 122.362000000]: Got new plan[0m
+[0m[INFO] [1774070006.902403638, 122.864000000]: Got new plan[0m
+[0m[INFO] [1774070007.179007022, 123.312000000]: Got new plan[0m
+[0m[INFO] [1774070007.565884164, 123.962000000]: Got new plan[0m
+[0m[INFO] [1774070007.978351667, 124.662000000]: Got new plan[0m
+[0m[INFO] [1774070008.398040468, 125.362000000]: Got new plan[0m
+[0m[INFO] [1774070008.793516202, 126.012000000]: Got new plan[0m
+[0m[INFO] [1774070008.916692594, 126.212000000]: Got new plan[0m
+[0m[INFO] [1774070009.191030570, 126.662000000]: Got new plan[0m
+[0m[INFO] [1774070009.492747015, 127.162000000]: Got new plan[0m
+[0m[INFO] [1774070009.793772438, 127.714000000]: Got new plan[0m
+[0m[INFO] [1774070010.128096320, 128.262000000]: Got new plan[0m
+[0m[INFO] [1774070010.520599003, 128.912000000]: Got new plan[0m
+[0m[INFO] [1774070010.741818549, 129.262000000]: Got new plan[0m
+[0m[INFO] [1774070011.075776738, 129.812000000]: Got new plan[0m
+[0m[INFO] [1774070011.345949591, 130.262000000]: Got new plan[0m
+[0m[INFO] [1774070011.596983992, 130.662000000]: Got new plan[0m
+[0m[INFO] [1774070011.927387339, 131.212000000]: Got new plan[0m
+[0m[INFO] [1774070012.229520539, 131.762000000]: Got new plan[0m
+[0m[INFO] [1774070012.511094064, 132.264000000]:[33m[WARN] [1774070015.422419484, 137.184000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 2.5440 seconds[0m
+[33m[WARN] [1774070017.434275727, 140.600000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 2.4160 seconds[0m
+E20260321 13:13:39.441723 82623 path_planner_node.cpp:250] Failed to get a path.
+E20260321 13:13:40.522697 82623 path_planner_node.cpp:250] Failed to get a path.
+E20260321 13:13:41.611747 82623 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774070021.615979364, 147.520000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 5.1640 seconds[0m
+[33m[WARN] [1774070021.634951591, 147.558000000]: Clearing both costmaps outside a square (3.00m) large centered on the robot.[0m
+[33m[WARN] [1774070026.270282615, 155.422000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 1.8220 seconds[0m
+ Got new plan[0m
+[0m[INFO] [1774070012.758767158, 132.712000000]: Got new plan[0m
+[0m[INFO] [1774070013.016840009, 133.162000000]: Got new plan[0m
+[0m[INFO] [1774070013.345278341, 133.712000000]: Got new plan[0m
+[0m[INFO] [1774070013.801484446, 134.462000000]: Got new plan[0m
+[0m[INFO] [1774070014.270342660, 135.262000000]: Got new plan[0m
+[0m[INFO] [1774070014.686353152, 135.964000000]: Got new plan[0m
+[0m[INFO] [1774070015.150648489, 136.712000000]: Got new plan[0m
+[0m[INFO] [1774070015.436571181, 137.212000000]: Got new plan[0m
+[0m[INFO] [1774070015.879495902, 138.012000000]: Got new plan[0m
+[0m[INFO] [1774070016.309895560, 138.762000000]: Got new plan[0m
+[0m[INFO] [1774070016.761639715, 139.512000000]: Got new plan[0m
+[0m[INFO] [1774070017.070997782, 140.012000000]: Got new plan[0m
+[0m[INFO] [1774070017.439916696, 140.612000000]: Got new plan[0m
+[0m[INFO] [1774070017.685570162, 141.014000000]: Got new plan[0m
+[0m[INFO] [1774070018.137175404, 141.762000000]: Got new plan[0m
+[0m[INFO] [1774070018.321097599, 142.062000000]: Got new plan[0m
+[0m[INFO] [1774070018.555332586, 142.462000000]: Got new plan[0m
+[0m[INFO] [1774070018.843423335, 142.916000000]: Got new plan[0m
+[0m[INFO] [1774070019.149221813, 143.414000000]: Got new plan[0m
+[0m[INFO] [1774070019.443342975, 143.912000000]: Got new plan[0m
+[0m[INFO] [1774070019.748261648, 144.412000000]: Got new plan[0m
+[0m[INFO] [1774070020.027673071, 144.862000000]: Got new plan[0m
+[0m[INFO] [1774070020.366904180, 145.414000000]: Got new plan[0m
+[0m[INFO] [1774070020.660580098, 145.912000000]: Got new plan[0m
+[0m[INFO] [1774070020.939262506, 146.412000000]: Got new plan[0m
+[0m[INFO] [1774070021.211205674, 146.862000000]: Got new plan[0m
+[0m[INFO] [1774070021.518051375, 147.362000000]: Got new plan[0m
+[0m[INFO] [1774070021.820883926, 147.862000000]: Got new plan[0m
+[0m[INFO] [1774070022.100497198, 148.362000000]: Got new plan[0m
+[0m[INFO] [1774070022.401200882, 148.864000000]: Got new plan[0m
+[0m[INFO] [1774070022.704101112, 149.362000000]: Got new plan[0m
+[0m[INFO] [1774070023.004824981, 149.862000000]: Got new plan[0m
+[0m[INFO] [1774070023.311874905, 150.362000000]: Got new plan[0m
+[0m[INFO] [1774070023.649044828, 150.962000000]: Got new plan[0m
+[0m[INFO] [1774070023.889519203, 151.362000000]: Got new plan[0m
+[0m[INFO] [1774070024.188425283, 151.862000000]: Got new plan[0m
+[0m[INFO] [1774070024.466229080, 152.362000000]: Got new plan[0m
+[0m[INFO] [1774070024.766274991, 152.912000000]: Got new plan[0m
+[0m[INFO] [1774070025.042832100, 153.362000000]: Got new plan[0m
+[0m[INFO] [1774070025.409433379, 153.962000000]: Got new plan[0m
+[0m[INFO] [1774070025.776428850, 154.612000000]: Got new plan[0m
+[0m[INFO] [1774070026.142033966, 155.212000000]: Got new plan[0m
+[0m[INFO] [1774070026.290477785, 155.462000000]: Got new plan[0m
+[0m[INFO] [1774070026.541283057, 155.862000000]: Got new plan[0m
+[0m[INFO] [1774070026.876271875, 156.412000000]: Got new plan[0m
+[0m[INFO] [1774070027.179416703, 156.912000000]: Got new plan[0m
+[0m[INFO] [1774070027.481489379, 157.412000000]: Got new plan[0m
+[0m[INFO] [1774070027.777791667, 157.912000000]: Got new plan[0m
+[0m[INFO] [1774070028.053778866, 158.362000000]: Got new plan[0m
+[0m[INFO] [1774070028.382096123, 158.912000000]: Got new plan[0m
+[0m[INFO] [1774070028.688091715, 159.412000000]: Got new plan[0m
+[0m[INFO] [1774070028.986699785, 159.912000000]: Got new plan[0m
+[0m[INFO] [1774070029.544166744, 160.862000000]: Got new plan[0m
+[0m[INFO] [1774070029.660151540, 161.062000000]: Got new plan[0m
+[0m[INFO] [1774070029.961941637, 161.562000000]: Got new plan[0m
+[0m[INFO] [1774070030.268036967, 162.062000000]: Got new plan[0m
+[0m[INFO] [1774070030.542149389, 162.512000000]: Got new plan[0m
+[0m[INFO] [1774070030.845978121, 163.012000000]: Got new plan[0m
+[0m[INFO] [1774070031.175204872, 163.564000000]: Got new plan[0m
+[0m[INFO] [1774070031.487348426, 164.112000000]: Got new plan[0m
+[0m[INFO] [1774070031.961227879, 164.964000000]: Got new INFO] [1774070011.846066436, 131.058000000]: Got new plan[0m
+[0m[INFO] [1774070011.870526466, 131.108000000]: Got new plan[0m
+[0m[INFO] [1774070012.148288685, 131.608000000]: Got new plan[0m
+[0m[INFO] [1774070012.427381893, 132.108000000]: Got new plan[0m
+[0m[INFO] [1774070012.705053876, 132.608000000]: Got new plan[0m
+[0m[INFO] [1774070012.979225633, 133.110000000]: Got new plan[0m
+[0m[INFO] [1774070013.287549535, 133.608000000]: Got new plan[0m
+[0m[INFO] [1774070013.592892070, 134.108000000]: Got new plan[0m
+[0m[INFO] [1774070013.884118528, 134.608000000]: Got new plan[0m
+[0m[INFO] [1774070014.187097106, 135.108000000]: Got new plan[0m
+[0m[INFO] [1774070014.470224839, 135.608000000]: Got new plan[0m
+[0m[INFO] [1774070014.794317573, 136.108000000]: Got new plan[0m
+[0m[INFO] [1774070014.819871128, 136.158000000]: Got new plan[0m
+[0m[INFO] [1774070015.112724221, 136.658000000]: Got new plan[0m
+[0m[INFO] [1774070015.409523975, 137.158000000]: Got new plan[0m
+[0m[INFO] [1774070015.680830727, 137.658000000]: Got new plan[0m
+[0m[INFO] [1774070015.963058472, 138.158000000]: Got new plan[0m
+[0m[INFO] [1774070016.253938238, 138.658000000]: Got new plan[0m
+[0m[INFO] [1774070016.550827043, 139.158000000]: Got new plan[0m
+[0m[INFO] [1774070016.863471617, 139.662000000]: Got new plan[0m
+[0m[INFO] [1774070017.172042490, 140.160000000]: Got new plan[0m
+[0m[INFO] [1774070017.462867640, 140.658000000]: Got new plan[0m
+[0m[INFO] [1774070017.768174564, 141.158000000]: Got new plan[0m
+[0m[INFO] [1774070018.074608257, 141.660000000]: Got new plan[0m
+[0m[INFO] [1774070018.388206256, 142.160000000]: Got new plan[0m
+[0m[INFO] [1774070021.698687065, 147.658000000]: Got new plan[0m
+[0m[INFO] [1774070021.981781566, 148.158000000]: Got new plan[0m
+[0m[INFO] [1774070022.268889219, 148.658000000]: Got new plan[0m
+[0m[INFO] [1774070022.572412794, 149.158000000]: Got new plan[0m
+[0m[INFO] [1774070022.878591222, 149.658000000]: Got new plan[0m
+[0m[INFO] [1774070023.184616486, 150.158000000]: Got new plan[0m
+[0m[INFO] [1774070023.482464661, 150.660000000]: Got new plan[0m
+[0m[INFO] [1774070023.762214478, 151.160000000]: Got new plan[0m
+[0m[INFO] [1774070024.064271712, 151.658000000]: Got new plan[0m
+[0m[INFO] [1774070024.351635830, 152.158000000]: Got new plan[0m
+[0m[INFO] [1774070024.626214859, 152.658000000]: Got new plan[0m
+[0m[INFO] [1774070024.913402067, 153.160000000]: Got new plan[0m
+[0m[INFO] [1774070025.114300607, 153.460000000]: Got new plan[0m
+[0m[INFO] [1774070025.407875612, 153.958000000]: Got new plan[0m
+[0m[INFO] [1774070025.692099264, 154.458000000]: Got new plan[0m
+[0m[INFO] [1774070025.980585404, 154.958000000]: Got new plan[0m
+[0m[INFO] [1774070026.288228996, 155.458000000]: Got new plan[0m
+[0m[INFO] [1774070026.597690378, 155.958000000]: Got new plan[0m
+[0m[INFO] [1774070026.905303100, 156.458000000]: Got new plan[0m
+[0m[INFO] [1774070027.202777275, 156.958000000]: Got new plan[0m
+[0m[INFO] [1774070027.504925939, 157.458000000]: Got new plan[0m
+[0m[INFO] [1774070027.807867736, 157.958000000]: Got new plan[0m
+[0m[INFO] [1774070028.113044074, 158.458000000]: Got new plan[0m
+[0m[INFO] [1774070028.404749051, 158.958000000]: Got new plan[0m
+[0m[INFO] [1774070028.711270626, 159.460000000]: Got new plan[0m
+[0m[INFO] [1774070029.016853030, 159.958000000]: Got new plan[0m
+[0m[INFO] [1774070029.112567854, 160.108000000]: Got new plan[0m
+[0m[INFO] [1774070029.409456684, 160.608000000]: Got new plan[0m
+[0m[INFO] [1774070029.689210073, 161.108000000]: Got new plan[0m
+[0m[INFO] [1774070029.997832025, 161.608000000]: Got new plan[0m
+[0m[INFO] [1774070030.291599385, 162.108000000]: Got new plan[0m
+[0m[INFO] [1774070030.597243533, 162.608000000]: Got new plan[0m
+[0m[INFO] [1774070030.905313381, 163.108000000]: Got new plan[0m
+[0m[INFO] [1774070031.198158193, 163.608000000]: Got new plan[0m
+[0m[INFO] [1774070031.486112423, 164.108000000]: Got new plan[0m
+[0m[INFO] [1774070031.756719870, 164.608000000]: Got new plan[0m
+[0m[INFO] [17[33m[WARN] [1774070032.990419315, 166.684000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 2.0840 seconds[0m
+[33m[WARN] [1774070043.597388917, 184.636000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 3.9520 seconds[0m
+[33m[WARN] [1774070046.275122216, 189.094000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 3.4580 seconds[0m
+74070032.060057053, 165.108000000]: Got new plan[0m
+[0m[INFO] [1774070032.364232486, 165.608000000]: Got new plan[0m
+[0m[INFO] [1774070032.659100498, 166.108000000]: Got new plan[0m
+[0m[INFO] [1774070032.944323888, 166.608000000]: Got new plan[0m
+[0m[INFO] [1774070033.249823188, 167.108000000]: Got new plan[0m
+[0m[INFO] [1774070033.529935156, 167.608000000]: Got new plan[0m
+[0m[INFO] [1774070033.818149414, 168.108000000]: Got new plan[0m
+[0m[INFO] [1774070034.124451345, 168.608000000]: Got new plan[0m
+[0m[INFO] [1774070034.435026452, 169.108000000]: Got new plan[0m
+[0m[INFO] [1774070034.714946075, 169.608000000]: Got new plan[0m
+[0m[INFO] [1774070035.006381541, 170.108000000]: Got new plan[0m
+[0m[INFO] [1774070035.313527662, 170.608000000]: Got new plan[0m
+[0m[INFO] [1774070035.590467107, 171.108000000]: Got new plan[0m
+[0m[INFO] [1774070035.901290366, 171.608000000]: Got new plan[0m
+[0m[INFO] [1774070036.190836804, 172.108000000]: Got new plan[0m
+[0m[INFO] [1774070036.499521697, 172.608000000]: Got new plan[0m
+[0m[INFO] [1774070036.784577682, 173.108000000]: Got new plan[0m
+[0m[INFO] [1774070037.083338932, 173.608000000]: Got new plan[0m
+[0m[INFO] [1774070037.374882450, 174.108000000]: Got new plan[0m
+[0m[INFO] [1774070037.682315906, 174.608000000]: Got new plan[0m
+[0m[INFO] [1774070037.992803157, 175.108000000]: Got new plan[0m
+[0m[INFO] [1774070038.296433621, 175.608000000]: Got new plan[0m
+[0m[INFO] [1774070038.588283469, 176.108000000]: Got new plan[0m
+[0m[INFO] [1774070038.896514809, 176.608000000]: Got new plan[0m
+[0m[INFO] [1774070039.190318991, 177.110000000]: Got new plan[0m
+[0m[INFO] [1774070039.482146283, 177.608000000]: Got new plan[0m
+[0m[INFO] [1774070039.770489969, 178.108000000]: Got new plan[0m
+[0m[INFO] [1774070039.906592767, 178.308000000]: Got new plan[0m
+[0m[INFO] [1774070040.199101583, 178.808000000]: Got new plan[0m
+[0m[INFO] [1774070040.498809136, 179.308000000]: Got new plan[0m
+[0m[INFO] [1774070040.784838733, 179.808000000]: Got new plan[0m
+[0m[INFO] [1774070041.074064602, 180.308000000]: Got new plan[0m
+[0m[INFO] [1774070041.358106622, 180.808000000]: Got new plan[0m
+[0m[INFO] [1774070041.632848343, 181.308000000]: Got new plan[0m
+[0m[INFO] [1774070041.939221528, 181.808000000]: Got new plan[0m
+[0m[INFO] [1774070042.226710347, 182.308000000]: Got new plan[0m
+[0m[INFO] [1774070042.510892472, 182.808000000]: Got new plan[0m
+[0m[INFO] [1774070042.792627526, 183.308000000]: Got new plan[0m
+[0m[INFO] [1774070043.093222014, 183.808000000]: Got new plan[0m
+[0m[INFO] [1774070043.386466975, 184.308000000]: Got new plan[0m
+[0m[INFO] [1774070043.693646356, 184.808000000]: Got new plan[0m
+[0m[INFO] [1774070044.001836149, 185.308000000]: Got new plan[0m
+[0m[INFO] [1774070044.313988039, 185.808000000]: Got new plan[0m
+[0m[INFO] [1774070044.605940008, 186.308000000]: Got new plan[0m
+[0m[INFO] [1774070044.912207527, 186.808000000]: Got new plan[0m
+[0m[INFO] [1774070045.226219953, 187.308000000]: Got new plan[0m
+[0m[INFO] [1774070045.527406920, 187.808000000]: Got new plan[0m
+[0m[INFO] [1774070045.629399128, 187.960000000]: Got new plan[0m
+[0m[INFO] [1774070045.913329547, 188.458000000]: Got new plan[0m
+[0m[INFO] [1774070046.196457336, 188.958000000]: Got new plan[0m
+[0m[INFO] [1774070046.494268746, 189.458000000]: Got new plan[0m
+[0m[INFO] [1774070046.800831912, 189.958000000]: Got new plan[0m
+[0m[INFO] [1774070047.104997874, 190.458000000]: Got new plan[0m
+[0m[INFO] [1774070047.410349973, 190.958000000]: Got new plan[0m
+[0m[INFO] [1774070047.708280117, 191.458000000]: Got new plan[0m
+[0m[INFO] [1774070048.013885115, 191.958000000]: Got new plan[0m
+[0m[INFO] [1774070048.320152641, 192.460000000]: Got new plan[0m
+[0m[INFO] [1774070048.625952362, 192.958000000]: Got new plan[0m
+[0m[INFO] [1774070048.925594628, 193.460000000]: Got new plan[0m
+[0m[INFO] [1774070049.226545324, 193.958000000]: Got new plan[0m
+[0m[INFO] [1774070049.509210063, 194.460000000]: Got new plan[0m
+[0m[INFO] [1774070049.plan[0m
+[0m[INFO] [1774070032.392499076, 165.662000000]: Got new plan[0m
+[0m[INFO] [1774070032.859281905, 166.464000000]: Got new plan[0m
+[0m[INFO] [1774070033.005031694, 166.712000000]: Got new plan[0m
+[0m[INFO] [1774070033.311030857, 167.212000000]: Got new plan[0m
+[0m[INFO] [1774070033.587102366, 167.712000000]: Got new plan[0m
+[0m[INFO] [1774070033.861319278, 168.164000000]: Got new plan[0m
+[0m[INFO] [1774070034.161486313, 168.662000000]: Got new plan[0m
+[0m[INFO] [1774070034.495395871, 169.216000000]: Got new plan[0m
+[0m[INFO] [1774070034.742059775, 169.662000000]: Got new plan[0m
+[0m[INFO] [1774070035.047194570, 170.164000000]: Got new plan[0m
+[0m[INFO] [1774070035.372070980, 170.712000000]: Got new plan[0m
+[0m[INFO] [1774070035.651385070, 171.214000000]: Got new plan[0m
+[0m[INFO] [1774070035.961994611, 171.712000000]: Got new plan[0m
+[0m[INFO] [1774070036.234156271, 172.162000000]: Got new plan[0m
+[0m[INFO] [1774070036.535188870, 172.662000000]: Got new plan[0m
+[0m[INFO] [1774070036.841588166, 173.212000000]: Got new plan[0m
+[0m[INFO] [1774070037.110726904, 173.662000000]: Got new plan[0m
+[0m[INFO] [1774070037.413615290, 174.162000000]: Got new plan[0m
+[0m[INFO] [1774070037.718292970, 174.662000000]: Got new plan[0m
+[0m[INFO] [1774070038.048588325, 175.212000000]: Got new plan[0m
+[0m[INFO] [1774070038.324025812, 175.662000000]: Got new plan[0m
+[0m[INFO] [1774070038.619602667, 176.162000000]: Got new plan[0m
+[0m[INFO] [1774070038.957333038, 176.712000000]: Got new plan[0m
+[0m[INFO] [1774070039.247165626, 177.212000000]: Got new plan[0m
+[0m[INFO] [1774070039.509111568, 177.662000000]: Got new plan[0m
+[0m[INFO] [1774070039.834033104, 178.212000000]: Got new plan[0m
+[0m[INFO] [1774070040.021601591, 178.512000000]: Got new plan[0m
+[0m[INFO] [1774070040.386170208, 179.114000000]: Got new plan[0m
+[0m[INFO] [1774070040.726113753, 179.712000000]: Got new plan[0m
+[0m[INFO] [1774070041.051145712, 180.264000000]: Got new plan[0m
+[0m[INFO] [1774070041.390524093, 180.862000000]: Got new plan[0m
+[0m[INFO] [1774070041.758379222, 181.512000000]: Got new plan[0m
+[0m[INFO] [1774070042.179222188, 182.214000000]: Got new plan[0m
+[0m[INFO] [1774070042.632391204, 183.014000000]: Got new plan[0m
+[0m[INFO] [1774070043.095329512, 183.812000000]: Got new plan[0m
+[0m[INFO] [1774070043.484232314, 184.462000000]: Got new plan[0m
+[0m[INFO] [1774070043.609765569, 184.662000000]: Got new plan[0m
+[0m[INFO] [1774070044.250323795, 185.712000000]: Got new plan[0m
+[0m[INFO] [1774070044.670300023, 186.414000000]: Got new plan[0m
+[0m[INFO] [1774070045.137237239, 187.164000000]: Got new plan[0m
+[0m[INFO] [1774070045.605943568, 187.912000000]: Got new plan[0m
+[0m[INFO] [1774070046.023813488, 188.662000000]: Got new plan[0m
+[0m[INFO] [1774070046.284580429, 189.112000000]: Got new plan[0m
+[0m[INFO] [1774070046.558039850, 189.562000000]: Got new plan[0m
+[0m[INFO] [1774070046.862947888, 190.062000000]: Got new plan[0m
+[0m[INFO] [1774070047.168646684, 190.562000000]: Got new plan[0m
+[0m[INFO] [1774070047.438329233, 191.014000000]: Got new plan[0m
+[0m[INFO] [1774070047.746244761, 191.514000000]: Got new plan[0m
+[0m[INFO] [1774070048.056032698, 192.012000000]: Got new plan[0m
+[0m[INFO] [1774070048.447615299, 192.662000000]: Got new plan[0m
+[0m[INFO] [1774070048.876180630, 193.362000000]: Got new plan[0m
+[0m[INFO] [1774070049.309879946, 194.112000000]: Got new plan[0m
+[0m[INFO] [1774070049.758996648, 194.862000000]: Got new plan[0m
+[0m[INFO] [1774070050.029895019, 195.312000000]: Got new plan[0m
+[0m[INFO] [1774070050.279698228, 195.712000000]: Got new plan[0m
+[0m[INFO] [1774070050.553490106, 196.162000000]: Got new plan[0m
+[0m[INFO] [1774070050.897163052, 196.762000000]: Got new plan[0m
+[0m[INFO] [1774070051.121697659, 197.162000000]: Got new plan[0m
+[0m[INFO] [1774070051.660834804, 198.162000000]: Got new plan[0m
+[0m[INFO] [1774070052.110851503, 198.962000000]: Got new plan[0m
+[0m[INFO] [1774070052.569959534, 199.812000000]: Got new plan[0m
+[33m[WARN] [1774070056.167316035, 205.962000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 7.8680 seconds[0m
+[33m[WARN] [1774070062.449449369, 216.874000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 1.9100 seconds[0m
+[33m[WARN] [1774070063.014733772, 217.796000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 1.8340 seconds[0m
+[33m[WARN] [1774070066.352517970, 223.470000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 2.5080 seconds[0m
+E20260321 13:14:28.006759 82623 path_planner_node.cpp:250] Failed to get a path.
+E20260321 13:14:29.046269 82623 path_planner_node.cpp:250] Failed to get a path.
+E20260321 13:14:30.098331 82623 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774070070.102553799, 230.028000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 5.5080 seconds[0m
+[33m[WARN] [1774070070.116799299, 230.060000000]: Clearing both costmaps outside a square (3.00m) large centered on the robot.[0m
+[33m[WARN] [1774070070.907380623, 231.366000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 1.8960 seconds[0m
+E20260321 13:14:31.211813 82623 path_planner_node.cpp:250] Failed to get a path.
+E20260321 13:14:32.290052 82623 path_planner_node.cpp:250] Failed to get a path.
+E20260321 13:14:33.309988 82623 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774070073.314815542, 235.386000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 4.3580 seconds[0m
+[33m[WARN] [1774070073.334677080, 235.408000000]: Rotate recovery behavior started.[0m
+[31m[ERROR] [1774070079.316979933, 245.358000000]: Rotate recovery can't rotate in place because there is a potential collision. Cost: -3.00[0m
+826923382, 194.960000000]: Got new plan[0m
+[0m[INFO] [1774070050.133038934, 195.458000000]: Got new plan[0m
+[0m[INFO] [1774070050.426776647, 195.958000000]: Got new plan[0m
+[0m[INFO] [1774070050.551351738, 196.158000000]: Got new plan[0m
+[0m[INFO] [1774070050.838772893, 196.658000000]: Got new plan[0m
+[0m[INFO] [1774070051.119764697, 197.158000000]: Got new plan[0m
+[0m[INFO] [1774070051.389138549, 197.658000000]: Got new plan[0m
+[0m[INFO] [1774070051.659637982, 198.158000000]: Got new plan[0m
+[0m[INFO] [1774070051.940487308, 198.658000000]: Got new plan[0m
+[0m[INFO] [1774070052.218343395, 199.160000000]: Got new plan[0m
+[0m[INFO] [1774070052.488638610, 199.658000000]: Got new plan[0m
+[0m[INFO] [1774070052.758397156, 200.158000000]: Got new plan[0m
+[0m[INFO] [1774070053.033688626, 200.658000000]: Got new plan[0m
+[0m[INFO] [1774070053.319637507, 201.158000000]: Got new plan[0m
+[0m[INFO] [1774070053.628122961, 201.658000000]: Got new plan[0m
+[0m[INFO] [1774070053.937427668, 202.158000000]: Got new plan[0m
+[0m[INFO] [1774070054.233094787, 202.658000000]: Got new plan[0m
+[0m[INFO] [1774070054.517057279, 203.158000000]: Got new plan[0m
+[0m[INFO] [1774070054.580884189, 203.258000000]: Got new plan[0m
+[0m[INFO] [1774070054.862011354, 203.758000000]: Got new plan[0m
+[0m[INFO] [1774070055.153342372, 204.258000000]: Got new plan[0m
+[0m[INFO] [1774070055.449347880, 204.758000000]: Got new plan[0m
+[0m[INFO] [1774070055.735752696, 205.258000000]: Got new plan[0m
+[0m[INFO] [1774070056.038267108, 205.760000000]: Got new plan[0m
+[0m[INFO] [1774070056.335207041, 206.258000000]: Got new plan[0m
+[0m[INFO] [1774070056.615041214, 206.758000000]: Got new plan[0m
+[0m[INFO] [1774070056.887479554, 207.258000000]: Got new plan[0m
+[0m[INFO] [1774070057.189627085, 207.758000000]: Got new plan[0m
+[0m[INFO] [1774070057.486096840, 208.258000000]: Got new plan[0m
+[0m[INFO] [1774070057.775056778, 208.758000000]: Got new plan[0m
+[0m[INFO] [1774070058.070757148, 209.258000000]: Got new plan[0m
+[0m[INFO] [1774070058.378137214, 209.760000000]: Got new plan[0m
+[0m[INFO] [1774070058.677723693, 210.258000000]: Got new plan[0m
+[0m[INFO] [1774070058.963574035, 210.758000000]: Got new plan[0m
+[0m[INFO] [1774070059.257803315, 211.258000000]: Got new plan[0m
+[0m[INFO] [1774070059.516840346, 211.658000000]: Got new plan[0m
+[0m[INFO] [1774070059.798257226, 212.160000000]: Got new plan[0m
+[0m[INFO] [1774070060.082410885, 212.658000000]: Got new plan[0m
+[0m[INFO] [1774070060.357633504, 213.158000000]: Got new plan[0m
+[0m[INFO] [1774070060.630521845, 213.658000000]: Got new plan[0m
+[0m[INFO] [1774070060.913802823, 214.158000000]: Got new plan[0m
+[0m[INFO] [1774070061.188683493, 214.658000000]: Got new plan[0m
+[0m[INFO] [1774070061.477377478, 215.158000000]: Got new plan[0m
+[0m[INFO] [1774070061.759694352, 215.660000000]: Got new plan[0m
+[0m[INFO] [1774070062.037467341, 216.158000000]: Got new plan[0m
+[0m[INFO] [1774070062.319458890, 216.658000000]: Got new plan[0m
+[0m[INFO] [1774070062.626217993, 217.160000000]: Got new plan[0m
+[0m[INFO] [1774070062.934108615, 217.658000000]: Got new plan[0m
+[0m[INFO] [1774070063.243979693, 218.160000000]: Got new plan[0m
+[0m[INFO] [1774070063.535503071, 218.658000000]: Got new plan[0m
+[0m[INFO] [1774070063.814380274, 219.158000000]: Got new plan[0m
+[0m[INFO] [1774070064.110571019, 219.658000000]: Got new plan[0m
+[0m[INFO] [1774070064.397254871, 220.160000000]: Got new plan[0m
+[0m[INFO] [1774070064.693317386, 220.658000000]: Got new plan[0m
+[0m[INFO] [1774070065.006258883, 221.158000000]: Got new plan[0m
+[0m[INFO] [1774070065.306443785, 221.660000000]: Got new plan[0m
+[0m[INFO] [1774070065.578267106, 222.160000000]: Got new plan[0m
+[0m[INFO] [1774070065.854463337, 222.660000000]: Got new plan[0m
+[0m[INFO] [1774070066.160041060, 223.158000000]: Got new plan[0m
+[0m[INFO] [1774070066.466462971, 223.658000000]: Got new plan[0m
+[0m[INFO] [1774070066.773046358, 224.158000000]: Got new plan[0m
+[0m[INFO] [1774070079.341500527[0m[INFO] [1774070053.036024090, 200.662000000]: Got new plan[0m
+[0m[INFO] [1774070053.483406125, 201.412000000]: Got new plan[0m
+[0m[INFO] [1774070053.900510241, 202.112000000]: Got new plan[0m
+[0m[INFO] [1774070054.356672530, 202.862000000]: Got new plan[0m
+[0m[INFO] [1774070054.810841304, 203.662000000]: Got new plan[0m
+[0m[INFO] [1774070055.242545933, 204.412000000]: Got new plan[0m
+[0m[INFO] [1774070055.613590241, 205.062000000]: Got new plan[0m
+[0m[INFO] [1774070056.039765509, 205.762000000]: Got new plan[0m
+[0m[INFO] [1774070056.168188717, 205.962000000]: Got new plan[0m
+[0m[INFO] [1774070056.471033207, 206.512000000]: Got new plan[0m
+[0m[INFO] [1774070056.727354827, 206.964000000]: Got new plan[0m
+[0m[INFO] [1774070057.017834536, 207.464000000]: Got new plan[0m
+[0m[INFO] [1774070057.313395989, 207.962000000]: Got new plan[0m
+[0m[INFO] [1774070057.595224866, 208.462000000]: Got new plan[0m
+[0m[INFO] [1774070057.902410210, 208.962000000]: Got new plan[0m
+[0m[INFO] [1774070058.202354072, 209.462000000]: Got new plan[0m
+[0m[INFO] [1774070058.506585358, 209.962000000]: Got new plan[0m
+[0m[INFO] [1774070058.813394322, 210.512000000]: Got new plan[0m
+[0m[INFO] [1774070059.084576477, 210.962000000]: Got new plan[0m
+[0m[INFO] [1774070059.388423072, 211.464000000]: Got new plan[0m
+[0m[INFO] [1774070059.628377452, 211.862000000]: Got new plan[0m
+[0m[INFO] [1774070059.935423882, 212.412000000]: Got new plan[0m
+[0m[INFO] [1774070060.195844146, 212.862000000]: Got new plan[0m
+[0m[INFO] [1774070060.799773526, 213.962000000]: Got new plan[0m
+[0m[INFO] [1774070061.251764768, 214.762000000]: Got new plan[0m
+[0m[INFO] [1774070061.708739205, 215.564000000]: Got new plan[0m
+[0m[INFO] [1774070062.123456823, 216.312000000]: Got new plan[0m
+[0m[INFO] [1774070062.479187057, 216.912000000]: Got new plan[0m
+[0m[INFO] [1774070062.811827423, 217.464000000]: Got new plan[0m
+[0m[INFO] [1774070063.023072341, 217.812000000]: Got new plan[0m
+[0m[INFO] [1774070063.220392337, 218.112000000]: Got new plan[0m
+[0m[INFO] [1774070063.791190671, 219.112000000]: Got new plan[0m
+[0m[INFO] [1774070064.167633755, 219.764000000]: Got new plan[0m
+[0m[INFO] [1774070064.547501079, 220.414000000]: Got new plan[0m
+[0m[INFO] [1774070064.922170304, 221.016000000]: Got new plan[0m
+[0m[INFO] [1774070065.387110500, 221.812000000]: Got new plan[0m
+[0m[INFO] [1774070065.794400235, 222.562000000]: Got new plan[0m
+[0m[INFO] [1774070066.262090273, 223.312000000]: Got new plan[0m
+[0m[INFO] [1774070066.350459152, 223.466000000]: Got new plan[0m
+[0m[INFO] [1774070066.655338731, 223.962000000]: Got new plan[0m
+[0m[INFO] [1774070067.010222411, 224.564000000]: Got new plan[0m
+[0m[INFO] [1774070067.258159174, 225.014000000]: Got new plan[0m
+[0m[INFO] [1774070067.539102325, 225.512000000]: Got new plan[0m
+[0m[INFO] [1774070067.809347697, 226.012000000]: Got new plan[0m
+[0m[INFO] [1774070068.080482374, 226.514000000]: Got new plan[0m
+[0m[INFO] [1774070068.350717061, 227.012000000]: Got new plan[0m
+[0m[INFO] [1774070068.627332422, 227.512000000]: Got new plan[0m
+[0m[INFO] [1774070068.928272467, 228.012000000]: Got new plan[0m
+[0m[INFO] [1774070069.475305365, 228.914000000]: Got new plan[0m
+[0m[INFO] [1774070069.913929748, 229.712000000]: Got new plan[0m
+[0m[INFO] [1774070070.425963933, 230.562000000]: Got new plan[0m
+[0m[INFO] [1774070070.730849455, 231.062000000]: Got new plan[0m
+[0m[INFO] [1774070070.906176677, 231.364000000]: Got new plan[0m
+[0m[INFO] [1774070071.208961826, 231.862000000]: Got new plan[0m
+[0m[INFO] [1774070071.453943348, 232.262000000]: Got new plan[0m
+[0m[INFO] [1774070071.757039576, 232.812000000]: Got new plan[0m
+[0m[INFO] [1774070072.025817423, 233.262000000]: Got new plan[0m
+[0m[INFO] [1774070072.059911400, 233.312000000]: GOAL Reached![0m
+[0m[INFO] [1774070079.410105235, 245.532000000]: Got new plan[0m
+[0m[INFO] [1774070079.846945096, 246.332000000]: Got new plan[0m
+[0m[INFO] [1774070080.141401190, 246.882000000]: Got new plan[0m
+[0m[INF[33m[WARN] [1774070083.992033254, 253.838000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 3.3680 seconds[0m
+E20260321 13:14:45.151347 82623 path_planner_node.cpp:250] Failed to get a path.
+E20260321 13:14:45.176928 82623 path_planner_node.cpp:250] Failed to get a path.
+[33m[WARN] [1774070085.309027349, 256.026000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 2.1880 seconds[0m
+[33m[WARN] [1774070088.496500438, 261.270000000]: Map update loop missed its desired rate of 1.0000Hz... the loop actually took 1.2440 seconds[0m
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+, 245.408000000]: Got new plan[0m
+[0m[INFO] [1774070079.615864741, 245.910000000]: Got new plan[0m
+[0m[INFO] [1774070079.890249139, 246.410000000]: Got new plan[0m
+[0m[INFO] [1774070080.154328762, 246.908000000]: Got new plan[0m
+[0m[INFO] [1774070080.423877195, 247.408000000]: Got new plan[0m
+[0m[INFO] [1774070080.694432479, 247.908000000]: Got new plan[0m
+[0m[INFO] [1774070080.970235729, 248.410000000]: Got new plan[0m
+[0m[INFO] [1774070081.240304212, 248.910000000]: Got new plan[0m
+[0m[INFO] [1774070081.510765698, 249.408000000]: Got new plan[0m
+[0m[INFO] [1774070081.783295501, 249.908000000]: Got new plan[0m
+[0m[INFO] [1774070082.058880286, 250.408000000]: Got new plan[0m
+[0m[INFO] [1774070082.332343326, 250.910000000]: Got new plan[0m
+[0m[INFO] [1774070082.609057257, 251.408000000]: Got new plan[0m
+[0m[INFO] [1774070082.910227666, 251.910000000]: Got new plan[0m
+[0m[INFO] [1774070083.183872368, 252.408000000]: Got new plan[0m
+[0m[INFO] [1774070083.469094656, 252.908000000]: Got new plan[0m
+[0m[INFO] [1774070083.755212186, 253.410000000]: Got new plan[0m
+[0m[INFO] [1774070084.039573666, 253.908000000]: Got new plan[0m
+[0m[INFO] [1774070084.346846919, 254.408000000]: Got new plan[0m
+[0m[INFO] [1774070084.656093502, 254.908000000]: Got new plan[0m
+[0m[INFO] [1774070084.927229392, 255.408000000]: Got new plan[0m
+[0m[INFO] [1774070085.060994388, 255.608000000]: Got new plan[0m
+[0m[INFO] [1774070085.232917570, 255.908000000]: Got new plan[0m
+[0m[INFO] [1774070085.529143972, 256.408000000]: Got new plan[0m
+[0m[INFO] [1774070085.819260409, 256.908000000]: Got new plan[0m
+[0m[INFO] [1774070086.098452288, 257.408000000]: Got new plan[0m
+[0m[INFO] [1774070086.389442596, 257.908000000]: Got new plan[0m
+[0m[INFO] [1774070086.683753847, 258.408000000]: Got new plan[0m
+[0m[INFO] [1774070086.980210591, 258.908000000]: Got new plan[0m
+[0m[INFO] [1774070087.260747709, 259.408000000]: Got new plan[0m
+[0m[INFO] [1774070087.556753272, 259.908000000]: Got new plan[0m
+[0m[INFO] [1774070087.829890993, 260.408000000]: Got new plan[0m
+[0m[INFO] [1774070088.136746314, 260.908000000]: Got new plan[0m
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+O] [1774070080.381669052, 247.334000000]: Got new plan[0m
+[0m[INFO] [1774070080.627789228, 247.782000000]: Got new plan[0m
+[0m[INFO] [1774070080.869443883, 248.232000000]: Got new plan[0m
+[0m[INFO] [1774070081.201449067, 248.832000000]: Got new plan[0m
+[0m[INFO] [1774070081.468429323, 249.334000000]: Got new plan[0m
+[0m[INFO] [1774070081.904206535, 250.134000000]: Got new plan[0m
+[0m[INFO] [1774070082.202452567, 250.682000000]: Got new plan[0m
+[0m[INFO] [1774070082.621793670, 251.432000000]: Got new plan[0m
+[0m[INFO] [1774070083.111268755, 252.282000000]: Got new plan[0m
+[0m[INFO] [1774070083.565637075, 253.082000000]: Got new plan[0m
+[0m[INFO] [1774070083.989343967, 253.834000000]: Got new plan[0m
+[0m[INFO] [1774070084.461300105, 254.584000000]: Got new plan[0m
+[0m[INFO] [1774070084.861211860, 255.282000000]: Got new plan[0m
+[0m[INFO] [1774070085.188746780, 255.832000000]: Got new plan[0m
+[0m[INFO] [1774070085.311960037, 256.032000000]: Got new plan[0m
+[0m[INFO] [1774070085.682803752, 256.682000000]: Got new plan[0m
+[0m[INFO] [1774070085.914344796, 257.082000000]: Got new plan[0m
+[0m[INFO] [1774070086.253041742, 257.682000000]: Got new plan[0m
+[0m[INFO] [1774070086.535026206, 258.132000000]: Got new plan[0m
+[0m[INFO] [1774070086.844098256, 258.682000000]: Got new plan[0m
+[0m[INFO] [1774070087.111700677, 259.132000000]: Got new plan[0m
+[0m[INFO] [1774070087.675155497, 260.132000000]: Got new plan[0m
+[0m[INFO] [1774070088.124160690, 260.884000000]: Got new plan[0m
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+[INFO] [1774069982.280325, 0.000000]: Ground Truth Odom Publisher initialized
+[INFO] [1774069982.236611, 0.000000]: Ground Truth Odom Publisher initialized
+[31mWARNING: disk usage in log directory [/data/lzq/.ros/log] is over 1GB.
+It's recommended that you use the 'rosclean' command.[0m
+[31m[robot1/urdf_spawner-12] process has died [pid 82339, exit code 1, cmd /opt/ros/noetic/lib/gazebo_ros/spawn_model -urdf -x -5 -y -3 -z 0 -Y 0 -model robot1 -param robot_description __name:=urdf_spawner __log:=/data/lzq/.ros/log/a199c896-24e4-11f1-aa32-cd86210345d0/robot1-urdf_spawner-12.log].
+log file: /data/lzq/.ros/log/a199c896-24e4-11f1-aa32-cd86210345d0/robot1-urdf_spawner-12*.log[0m
+[31m[rviz-16] escalating to SIGTERM[0m
+
+auto-starting new master
+[1mprocess[master]: started with pid [82297][0m
+[1mROS_MASTER_URI=http://localhost:11311[0m
+]2;/data/lzq/ros_motion_planning/src/sim_env/launch/main.launch http://localhost:11311
+[1msetting /run_id to a199c896-24e4-11f1-aa32-cd86210345d0[0m
+[1mprocess[rosout-1]: started with pid [82307][0m
+started core service [/rosout]
+[1mprocess[gazebo-2]: started with pid [82314][0m
+[1mprocess[map_server-3]: started with pid [82316][0m
+[1mprocess[robot2/robot_state_publisher-4]: started with pid [82318][0m
+[1mprocess[robot2/joint_state_publisher-5]: started with pid [82321][0m
+[1mprocess[robot2/urdf_spawner-6]: started with pid [82322][0m
+[1mprocess[robot2/tf_map2odom_node-7]: started with pid [82332][0m
+[1mprocess[robot2/ground_truth_odom_publisher-8]: started with pid [82335][0m
+[1mprocess[robot2/move_base-9]: started with pid [82336][0m
+[1mprocess[robot1/robot_state_publisher-10]: started with pid [82337][0m
+[1mprocess[robot1/joint_state_publisher-11]: started with pid [82338][0m
+[1mprocess[robot1/urdf_spawner-12]: started with pid [82339][0m
+[1mprocess[robot1/tf_map2odom_node-13]: started with pid [82349][0m
+[1mprocess[robot1/ground_truth_odom_publisher-14]: started with pid [82383][0m
+[1mprocess[robot1/move_base-15]: started with pid [82416][0m
+[1mprocess[rviz-16]: started with pid [82448][0m
+[1m[robot2/urdf_spawner-6] process has finished cleanly
+log file: /data/lzq/.ros/log/a199c896-24e4-11f1-aa32-cd86210345d0/robot2-urdf_spawner-6*.log[0m
+[rviz-16] killing on exit
+[robot1/move_base-15] killing on exit
+[robot1/ground_truth_odom_publisher-14] killing on exit
+[robot1/tf_map2odom_node-13] killing on exit
+[robot1/joint_state_publisher-11] killing on exit
+[robot1/robot_state_publisher-10] killing on exit
+[robot2/move_base-9] killing on exit
+[robot2/ground_truth_odom_publisher-8] killing on exit
+[robot2/tf_map2odom_node-7] killing on exit
+[robot2/joint_state_publisher-5] killing on exit
+[robot2/robot_state_publisher-4] killing on exit
+[map_server-3] killing on exit
+[gazebo-2] killing on exit
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

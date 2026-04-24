@@ -1,0 +1,2 @@
+﻿model_key,model_label,scenario,repeats,avg_success_rate,avg_collision_rate,avg_reward,avg_timeout_rate
+ours_run1,扩散模型对抗训练 TD3（本文）,adv,3,0.805229,0.194771,37.123580,0.000000

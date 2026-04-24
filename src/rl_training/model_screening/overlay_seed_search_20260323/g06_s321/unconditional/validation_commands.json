@@ -1,0 +1,21 @@
+[
+  {
+    "key": "unconditional_diffusion",
+    "label": "unconditional_diffusion",
+    "opponent_mode": "diffusion",
+    "robot2_global_planner": "diffusion",
+    "robot2_local_planner": "pid",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_seed_search_20260323/g06_s321/unconditional/configs/unconditional_diffusion.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_seed_search_20260323/g06_s321/unconditional/csv/unconditional_diffusion.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_seed_search_20260323/g06_s321/unconditional/configs/unconditional_diffusion.yaml --robot1_mode movebase --opponent_mode diffusion --episodes 1 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_seed_search_20260323/g06_s321/unconditional/csv/unconditional_diffusion.csv --goal_x -1.275 --goal_y -4.975 --random_seed 321 --record_trajectory_output_dir /data/lzq/ros_motion_planning/src/rl_training/model_screening/overlay_seed_search_20260323/g06_s321/unconditional/trajectories --record_all_trajectory_episodes",
+    "goal_offset": 0.0,
+    "nomad_overrides": {
+      "weights_path": "/data/lzq/visualnav-transformer/train/logs/diffusion_2d_ablation/diffusion_2d_gazebo_20260310_212252/latest.pth",
+      "config_path": "/data/lzq/visualnav-transformer/train/config/diffusion_2d.yaml",
+      "classical_guidance_weight": 0.25,
+      "opponent_guidance_enabled": true,
+      "adversarial_max_step": 0.25,
+      "adversarial_max_turn_deg": 60.0
+    }
+  }
+]

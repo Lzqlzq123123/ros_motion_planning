@@ -1,0 +1,62 @@
+[
+  {
+    "category": "cand_run13",
+    "scenario": "adv",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_adv.yaml",
+    "group": "forklift_movebase",
+    "run_name": "run_13",
+    "model_path": "/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_13/td3_model",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run13__forklift_movebase__run_13__adv.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_adv.yaml --model_path /data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_13/td3_model --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run13__forklift_movebase__run_13__adv.csv"
+  },
+  {
+    "category": "cand_run13",
+    "scenario": "noadv",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_noadv.yaml",
+    "group": "forklift_movebase",
+    "run_name": "run_13",
+    "model_path": "/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_13/td3_model",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run13__forklift_movebase__run_13__noadv.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_noadv.yaml --model_path /data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_13/td3_model --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run13__forklift_movebase__run_13__noadv.csv"
+  },
+  {
+    "category": "cand_run14",
+    "scenario": "adv",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_adv.yaml",
+    "group": "forklift_movebase",
+    "run_name": "run_14",
+    "model_path": "/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_14/td3_model",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run14__forklift_movebase__run_14__adv.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_adv.yaml --model_path /data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_14/td3_model --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run14__forklift_movebase__run_14__adv.csv"
+  },
+  {
+    "category": "cand_run14",
+    "scenario": "noadv",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_noadv.yaml",
+    "group": "forklift_movebase",
+    "run_name": "run_14",
+    "model_path": "/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_14/td3_model",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run14__forklift_movebase__run_14__noadv.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_noadv.yaml --model_path /data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_14/td3_model --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run14__forklift_movebase__run_14__noadv.csv"
+  },
+  {
+    "category": "cand_run15",
+    "scenario": "adv",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_adv.yaml",
+    "group": "forklift_movebase",
+    "run_name": "run_15",
+    "model_path": "/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_15/td3_model",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run15__forklift_movebase__run_15__adv.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_adv.yaml --model_path /data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_15/td3_model --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run15__forklift_movebase__run_15__adv.csv"
+  },
+  {
+    "category": "cand_run15",
+    "scenario": "noadv",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_noadv.yaml",
+    "group": "forklift_movebase",
+    "run_name": "run_15",
+    "model_path": "/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_15/td3_model",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run15__forklift_movebase__run_15__noadv.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/configs/forklift_eval_noadv.yaml --model_path /data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_15/td3_model --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/unknown_candidate_eval_20260320/csv/cand_run15__forklift_movebase__run_15__noadv.csv"
+  }
+]

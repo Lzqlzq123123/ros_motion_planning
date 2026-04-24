@@ -1,0 +1,3 @@
+method,agent,source_type,point_idx,x,y
+ego_movebase,robot1,plan,0,-4.974999895319343,-2.9749998655170202
+ego_movebase,robot1,plan,1,-3.0249998662620783,-4.0249998811632395

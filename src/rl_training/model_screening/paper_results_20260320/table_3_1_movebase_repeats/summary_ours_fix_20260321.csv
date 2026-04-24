@@ -1,0 +1,2 @@
+﻿method_key,opponent_mode,robot2_global_planner,robot1_mode,valid_success_rate,collision_rate,avg_min_ttc_s,avg_frechet_distance,avg_smoothness,source_csv
+ours_diffusion,diffusion,diffusion,movebase,0.6785714285714286,0.32142857142857145,3.4672166226724648,2.671202083301569,9.886667345206691e-05,/data/lzq/ros_motion_planning/src/rl_training/model_screening/table3_movebase_eval_diffusion_fix_20260321/csv/ours_diffusion.csv

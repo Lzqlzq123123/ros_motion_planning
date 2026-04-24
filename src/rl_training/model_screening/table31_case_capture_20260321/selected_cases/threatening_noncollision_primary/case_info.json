@@ -1,0 +1,23 @@
+{
+  "case_name": "threatening_noncollision_primary",
+  "episode": 19,
+  "source_episode_dir": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/episode_images/ours_diffusion/episode_019",
+  "triptych_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/selected_cases/threatening_noncollision_primary_triptych.png",
+  "selected_frames": [
+    "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/selected_cases/threatening_noncollision_primary/threatening_noncollision_primary_frame1_frame_000000.png",
+    "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/selected_cases/threatening_noncollision_primary/threatening_noncollision_primary_frame2_frame_000007.png",
+    "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_20260321/selected_cases/threatening_noncollision_primary/threatening_noncollision_primary_frame3_frame_000013.png"
+  ],
+  "collided": false,
+  "reached_goal": true,
+  "timed_out": false,
+  "steps": 68,
+  "episode_reward": 84.96381977945566,
+  "min_ttc": 1.1898640184058202,
+  "goal_x": -6.1164288118568475,
+  "goal_y": -3.075914494637855,
+  "goal_yaw": 2.853293446661737,
+  "frechet_distance": 2.208339535666866,
+  "smoothness": 0.0001076892135302338,
+  "frame_count": 14
+}

@@ -1,0 +1,9 @@
+{
+  "selection_rule": "manual candidate screening for no-adversarial baseline",
+  "top_k": 1,
+  "recommended": {
+    "cand_run13": [{"group": "forklift_movebase", "run_name": "run_13", "model_path": "logs/forklift_movebase/run_13/td3_model"}],
+    "cand_run14": [{"group": "forklift_movebase", "run_name": "run_14", "model_path": "logs/forklift_movebase/run_14/td3_model"}],
+    "cand_run15": [{"group": "forklift_movebase", "run_name": "run_15", "model_path": "logs/forklift_movebase/run_15/td3_model"}]
+  }
+}

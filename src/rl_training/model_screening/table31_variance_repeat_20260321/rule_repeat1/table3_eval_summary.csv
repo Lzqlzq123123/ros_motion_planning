@@ -1,0 +1,2 @@
+﻿method_key,opponent_mode,robot2_global_planner,robot2_local_planner,robot1_mode,valid_success_rate,collision_rate,avg_min_ttc_s,avg_frechet_distance,avg_smoothness,source_csv
+rule_based,rule_based,theta_star,pid,movebase,0.631578947368421,0.3684210526315789,2.698348456811122,2.7733821524890137,0.0002046110531028122,/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_variance_repeat_20260321/rule_repeat1/csv/rule_based.csv

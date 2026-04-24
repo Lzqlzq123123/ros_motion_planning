@@ -1,0 +1,14 @@
+[WARN] [1774258542.267065, 123.542000]: [capture_path_once] ROS shutdown before idle timeout; saving latest received path if any
+[INFO] [1774258504.593592, 101.134000]: [capture_path_once] received path with 3 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258505.171677, 102.136000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258506.049567, 103.638000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258506.915596, 105.136000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258507.738459, 106.636000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258508.554375, 108.134000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258509.111709, 109.136000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258509.933441, 110.638000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258510.806857, 112.136000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258511.415546, 113.138000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258512.293095, 114.640000]: [capture_path_once] received path with 2 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258513.131102, 116.140000]: [capture_path_once] received path with 4 poses on /robot2/move_base/PathPlanner/plan
+[INFO] [1774258542.278128, 123.542000]: [capture_path_once] saved 4 poses to /data/lzq/ros_motion_planning/src/rl_training/model_screening/fixed_goal_m3_m4_far_aligned_rerun_20260323/raw_selected_ep005/planner_plan/robot2_plan.csv

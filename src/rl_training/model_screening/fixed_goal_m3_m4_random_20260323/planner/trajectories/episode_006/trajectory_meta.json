@@ -1,0 +1,16 @@
+{
+  "robot1_mode": "movebase",
+  "opponent_mode": "movebase",
+  "collided": false,
+  "reached_goal": true,
+  "timed_out": false,
+  "steps": 68,
+  "episode_reward": 86.81334429234266,
+  "min_ttc": 1.126241710496918,
+  "frechet_distance": 2.2885423491717107,
+  "smoothness": 9.616711241435753e-05,
+  "goal_x": -3.0,
+  "goal_y": -4.0,
+  "goal_yaw": -0.7205128002756952,
+  "skipped": false
+}

@@ -1,0 +1,4 @@
+method,agent,source_type,point_idx,x,y
+movebase,robot2,plan,0,-2.72499986179173,-1.5249998439103365
+movebase,robot2,plan,1,-2.774999862536788,-1.5749998446553946
+movebase,robot2,plan,2,-3.0249998662620783,-4.0249998811632395

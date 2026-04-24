@@ -1,0 +1,4 @@
+﻿case_name,episode,frame1,frame2,frame3,collided,steps,min_ttc_s,frechet_distance,smoothness,triptych_plain_path
+collision_sequence_primary_ep20,20,35,39,43,True,65,0.14620207754302061,2.331111177454876,0.00011855556049993383,/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_20260321/selected_collision_sequences/collision_sequence_primary_ep20_triptych_plain.png
+collision_sequence_alt_ep02,2,54,59,64,True,80,0.32983434300209274,2.775309233851185,9.351207935393976e-05,/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_20260321/selected_collision_sequences/collision_sequence_alt_ep02_triptych_plain.png
+collision_sequence_alt_ep08,8,108,115,122,True,178,0.8074830153959229,3.117492195665594,0.00012335177010390697,/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_20260321/selected_collision_sequences/collision_sequence_alt_ep08_triptych_plain.png

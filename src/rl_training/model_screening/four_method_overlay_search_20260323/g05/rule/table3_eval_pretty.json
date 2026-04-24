@@ -1,0 +1,13 @@
+{
+  "rule_based": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "rule_based",
+    "robot2_local_planner": "pid",
+    "success_percent": 100.0,
+    "collision_percent": 0.0,
+    "avg_min_ttc_s": 4.422,
+    "avg_frechet_distance": 2.576,
+    "avg_smoothness": 0.00019368063024646895,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/four_method_overlay_search_20260323/g05/rule/csv/rule_based.csv"
+  }
+}

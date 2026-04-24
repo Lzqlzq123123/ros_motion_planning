@@ -1,0 +1,3 @@
+row_type,episode,robot1_mode,opponent_mode,opponent_enabled,collided,reached_goal,timed_out,steps,episode_reward,goal_x,goal_y,goal_yaw,model_path,avg_reward,success_rate,collision_rate,timeout_rate,min_ttc,frechet_distance,smoothness
+,1,movebase,diffusion,True,1,0,0,73,-112.08418575674295,-3.0,-4.0,-0.6698556438885381,,,,,,0.5722072228866094,2.1936042818565604,6.0987725661544286e-05
+summary,all,movebase,diffusion,True,,,,,,,,,,-112.08418575674295,0.0,1.0,0.0,0.5722072228866094,2.1936042818565604,6.0987725661544286e-05

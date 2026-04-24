@@ -1,0 +1,5 @@
+﻿model_name,scenario,repeats,avg_success_rate,avg_collision_rate,avg_reward,avg_timeout_rate
+run_1,adv,3,0.776797,0.223203,31.097907,0.000000
+run_1,noadv,3,0.908153,0.091847,56.337184,0.000000
+run_2,adv,3,0.679154,0.267028,9.485158,0.000000
+run_2,noadv,3,0.775658,0.203509,24.659973,0.000000

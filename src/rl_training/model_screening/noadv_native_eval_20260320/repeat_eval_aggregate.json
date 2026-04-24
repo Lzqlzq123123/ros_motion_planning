@@ -1,0 +1,80 @@
+[
+  {
+    "model_key": "noadv_run1",
+    "model_label": "无对抗训练 TD3",
+    "scenario": "noadv",
+    "repeats": 2,
+    "avg_success_rate": 0.0,
+    "avg_collision_rate": 0.5,
+    "avg_reward": -229.85392587280109,
+    "avg_timeout_rate": 0.0,
+    "per_repeat": [
+      {
+        "repeat_idx": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.5,
+        "avg_reward": -244.3059141404099,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 2,
+        "success_rate": 0.0,
+        "collision_rate": 0.5,
+        "avg_reward": -215.40193760519227,
+        "timeout_rate": 0.0
+      }
+    ]
+  },
+  {
+    "model_key": "noadv_seed1",
+    "model_label": "无对抗训练 TD3",
+    "scenario": "noadv",
+    "repeats": 2,
+    "avg_success_rate": 0.027777777777777776,
+    "avg_collision_rate": 0.3137254901960784,
+    "avg_reward": -72.01268444680213,
+    "avg_timeout_rate": 0.0,
+    "per_repeat": [
+      {
+        "repeat_idx": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.29411764705882354,
+        "avg_reward": -70.55493140001508,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 2,
+        "success_rate": 0.05555555555555555,
+        "collision_rate": 0.3333333333333333,
+        "avg_reward": -73.47043749358919,
+        "timeout_rate": 0.0
+      }
+    ]
+  },
+  {
+    "model_key": "noadv_seed2",
+    "model_label": "无对抗训练 TD3",
+    "scenario": "noadv",
+    "repeats": 2,
+    "avg_success_rate": 0.0,
+    "avg_collision_rate": 0.3602941176470588,
+    "avg_reward": -79.2372050037498,
+    "avg_timeout_rate": 0.0,
+    "per_repeat": [
+      {
+        "repeat_idx": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.47058823529411764,
+        "avg_reward": -84.30324730759158,
+        "timeout_rate": 0.0
+      },
+      {
+        "repeat_idx": 2,
+        "success_rate": 0.0,
+        "collision_rate": 0.25,
+        "avg_reward": -74.17116269990802,
+        "timeout_rate": 0.0
+      }
+    ]
+  }
+]

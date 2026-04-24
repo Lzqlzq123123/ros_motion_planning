@@ -1,0 +1,5 @@
+﻿model_key,model_label,scenario,repeats,avg_success_rate,avg_collision_rate,avg_reward,avg_timeout_rate
+planner_run18,规划器驱动对抗训练 TD3,adv,3,0.854167,0.125000,41.489403,0.000000
+planner_run18,规划器驱动对抗训练 TD3,noadv,3,0.826998,0.173002,33.549105,0.000000
+rule_run10,规则对抗训练 TD3,adv,3,0.857407,0.125926,44.687336,0.000000
+rule_run10,规则对抗训练 TD3,noadv,3,0.877193,0.035088,51.035162,0.000000

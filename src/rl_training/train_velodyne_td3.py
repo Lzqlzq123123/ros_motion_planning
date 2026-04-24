@@ -100,6 +100,11 @@ def save_experiment_config(log_dir, cfg, env_cfg, runner_cfg, hyperparams, git_i
             'max_episode_length': env_cfg.get('max_episode_length', 500),
             'collision_dist': env_cfg.get('collision_dist', 0.35),
             'goal_reached_dist': env_cfg.get('goal_reached_dist', 0.3),
+            'goal_mode': env_cfg.get('goal_mode', 'random'),
+            'goal_range': env_cfg.get('goal_range', {}),
+            'ego_spawn_radius': env_cfg.get('ego_spawn_radius'),
+            'adv_spawn_radius': env_cfg.get('adv_spawn_radius'),
+            'goal_offset': env_cfg.get('goal_offset', env_cfg.get('opponent', {}).get('goal_offset')),
             'curriculum': env_cfg.get('curriculum', {}),
         },
         'opponent': opponent_config,
@@ -141,6 +146,49 @@ def load_yaml(path):
     with open(path, 'r') as f:
         return yaml.safe_load(f)
 
+
+def apply_train_overrides(env_cfg, args):
+    env_cfg = dict(env_cfg)
+
+    if args.max_steps is not None:
+        env_cfg['max_episode_length'] = int(args.max_steps)
+
+    if any(v is not None for v in [args.goal_x_min, args.goal_x_max, args.goal_y_min, args.goal_y_max]):
+        if None in [args.goal_x_min, args.goal_x_max, args.goal_y_min, args.goal_y_max]:
+            raise ValueError('goal_range override requires goal_x_min, goal_x_max, goal_y_min, goal_y_max')
+        if args.goal_x_min > args.goal_x_max:
+            raise ValueError('goal_x_min must be <= goal_x_max')
+        if args.goal_y_min > args.goal_y_max:
+            raise ValueError('goal_y_min must be <= goal_y_max')
+        env_cfg['goal_range'] = {
+            'x_min': float(args.goal_x_min),
+            'x_max': float(args.goal_x_max),
+            'y_min': float(args.goal_y_min),
+            'y_max': float(args.goal_y_max),
+        }
+        env_cfg['goal_mode'] = 'random'
+
+    if args.goal_x is not None and args.goal_y is not None:
+        env_cfg['goal_range'] = {
+            'x_min': float(args.goal_x),
+            'x_max': float(args.goal_x),
+            'y_min': float(args.goal_y),
+            'y_max': float(args.goal_y),
+        }
+        env_cfg['goal_mode'] = 'fixed'
+
+    opponent_cfg = dict(env_cfg.get('opponent', {}))
+    if args.opponent_mode is not None:
+        opponent_cfg['mode'] = args.opponent_mode
+    if opponent_cfg:
+        env_cfg['opponent'] = opponent_cfg
+
+    if args.opponent_goal_offset is not None:
+        env_cfg['goal_offset'] = float(args.opponent_goal_offset)
+
+    return env_cfg
+
+
 def get_user_config_init_poses():
     # Path to user_config.yaml relative to this script
     # src/rl_training/train_velodyne_td3.py -> src/user_config/user_config.yaml
@@ -180,10 +228,31 @@ def get_user_config_init_poses():
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, required=True, help='Path to config yaml')
 parser.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu')
+parser.add_argument('--max_steps', type=int, default=None, help='Override max_episode_length from yaml')
+parser.add_argument('--goal_x', type=float, default=None, help='Fixed goal x in map frame')
+parser.add_argument('--goal_y', type=float, default=None, help='Fixed goal y in map frame')
+parser.add_argument('--goal_x_min', type=float, default=None, help='Goal range x lower bound override')
+parser.add_argument('--goal_x_max', type=float, default=None, help='Goal range x upper bound override')
+parser.add_argument('--goal_y_min', type=float, default=None, help='Goal range y lower bound override')
+parser.add_argument('--goal_y_max', type=float, default=None, help='Goal range y upper bound override')
+parser.add_argument('--opponent_mode', type=str, choices=['movebase', 'diffusion', 'rule_based'], default=None, help='Override opponent mode from yaml')
+parser.add_argument('--opponent_goal_offset', type=float, default=None, help='Override opponent goal offset from yaml')
 args = parser.parse_args()
 
 cfg = load_yaml(args.config)
-env_cfg = cfg['env']
+try:
+    if args.goal_x is not None and args.goal_y is None:
+        raise ValueError('both goal_x and goal_y are required for fixed goal')
+    if args.goal_y is not None and args.goal_x is None:
+        raise ValueError('both goal_x and goal_y are required for fixed goal')
+    if args.goal_x is not None and any(v is not None for v in [args.goal_x_min, args.goal_x_max, args.goal_y_min, args.goal_y_max]):
+        raise ValueError('choose either fixed goal or goal_range override')
+
+    env_cfg = apply_train_overrides(cfg['env'], args)
+except ValueError as exc:
+    print(f"Invalid goal configuration: {exc}")
+    sys.exit(2)
+
 runner_cfg = cfg['runner']
 algo_cfg = runner_cfg.get('algorithm', {})
 
@@ -296,8 +365,11 @@ if resume_path:
 
 def evaluate(*, network, epoch, eval_episodes=10):
     avg_reward = 0.0
-    col = 0
-    success_count = 0
+    collision_episodes = 0
+    success_episodes = 0
+    timeout_episodes = 0
+    step_limit = env.max_episode_length
+
     for _ in range(eval_episodes):
         count = 0
         obs_td = env.reset()
@@ -306,68 +378,51 @@ def evaluate(*, network, epoch, eval_episodes=10):
         episode_reward = 0.0
         episode_collided = False
         episode_success = False
-        while not done and count < 501:
+
+        while not done and count < step_limit:
             action = network.get_action(np.array(state))
             a_in = np.array([(action[0] + 1) / 2.0, action[1]])
 
-            # Step env
             action_tensor = torch.tensor(a_in, dtype=torch.float32, device=device).unsqueeze(0)
             next_obs_td, reward_tensor, done_tensor, _ = env.step(action_tensor)
 
             state = next_obs_td['policy'][0].cpu().numpy()
             reward = float(reward_tensor[0].cpu().item())
             done = bool(done_tensor[0].cpu().item())
-
             episode_reward += reward
+            count += 1
 
-            # Check collision / success for this episode
             if reward < -90:
                 episode_collided = True
-            if reward >= 100:
+            elif reward > 90:
                 episode_success = True
-
-            count += 1
 
         avg_reward += episode_reward
         if episode_collided:
-            col += 1
+            collision_episodes += 1
         if episode_success:
-            success_count += 1
+            success_episodes += 1
+        if not done and count >= step_limit:
+            timeout_episodes += 1
 
     avg_reward /= eval_episodes
-    avg_col = col / eval_episodes
+    collision_rate = collision_episodes / eval_episodes
+    success_rate = success_episodes / eval_episodes
+    timeout_rate = timeout_episodes / eval_episodes
 
     print("..............................................")
     print(
-        "Average Reward over %i Evaluation Episodes, Epoch %i: %f, Collision Rate: %f, Successes: %d"
-        % (eval_episodes, epoch, avg_reward, avg_col, success_count)
+        f"Average Reward over {eval_episodes} Evaluation Episodes, Epoch {epoch}: {avg_reward:.6f}, "
+        f"Collision Rate: {collision_rate:.6f}, Success Rate: {success_rate:.6f}, Timeout Rate: {timeout_rate:.6f}"
     )
     print("..............................................")
 
-    # Write evaluation metrics to Tensorboard
-
     writer.add_scalar('eval/avg_reward', avg_reward, epoch)
-    writer.add_scalar('eval/collision_rate', avg_col, epoch)
-    writer.add_scalar('eval/success_count', success_count, epoch)
+    writer.add_scalar('eval/collision_rate', collision_rate, epoch)
+    writer.add_scalar('eval/success_rate', success_rate, epoch)
+    writer.add_scalar('eval/timeout_rate', timeout_rate, epoch)
 
-
-    return avg_reward, avg_col, success_count
-
-# Create evaluation data store
-evaluations = []
-# New: detailed eval metrics and training collision tracking
-eval_reward_history = []
-eval_col_history = []
-eval_success_history = []
-
-# Training collision counters
-train_collision_count_total = 0
-collisions_since_last_eval = 0
-train_collision_history = []
-train_collision_total_history = []
-# Per-episode collision counter
-episode_collisions = 0
-
+    return avg_reward, collision_rate, success_rate, timeout_rate
 timestep = 0
 timesteps_since_eval = 0
 episode_num = 0
@@ -412,19 +467,17 @@ while timestep < max_timesteps:
         if timesteps_since_eval >= eval_freq:
             print("Validating")
             timesteps_since_eval %= eval_freq
-            avg_reward, avg_col, success_count = evaluate(network=network, epoch=epoch, eval_episodes=eval_ep)
+            avg_reward, avg_col, success_rate, timeout_rate = evaluate(network=network, epoch=epoch, eval_episodes=eval_ep)
             evaluations.append(avg_reward)
             eval_reward_history.append(avg_reward)
             eval_col_history.append(avg_col)
-            eval_success_history.append(success_count)
+            eval_success_history.append(success_rate)
             train_collision_history.append(collisions_since_last_eval)
             train_collision_total_history.append(train_collision_count_total)
 
-            # Write training collision stats to Tensorboard for this evaluation epoch
-
             writer.add_scalar('train/collisions_interval', collisions_since_last_eval, epoch)
             writer.add_scalar('train/collisions_total', train_collision_count_total, epoch)
-            writer.add_scalar('train/curriculum_span', env.goal_span_upper, epoch)
+            writer.add_scalar('train/curriculum_expansion', env.curriculum_expansion, epoch)
 
 
             collisions_since_last_eval = 0
@@ -538,17 +591,18 @@ while timestep < max_timesteps:
         episode_collisions += 1
 
 # After the training is done, evaluate the network and save it
-avg_reward, avg_col, success_count = evaluate(network=network, epoch=epoch, eval_episodes=eval_ep)
+avg_reward, avg_col, success_rate, timeout_rate = evaluate(network=network, epoch=epoch, eval_episodes=eval_ep)
 evaluations.append(avg_reward)
 eval_reward_history.append(avg_reward)
 eval_col_history.append(avg_col)
-eval_success_history.append(success_count)
+eval_success_history.append(success_rate)
 train_collision_history.append(collisions_since_last_eval)
 train_collision_total_history.append(train_collision_count_total)
 
 # Write final evaluation training collision stats to Tensorboard
 writer.add_scalar('train/collisions_interval', collisions_since_last_eval, epoch)
 writer.add_scalar('train/collisions_total', train_collision_count_total, epoch)
+writer.add_scalar('train/curriculum_expansion', env.curriculum_expansion, epoch)
 
 
 if save_model:

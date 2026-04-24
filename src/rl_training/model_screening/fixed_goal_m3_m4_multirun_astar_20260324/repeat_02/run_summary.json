@@ -1,0 +1,16 @@
+{
+  "goal": [
+    -3.0,
+    -4.0
+  ],
+  "fixed_setup_json": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/fixed_goal_m3_m4_multirun_astar_20260324/repeat_02/fixed_episode_setup.json",
+  "output_dir": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/fixed_goal_m3_m4_multirun_astar_20260324/repeat_02",
+  "path_keys": [
+    "ego_movebase",
+    "movebase",
+    "diffusion",
+    "unconditional_diffusion",
+    "rule_based"
+  ],
+  "note": "rule_based uses executed odom path because this baseline has no global planner output topic."
+}

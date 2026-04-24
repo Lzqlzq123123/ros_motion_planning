@@ -1,0 +1,13 @@
+{
+  "rule_based": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "rule_based",
+    "robot2_local_planner": "pid",
+    "success_percent": 0.0,
+    "collision_percent": 100.0,
+    "avg_min_ttc_s": 0.92,
+    "avg_frechet_distance": 3.158,
+    "avg_smoothness": 0.0002233996920127192,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/scene_compare_multi_20260323/s07/rule/csv/rule_based.csv"
+  }
+}

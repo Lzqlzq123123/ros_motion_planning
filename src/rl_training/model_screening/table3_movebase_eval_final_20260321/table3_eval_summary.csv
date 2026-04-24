@@ -1,0 +1,4 @@
+﻿method_key,opponent_mode,robot2_global_planner,robot1_mode,valid_success_rate,collision_rate,avg_min_ttc_s,avg_frechet_distance,avg_smoothness,source_csv
+rule_based,rule_based,theta_star,movebase,0.5555555555555556,0.4444444444444444,2.602223426515175,2.7423954243580426,0.00016722397598694614,/data/lzq/ros_motion_planning/src/rl_training/model_screening/table3_movebase_eval_final_20260321/csv/rule_based.csv
+planner_based,movebase,theta_star,movebase,0.7931034482758621,0.1724137931034483,3.731909509667678,2.6435343852886506,6.471629476830252e-05,/data/lzq/ros_motion_planning/src/rl_training/model_screening/table3_movebase_eval_final_20260321/csv/planner_based.csv
+ours_diffusion,diffusion,diffusion,movebase,0.6896551724137931,0.3103448275862069,3.461284409936182,2.6119272235427617,9.583910415055572e-05,/data/lzq/ros_motion_planning/src/rl_training/model_screening/table3_movebase_eval_final_20260321/csv/ours_diffusion.csv

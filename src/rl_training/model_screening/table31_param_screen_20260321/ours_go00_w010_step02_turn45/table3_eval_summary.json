@@ -1,0 +1,46 @@
+[
+  {
+    "key": "ours_diffusion",
+    "label": "ours_diffusion",
+    "opponent_mode": "diffusion",
+    "robot2_global_planner": "diffusion",
+    "robot2_local_planner": "pid",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/ours_go00_w010_step02_turn45/configs/ours_diffusion.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/ours_go00_w010_step02_turn45/csv/ours_diffusion.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/ours_go00_w010_step02_turn45/configs/ours_diffusion.yaml --robot1_mode movebase --opponent_mode diffusion --episodes 10 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/ours_go00_w010_step02_turn45/csv/ours_diffusion.csv",
+    "goal_offset": 0.0,
+    "nomad_overrides": {
+      "classical_guidance_weight": 0.1,
+      "opponent_guidance_enabled": true,
+      "num_adversarial_samples": 128,
+      "adversarial_max_step": 0.2,
+      "adversarial_max_turn_deg": 45.0,
+      "adversarial_guidance_max_deviation": 2.0,
+      "adversarial_guidance_mean_deviation": 1.2
+    },
+    "summary": {
+      "row_type": "summary",
+      "episode": "all",
+      "robot1_mode": "movebase",
+      "opponent_mode": "diffusion",
+      "opponent_enabled": "True",
+      "collided": "",
+      "reached_goal": "",
+      "timed_out": "",
+      "steps": "",
+      "episode_reward": "",
+      "goal_x": "",
+      "goal_y": "",
+      "goal_yaw": "",
+      "model_path": "",
+      "avg_reward": "-60.46387411803007",
+      "success_rate": "0.3",
+      "collision_rate": "0.7",
+      "timeout_rate": "0.0",
+      "min_ttc": "1.838969754550907",
+      "frechet_distance": "2.8070752153401957",
+      "smoothness": "0.0001345819162703163"
+    },
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/ours_go00_w010_step02_turn45/stack_logs/ours_diffusion.log"
+  }
+]

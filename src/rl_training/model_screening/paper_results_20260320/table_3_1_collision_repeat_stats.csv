@@ -1,0 +1,4 @@
+﻿对抗方法,重复次数,碰撞率均值（%）,碰撞率标准差（pp）,碰撞率展示,重复1（%）,重复2（%）,重复3（%）,来源汇总CSV
+规则对抗（Rule-based）,3,37.9,1.8,37.9 ± 1.8,36.8,40.0,36.8,../table31_variance_repeat_20260321/rule_repeat1/table3_eval_summary.csv ; ../table31_variance_repeat_20260321/rule_repeat2/table3_eval_summary.csv ; ../table31_variance_repeat_20260321/rule_repeat3/table3_eval_summary.csv
+规划器驱动对抗（Planner-based）,3,31.9,14.8,31.9 ± 14.8,45.0,35.0,15.8,../table31_variance_repeat_20260321/planner_repeat1/table3_eval_summary.csv ; ../table31_variance_repeat_20260321/planner_repeat2/table3_eval_summary.csv ; ../table31_variance_repeat_20260321/planner_repeat3/table3_eval_summary.csv
+扩散模型对抗（Ours）,3,55.2,21.5,55.2 ± 21.5,80.0,44.4,41.2,../table31_variance_repeat_20260321/ours_repeat1/table3_eval_summary.csv ; ../table31_variance_repeat_20260321/ours_repeat2/table3_eval_summary.csv ; ../table31_variance_repeat_20260321/ours_repeat3/table3_eval_summary.csv

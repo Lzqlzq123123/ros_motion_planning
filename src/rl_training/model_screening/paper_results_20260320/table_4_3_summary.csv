@@ -1,0 +1,5 @@
+﻿训练方式,无对抗验证成功率（%）,有对抗验证成功率（%）,成功率波动幅度（|ΔSR|）,无对抗结果来源,有对抗结果来源,训练模型路径
+历史参考对照 TD3,72.8,50.0,22.8,baseline_noadv_historical.csv,baseline_adv_historical.csv,logs/forklift_movebase/run_19/td3_model
+规则对抗训练 TD3,84.2,78.9,5.3,rule_run10_noadv_independent.csv,rule_run10_adv_independent.csv,/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_10/td3_model
+规划器驱动对抗训练 TD3,89.5,83.3,6.2,planner_run18_noadv_independent.csv,planner_run18_adv_independent.csv,/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase/run_18/td3_model
+扩散模型对抗训练 TD3（本文，run_1）,90.8,80.5,10.3,ours_run1_noadv_repeat_aggregate.csv,ours_run1_adv_native_repeat_aggregate.csv,/data/lzq/ros_motion_planning/src/rl_training/logs/forklift_movebase_with_goal/run_1/td3_model

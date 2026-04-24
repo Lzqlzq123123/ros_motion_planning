@@ -12,7 +12,7 @@ Panels:
         - /Robot21/Path1
         - /Map2
       Splitter Ratio: 0.5
-    Tree Height: 212
+    Tree Height: 239
   - Class: rviz/Tool Properties
     Expanded: ~
     Name: Tool Properties
@@ -53,70 +53,12 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Filter (blacklist): ""
       Filter (whitelist): ""
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        map:
-          Value: true
-        robot1/base_footprint:
-          Value: true
-        robot1/base_scan:
-          Value: true
-        robot1/camera_depth_frame:
-          Value: true
-        robot1/camera_depth_optical_frame:
-          Value: true
-        robot1/camera_link:
-          Value: true
-        robot1/camera_rgb_frame:
-          Value: true
-        robot1/camera_rgb_optical_frame:
-          Value: true
-        robot1/front_axle:
-          Value: true
-        robot1/front_left_wheel_link:
-          Value: true
-        robot1/front_right_wheel_link:
-          Value: true
-        robot1/imu_link:
-          Value: true
-        robot1/odom:
-          Value: true
-        robot1/rear_left_wheel_link:
-          Value: true
-        robot1/rear_right_wheel_link:
-          Value: true
-        robot2/base_footprint:
-          Value: true
-        robot2/base_scan:
-          Value: true
-        robot2/camera_depth_frame:
-          Value: true
-        robot2/camera_depth_optical_frame:
-          Value: true
-        robot2/camera_link:
-          Value: true
-        robot2/camera_rgb_frame:
-          Value: true
-        robot2/camera_rgb_optical_frame:
-          Value: true
-        robot2/front_axle:
-          Value: true
-        robot2/front_left_wheel_link:
-          Value: true
-        robot2/front_right_wheel_link:
-          Value: true
-        robot2/imu_link:
-          Value: true
-        robot2/odom:
-          Value: true
-        robot2/rear_left_wheel_link:
-          Value: true
-        robot2/rear_right_wheel_link:
-          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -124,58 +66,14 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          robot1/odom:
-            robot1/base_footprint:
-              robot1/front_axle:
-                robot1/base_scan:
-                  {}
-                robot1/camera_link:
-                  robot1/camera_depth_frame:
-                    robot1/camera_depth_optical_frame:
-                      {}
-                  robot1/camera_rgb_frame:
-                    robot1/camera_rgb_optical_frame:
-                      {}
-                robot1/front_left_wheel_link:
-                  {}
-                robot1/front_right_wheel_link:
-                  {}
-                robot1/imu_link:
-                  {}
-                robot1/rear_left_wheel_link:
-                  {}
-                robot1/rear_right_wheel_link:
-                  {}
-          robot2/odom:
-            robot2/base_footprint:
-              robot2/front_axle:
-                robot2/base_scan:
-                  {}
-                robot2/camera_link:
-                  robot2/camera_depth_frame:
-                    robot2/camera_depth_optical_frame:
-                      {}
-                  robot2/camera_rgb_frame:
-                    robot2/camera_rgb_optical_frame:
-                      {}
-                robot2/front_left_wheel_link:
-                  {}
-                robot2/front_right_wheel_link:
-                  {}
-                robot2/imu_link:
-                  {}
-                robot2/rear_left_wheel_link:
-                  {}
-                robot2/rear_right_wheel_link:
-                  {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
     - Class: rviz/Group
       Displays:
         - Alpha: 1
           Class: rviz/RobotModel
-          Collision Enabled: true
+          Collision Enabled: false
           Enabled: true
           Links:
             All Links Enabled: true
@@ -232,12 +130,27 @@ Visualization Manager:
               Alpha: 1
               Show Axes: false
               Show Trail: false
+            laser_detection_element:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            left_clamp_plate:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
             rear_left_wheel_link:
               Alpha: 1
               Show Axes: false
               Show Trail: false
               Value: true
             rear_right_wheel_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            right_clamp_plate:
               Alpha: 1
               Show Axes: false
               Show Trail: false
@@ -375,12 +288,27 @@ Visualization Manager:
               Alpha: 1
               Show Axes: false
               Show Trail: false
+            laser_detection_element:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            left_clamp_plate:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
             rear_left_wheel_link:
               Alpha: 1
               Show Axes: false
               Show Trail: false
               Value: true
             rear_right_wheel_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            right_clamp_plate:
               Alpha: 1
               Show Axes: false
               Show Trail: false
@@ -485,7 +413,7 @@ Visualization Manager:
       Buffer Length: 1
       Class: rviz/Path
       Color: 25; 255; 0
-      Enabled: true
+      Enabled: false
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
@@ -504,7 +432,7 @@ Visualization Manager:
       Shaft Length: 0.10000000149011612
       Topic: /robot2/move_base/PathPlanner/plan
       Unreliable: false
-      Value: true
+      Value: false
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: map
@@ -520,7 +448,8 @@ Visualization Manager:
       Marker Topic: /robot1/rl_goal_marker
       Name: Marker
       Namespaces:
-        {}
+        /robot1/global_goal: true
+        /robot1/rl_goal: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -554,11 +483,12 @@ Visualization Manager:
       Y std deviation: 0.5
     - Class: rviz/SetGoal
       Topic: /robot2/move_base_simple/goal
+    - Class: jsk_rviz_plugin/ScreenshotListener
   Value: true
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 18.876609802246094
+      Distance: 6.327262878417969
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -566,9 +496,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -1.3904988765716553
-        Y: -0.44868844747543335
-        Z: 0.14748243987560272
+        X: -3.381187677383423
+        Y: -2.5124905109405518
+        Z: 0.14954696595668793
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -581,16 +511,16 @@ Visualization Manager:
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1066
+  Height: 1137
   Hide Left Dock: false
   Hide Right Dock: false
   Image1:
     collapsed: false
   Image2:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd000000010000000000000161000003c2fc0200000004fb0000000c0049006d00610067006500320100000047000000990000001900fffffffb0000000c0049006d006100670065003101000000e7000000a20000001900fffffffb000000100044006900730070006c006100790073010000019000000170000000f100fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000307000001020000006e00ffffff00000456000003c200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000001000000000000016100000409fc0200000004fb0000000c0049006d00610067006500320100000047000000a40000001900fffffffb0000000c0049006d006100670065003101000000f2000000af0000001900fffffffb000000100044006900730070006c00610079007301000001a80000018b000000f100fffffffb0000001e0054006f006f006c002000500072006f0070006500720074006900650073010000033a000001160000006e00ffffff000005e20000040900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Tool Properties:
     collapsed: false
-  Width: 1470
-  X: 1090
-  Y: 0
+  Width: 1866
+  X: 383
+  Y: 89

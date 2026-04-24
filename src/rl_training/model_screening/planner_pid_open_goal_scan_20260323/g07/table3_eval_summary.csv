@@ -1,0 +1,2 @@
+﻿method_key,opponent_mode,robot2_global_planner,robot2_local_planner,robot1_mode,valid_success_rate,collision_rate,avg_min_ttc_s,avg_frechet_distance,avg_smoothness,source_csv
+planner_based,movebase,theta_star,pid,movebase,0.0,0.0,7.8072728107727825,2.5873887709040377,1.5580003814832798e-05,/data/lzq/ros_motion_planning/src/rl_training/model_screening/planner_pid_open_goal_scan_20260323/g07/csv/planner_based.csv

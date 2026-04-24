@@ -1,0 +1,13 @@
+{
+  "ours_diffusion": {
+    "robot1_mode": "movebase",
+    "opponent_mode": "diffusion",
+    "robot2_local_planner": "pid",
+    "success_percent": 66.7,
+    "collision_percent": 33.3,
+    "avg_min_ttc_s": 2.306,
+    "avg_frechet_distance": 2.607,
+    "avg_smoothness": 0.00013004562801308613,
+    "source_csv": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/ours_go00_w002_step02_turn45/csv/ours_diffusion.csv"
+  }
+}

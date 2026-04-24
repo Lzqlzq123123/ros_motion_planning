@@ -1,0 +1,201 @@
+[nomad-env] python= /data/lzq/miniconda3/envs/nomad_train/bin/python
+[nomad-env] import PIL: OK
+[nomad-env] import torch: OK
+[nomad-env] import torchvision: OK
+[nomad-env] import cv2: OK
+[nomad-env] import diffusers: OK
+[nomad-env] import rospy: OK
+[nomad-env] import cv_bridge: OK
+/data/lzq/visualnav-transformer/deployment/src/nomad_plan_service.py:161: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint = torch.load(model_weights_path, map_location=self.device)
+[WARN] [1774244197.484881, 113.638000]: [nomad_plan_service] No feasible adversarial candidate; fallback to unconstrained scoring
+[WARN] [1774244197.488158, 113.646000]: [nomad_plan_service] Opponent pose frame robot1/world != start frame map
+[WARN] [1774244198.723027, 115.782000]: [nomad_plan_service] No feasible adversarial candidate; fallback to unconstrained scoring
+[WARN] [1774244198.726264, 115.800000]: [nomad_plan_service] Opponent pose frame robot1/world != start frame map
+[INFO] [1774244189.323363, 0.000000]: [nomad_plan_service] Loaded parameter defaults from /tmp/nomad_params_s2lwk9fd.yaml
+[INFO] [1774244189.332165, 97.742000]: [nomad_plan_service] Loading model 'diffusion'
+[INFO] [1774244189.332516, 97.744000]: [nomad_plan_service] Loading config from /data/lzq/visualnav-transformer/train/config/diffusion_2d.yaml
+[INFO] [1774244189.332837, 97.744000]: [nomad_plan_service] Loading weights from /data/lzq/visualnav-transformer/train/logs/diffusion_2d_ablation/diffusion_2d_gazebo_20260310_212252/latest.pth
+[INFO] [1774244189.579334, 98.236000]: [nomad_plan_service] Loaded diffusion_2d unconditional model
+[INFO] [1774244189.588849, 98.254000]: [nomad_plan_service] Ready on /nomad/make_plan
+[INFO] [1774244189.589754, 98.258000]: [nomad_plan_service] adversarial_selection_enabled: True, num_samples: 96
+[INFO] [1774244197.487179, 113.640000]: [nomad_plan_service] Adversarial selection: best=0/96, score=9.34
+published_points: [[ 0.02597466 -0.01336619]
+ [ 0.19884459  0.08500349]
+ [ 0.38846065  0.16483629]
+ [ 0.61223883  0.20473065]
+ [ 0.79724039  0.30928966]
+ [ 0.94515837  0.48425782]
+ [ 1.09619445  0.66069782]
+ [ 1.25462654  0.83734896]
+ [ 1.4146683   1.01905696]
+ [ 1.5801151   1.20226885]
+ [ 1.712418    1.39388821]
+ [ 1.73444469  1.61062698]
+ [ 1.81961364  1.81517557]
+ [ 2.0007067   2.00329651]
+ [ 2.17363458  2.19655548]
+ [ 2.28620442  2.40419299]]
+[INFO] [1774244197.489084, 113.648000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774244197.579614, 113.764000]: [nomad_plan_service] Adversarial selection: best=28/96, score=8.57
+published_points: [[ 0.00544869 -0.01532366]
+ [-0.02364732 -0.20060897]
+ [-0.13569992 -0.36888832]
+ [-0.19797498 -0.5468419 ]
+ [-0.16174992 -0.74593767]
+ [-0.12438433 -0.94265775]
+ [-0.19224414 -1.08657213]
+ [-0.39018727 -1.12282177]
+ [-0.58975741 -1.15899529]
+ [-0.78717351 -1.19642003]
+ [-0.9845491  -1.23578373]
+ [-1.18228764 -1.27274832]
+ [-1.38023681 -1.30963184]
+ [-1.55436733 -1.23219129]
+ [-1.73418708 -1.18922345]
+ [-1.91587714 -1.14871891]]
+[INFO] [1774244197.581494, 113.792000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774244197.869312, 114.276000]: [nomad_plan_service] Adversarial selection: best=15/96, score=8.52
+published_points: [[-0.01144494  0.010489  ]
+ [ 0.03162813 -0.16802267]
+ [-0.01360199 -0.36317949]
+ [ 0.0247565  -0.54466426]
+ [ 0.13124208 -0.71551122]
+ [ 0.23742706 -0.88438593]
+ [ 0.2255215  -1.03814542]
+ [ 0.06040213 -1.1462419 ]
+ [-0.10653243 -1.25234133]
+ [-0.27333018 -1.36285628]
+ [-0.44155995 -1.46935012]
+ [-0.60870941 -1.57485344]
+ [-0.7829381  -1.64212491]
+ [-0.97088716 -1.62933677]
+ [-1.15127765 -1.65524432]
+ [-1.33466121 -1.68141556]]
+[INFO] [1774244197.870924, 114.296000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774244198.147303, 114.774000]: [nomad_plan_service] Adversarial selection: best=35/96, score=8.64
+published_points: [[-0.00279128 -0.00264197]
+ [ 0.06845263 -0.16386797]
+ [ 0.05653091 -0.34966608]
+ [ 0.1095088  -0.51608229]
+ [ 0.23665126 -0.65788904]
+ [ 0.36464547 -0.8009034 ]
+ [ 0.39516538 -0.9552187 ]
+ [ 0.2523931  -1.08286581]
+ [ 0.10948025 -1.21002581]
+ [-0.0325099  -1.33436721]
+ [-0.1745503  -1.46367141]
+ [-0.33133129 -1.55125954]
+ [-0.48625768 -1.64203946]
+ [-0.65401903 -1.69454228]
+ [-0.83671533 -1.7049027 ]
+ [-1.00570322 -1.75289496]]
+[INFO] [1774244198.149002, 114.780000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774244198.443507, 115.268000]: [nomad_plan_service] Adversarial selection: best=90/96, score=8.76
+published_points: [[-0.00659806  0.01519754]
+ [ 0.10922678 -0.11638837]
+ [ 0.15212079 -0.29877389]
+ [ 0.2436454  -0.44561735]
+ [ 0.4024858  -0.54508251]
+ [ 0.56311163 -0.64374925]
+ [ 0.65753528 -0.77516457]
+ [ 0.56174778 -0.9344505 ]
+ [ 0.46517435 -1.09586224]
+ [ 0.36863923 -1.25674087]
+ [ 0.24791996 -1.3778172 ]
+ [ 0.10089155 -1.47313442]
+ [-0.03786545 -1.57721779]
+ [-0.14240167 -1.72992049]
+ [-0.32202479 -1.7780323 ]
+ [-0.46806927 -1.87309166]]
+[INFO] [1774244198.445190, 115.298000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774244198.725442, 115.796000]: [nomad_plan_service] Adversarial selection: best=25/96, score=9.00
+published_points: [[ 1.47624872e-02 -7.71298874e-04]
+ [ 1.68111221e-01 -7.26507497e-02]
+ [ 2.75855650e-01 -2.15791783e-01]
+ [ 4.08863384e-01 -3.30053976e-01]
+ [ 5.98117731e-01 -3.62037127e-01]
+ [ 7.87366771e-01 -3.90546767e-01]
+ [ 9.14450576e-01 -4.84784231e-01]
+ [ 9.05734857e-01 -6.62595385e-01]
+ [ 9.00897497e-01 -8.43311740e-01]
+ [ 8.94933181e-01 -1.02281122e+00]
+ [ 8.19599910e-01 -1.15966250e+00]
+ [ 7.00731074e-01 -1.26587708e+00]
+ [ 6.08371066e-01 -1.38635166e+00]
+ [ 5.73510178e-01 -1.54119435e+00]
+ [ 5.27058735e-01 -1.69330091e+00]
+ [ 4.37353412e-01 -1.81516180e+00]]
+[INFO] [1774244198.727360, 115.802000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774244198.989859, 116.288000]: [nomad_plan_service] Adversarial selection: best=66/96, score=9.17
+published_points: [[ 0.00309609  0.00571835]
+ [ 0.16335092 -0.03096819]
+ [ 0.30194956 -0.1457551 ]
+ [ 0.45181616 -0.24365901]
+ [ 0.64344074 -0.2386827 ]
+ [ 0.83780031 -0.23505378]
+ [ 0.94105829 -0.35210483]
+ [ 0.97704622 -0.52659848]
+ [ 1.0161619  -0.70248429]
+ [ 1.05940306 -0.87936942]
+ [ 1.01187676 -1.02370942]
+ [ 0.93432232 -1.15544166]
+ [ 0.89858408 -1.299472  ]
+ [ 0.90069052 -1.45613664]
+ [ 0.91413938 -1.61704361]
+ [ 0.87559955 -1.76005794]]
+[INFO] [1774244198.991461, 116.294000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774244199.262830, 116.774000]: [nomad_plan_service] Adversarial selection: best=45/96, score=9.22
+published_points: [[-0.01211034 -0.01192415]
+ [ 0.1436893  -0.01970727]
+ [ 0.28705864 -0.10503571]
+ [ 0.44124531 -0.15626806]
+ [ 0.61691638 -0.12924842]
+ [ 0.79486733 -0.09905808]
+ [ 0.88580665 -0.23803177]
+ [ 0.941584   -0.40113006]
+ [ 1.00227862 -0.56959685]
+ [ 1.06459073 -0.73299233]
+ [ 1.04960817 -0.88263603]
+ [ 0.99927916 -1.02791806]
+ [ 0.94803176 -1.17131497]
+ [ 0.90199726 -1.31880917]
+ [ 0.88527248 -1.47273398]
+ [ 0.90020771 -1.63065948]]
+[INFO] [1774244199.264468, 116.800000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774244199.544996, 117.254000]: [nomad_plan_service] Adversarial selection: best=84/96, score=9.31
+published_points: [[ 2.42079849e-03 -4.47934003e-03]
+ [ 1.47837663e-01 -5.41201606e-04]
+ [ 2.91517342e-01 -5.72117352e-02]
+ [ 4.42413548e-01 -7.33754221e-02]
+ [ 6.00954580e-01 -2.90269276e-02]
+ [ 7.46420181e-01 -5.02374682e-02]
+ [ 8.11019450e-01 -1.91874113e-01]
+ [ 8.81616721e-01 -3.34350508e-01]
+ [ 9.53286884e-01 -4.78854941e-01]
+ [ 1.02887917e+00 -6.19157844e-01]
+ [ 1.00527382e+00 -7.52814175e-01]
+ [ 9.70482305e-01 -8.87177995e-01]
+ [ 9.38099555e-01 -1.01798885e+00]
+ [ 9.08521034e-01 -1.15050700e+00]
+ [ 8.80935739e-01 -1.28153631e+00]
+ [ 8.34852521e-01 -1.38985186e+00]]
+[INFO] [1774244199.546575, 117.268000]: [nomad_plan_service] Generated plan with 17 poses using goal 
+[INFO] [1774244199.856698, 117.766000]: [nomad_plan_service] Adversarial selection: best=14/96, score=9.80
+published_points: [[ 0.02069917 -0.01076218]
+ [ 0.16457119  0.00248787]
+ [ 0.31128442 -0.05792835]
+ [ 0.47115431 -0.03333944]
+ [ 0.62794225 -0.00871235]
+ [ 0.72861856 -0.12789962]
+ [ 0.8142888  -0.26525   ]
+ [ 0.90363614 -0.39670873]
+ [ 0.99877447 -0.53150005]
+ [ 1.05195085 -0.65908709]
+ [ 1.04804696 -0.78539668]
+ [ 1.04937051 -0.9134    ]
+ [ 1.06083776 -1.03773976]
+ [ 1.043821   -1.12671706]
+ [ 1.03567581 -1.2185874 ]
+ [ 1.01865292 -1.29877821]]
+[INFO] [1774244199.858778, 117.776000]: [nomad_plan_service] Generated plan with 17 poses using goal 

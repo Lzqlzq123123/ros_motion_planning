@@ -1,0 +1,38 @@
+[
+  {
+    "key": "planner_based",
+    "label": "planner_based",
+    "opponent_mode": "movebase",
+    "robot2_global_planner": "rrt_connect",
+    "robot2_local_planner": "pid",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/planner_rrtconnect_pid_go08/configs/planner_based.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/planner_rrtconnect_pid_go08/csv/planner_based.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/planner_rrtconnect_pid_go08/configs/planner_based.yaml --robot1_mode movebase --opponent_mode movebase --episodes 10 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/planner_rrtconnect_pid_go08/csv/planner_based.csv",
+    "goal_offset": 0.8,
+    "nomad_overrides": {},
+    "summary": {
+      "row_type": "summary",
+      "episode": "all",
+      "robot1_mode": "movebase",
+      "opponent_mode": "movebase",
+      "opponent_enabled": "True",
+      "collided": "",
+      "reached_goal": "",
+      "timed_out": "",
+      "steps": "",
+      "episode_reward": "",
+      "goal_x": "",
+      "goal_y": "",
+      "goal_yaw": "",
+      "model_path": "",
+      "avg_reward": "72.321429181844",
+      "success_rate": "0.9",
+      "collision_rate": "0.0",
+      "timeout_rate": "0.0",
+      "min_ttc": "6.15939294612945",
+      "frechet_distance": "2.983269845569973",
+      "smoothness": "5.3227926759740924e-14"
+    },
+    "stack_log": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_param_screen_20260321/planner_rrtconnect_pid_go08/stack_logs/planner_based.log"
+  }
+]
