@@ -737,13 +737,14 @@ if __name__ == "__main__":
     parser.add_argument('--adv_spawn_radius_min', type=float, default=None)
     parser.add_argument('--adv_spawn_radius_max', type=float, default=None)
     parser.add_argument('--robot1_mode', type=str, choices=['td3', 'movebase'], default='td3')
-    parser.add_argument('--opponent_mode', type=str, choices=['movebase', 'diffusion', 'rule_based'], default=None)
+
+    parser.add_argument('--opponent_mode', type=str, choices=['movebase', 'diffusion', 'rule_based'], default="movebase")
     parser.add_argument('--opponent_goal_offset', type=float, default=None)
     
     # Image recording args
     parser.add_argument('--record_image_topic', type=str, default=None, help='Generic sensor_msgs/Image topic to record per episode, e.g. /robot2/camera/rgb/image_raw')
     parser.add_argument('--record_image_output_dir', type=str, default='/tmp/eval_images', help='Output directory for recorded per-episode images')
-    parser.add_argument('--record_image_save_rate', type=float, default=5, help='Frame save rate for --record_image_topic; 0 means save every frame')
+    parser.add_argument('--record_image_save_rate', type=float, default=0, help='Frame save rate for --record_image_topic; 0 means save every frame')
     
     # RViz recording args
     parser.add_argument('--enable_rviz_shot', action='store_true', help='Enable screenshotting RViz per episode')
@@ -880,3 +881,5 @@ if __name__ == "__main__":
         episode_setups=episode_setups,
         save_episode_setups_json=args.save_episode_setups_json,
     )
+
+# python eval_velodyne_td3_with_goal.py --robot1_mode td3 --model_path logs/forklift_movebase/run_9/td3_model

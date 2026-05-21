@@ -5,11 +5,13 @@ import yaml
 import torch
 
 # Add current directory to path to allow imports
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+script_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(script_dir)
 
-# Add local rsl_rl to path to use custom modified version
-rsl_rl_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'third_party', 'rsl_rl')
+# Prefer the vendored rsl_rl fork under src/rl_training/third_party/rsl_rl.
+rsl_rl_path = os.path.join(script_dir, 'third_party', 'rsl_rl')
 if os.path.exists(rsl_rl_path):
+    sys.path.insert(0, rsl_rl_path)
     print(f"Using local rsl_rl from: {rsl_rl_path}")
 
 from rsl_rl.runners import OnPolicyRunner

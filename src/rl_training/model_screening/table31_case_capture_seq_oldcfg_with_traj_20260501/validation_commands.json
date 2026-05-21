@@ -1,0 +1,22 @@
+[
+  {
+    "key": "ours_diffusion",
+    "label": "ours_diffusion",
+    "opponent_mode": "diffusion",
+    "robot2_global_planner": "diffusion",
+    "robot2_local_planner": "pid",
+    "config_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_oldcfg_with_traj_20260501/configs/ours_diffusion.yaml",
+    "csv_path": "/data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_oldcfg_with_traj_20260501/csv/ours_diffusion.csv",
+    "command": "source /opt/ros/noetic/setup.bash && source /data/lzq/miniconda3/etc/profile.d/conda.sh && conda activate rl && source /data/lzq/ros_motion_planning/devel/setup.bash && python /data/lzq/ros_motion_planning/src/rl_training/eval_velodyne_td3_with_goal.py --config /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_oldcfg_with_traj_20260501/configs/ours_diffusion.yaml --robot1_mode movebase --opponent_mode diffusion --episodes 20 --csv_path /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_oldcfg_with_traj_20260501/csv/ours_diffusion.csv --record_image_topic /robot2/camera/rgb/image_raw --record_image_output_dir /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_oldcfg_with_traj_20260501/episode_images/ours_diffusion --record_image_save_rate 10.0 --record_all_image_episodes --max_steps 400 --ego_spawn_radius_min 1.0 --ego_spawn_radius_max 2.0 --adv_spawn_radius_min 1.0 --adv_spawn_radius_max 2.0 --record_trajectory_output_dir /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_oldcfg_with_traj_20260501/trajectories/ours_diffusion --record_all_trajectory_episodes --save_episode_setups_json /data/lzq/ros_motion_planning/src/rl_training/model_screening/table31_case_capture_seq_oldcfg_with_traj_20260501/fixed_episode_setups.json",
+    "goal_offset": 0.0,
+    "nomad_overrides": {
+      "classical_guidance_weight": 0.15,
+      "opponent_guidance_enabled": true,
+      "num_adversarial_samples": 128,
+      "adversarial_max_step": 0.25,
+      "adversarial_max_turn_deg": 60.0,
+      "adversarial_guidance_max_deviation": 2.0,
+      "adversarial_guidance_mean_deviation": 1.2
+    }
+  }
+]

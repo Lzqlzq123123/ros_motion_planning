@@ -2,6 +2,7 @@ map: warehouse
 world: warehouse
 rviz_file: sim_env.rviz
 robots_config:
+#自车
 - robot1_type: forklift
   robot1_global_planner: theta_star
   robot1_local_planner: dwa
@@ -9,8 +10,10 @@ robots_config:
   robot1_y_pos: '-2'
   robot1_z_pos: '0'
   robot1_yaw: '-1.75'
+
+#对抗车
 - robot2_type: forklift
-  robot2_global_planner: theta_star
+  robot2_global_planner: diffusion #diffusion,theta_star
   robot2_local_planner: pid
   robot2_x_pos: '-3.5'
   robot2_y_pos: '-7'
@@ -18,3 +21,39 @@ robots_config:
   robot2_yaw: '1.75'
 plugins:
   map_layers: map_layers_config.yaml
+
+# * global planner
+#   * graph_planner
+#     * astar
+#     * jps
+#     * gbfs
+#     * dijkstra
+#     * d_star
+#     * lpa_star
+#     * voronoi
+#     * d_star_lite
+#     * theta_star
+#     * lazy_theta_star
+#     * hybrid_astar
+#
+#   * sample_planner
+#     * rrt
+#     * rrt_star
+#     * rrt_connect
+#     * informed_rrt
+#     * quick_informed_rrt
+#
+#   * evolutionary_planner
+#     * aco
+#     * pso
+#     * ga
+#   * lazy_planner
+#
+# * local planner
+#   * dwa
+#   * pid
+#   * apf
+#   * rpp
+#   * lqr
+#   * MPC
+#   * static

@@ -8,24 +8,27 @@ env:
   lidar_beams: 20
   num_actions: 2           # cmd_vel [linear_x, angular_z]
   control_dt: 0.1
-  max_episode_length: 400
+  max_episode_length: 100
   scan_dim: 180        # Match lidar_beams for simplicity
   goal_reached_dist: 0.2
-  collision_dist: 0.1
+  collision_dist: 0.2
+  termination:
+    min_collision_range: 0.2
+    pairwise_collision_dist: 0.55
   # Goal sampling range (base rectangle in map frame)
   goal_range:
     x_min: -6.5
-    x_max: -1
+    x_max: 0
     y_min: -5
-    y_max: -1
+    y_max: 0
   # Curriculum: each reset expands the range by delta on all four sides,
   # up to max_span beyond the base range. Set delta=0 to disable.
   curriculum:
     delta: 0.0          # expansion per reset (m)
     max_span: 0.0       # max total expansion beyond base range (m)
   # Spawn radii: distance from goal to initial robot position
-  ego_spawn_radius: [1.0, 2.0]    # [min, max] m from goal
-  adv_spawn_radius: [0.5, 2.0]    # [min, max] m from goal
+  ego_spawn_radius: [1.0, 5]    # [min, max] m from goal
+  adv_spawn_radius: [0.5, 3.0]    # [min, max] m from goal
   # Raw map OccupancyGrid for spawn/goal validity checks
   map_topic: "/map"
   map_obstacle_threshold: 50
@@ -35,7 +38,7 @@ env:
     mode: "movebase"           # "movebase" | "rule_based" | "diffusion"
     goal_topic: "/robot2/move_base_simple/goal"
     frame_id: "map"
-    goal_offset: 0.3           # adv nav goal offset from ego goal (m)
+    goal_offset: 0.1           # adv nav goal offset from ego goal (m)
     rule_based:
       linear_speed: 0.5
       angular_gain: 2.0

@@ -70,8 +70,10 @@ COLORS = OrderedDict([
 # 3. 不同指标允许使用不同 run 组合作为“代表性实验曲线”，用于论文画图时保持逻辑一致。
 GROUPS_BY_METRIC = {
     'Max._Q': OrderedDict([
-        ('课程学习', ['run_13','run_14', 'run_15']),
-        ('无课程学习', ['run_noadv_nocurr_seed2', 'run_noadv_nocurr_seed1']),
+        ('无对抗训练', ['run_1', 'run_13']),
+        ('规划器驱动对抗训练', ['run_14', 'run_15']),
+        ('规则对抗训练', ['run_16', 'run_17']),
+        ('扩散模型对抗训练', ['run_9', 'run_10']),
     ]),
     'train_episode_reward': OrderedDict([
         ('无对抗训练', ['run_1', 'run_13']),

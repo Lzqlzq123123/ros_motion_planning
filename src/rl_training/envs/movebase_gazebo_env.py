@@ -229,9 +229,12 @@ class MoveBaseGazeboEnv(VecEnv):
         self.opponent_spawn_radius = env_cfg.get("adv_spawn_radius", opponent_cfg.get("adv_spawn_radius", opponent_cfg.get("spawn_radius", [1.0, 3.0])))
         self.opponent_goal_pub = None
         self.opponent_cmd_pub = None
+        self.opponent_odom = None
+        self.opponent_odom_lock = threading.Lock()
         self.rule_adversary = None
         if self.opponent_enabled:
             self.opponent_cmd_pub = rospy.Publisher(f"/{self.opponent_name}/cmd_vel", Twist, queue_size=1)
+            self.opponent_odom_sub = rospy.Subscriber(f"/{self.opponent_name}/odom", Odometry, self.opponent_odom_cb, queue_size=1)
             if self.opponent_mode in ("movebase", "diffusion"):
                 # Both modes use move_base: publish goal to move_base_simple/goal
                 # diffusion mode uses NoMaD as global planner registered in move_base
@@ -263,6 +266,14 @@ class MoveBaseGazeboEnv(VecEnv):
         self.reset_buf = torch.ones(self.num_envs, dtype=torch.bool, device=device)
         self.max_episode_length = env_cfg.get("max_episode_length", 500)
         self.episode_length_buf = torch.zeros(self.num_envs, dtype=torch.long, device=device)
+
+    def opponent_odom_cb(self, msg):
+        with self.opponent_odom_lock:
+            self.opponent_odom = msg
+
+    def get_opponent_odom(self):
+        with self.opponent_odom_lock:
+            return self.opponent_odom
 
     def get_observations(self):
         for i, robot in enumerate(self.robots):
@@ -297,9 +308,15 @@ class MoveBaseGazeboEnv(VecEnv):
         self.rew_buf[:] = 0.0
         self.reset_buf[:] = False
         self.episode_length_buf += 1
+        opponent_odom = self.get_opponent_odom() if self.opponent_enabled else None
 
         for i, robot in enumerate(self.robots):
-            rew, done = robot.compute_reward_and_done(actions_np[i], self.goal_reached_dist, self.collision_dist)
+            rew, done = robot.compute_reward_and_done(
+                actions_np[i],
+                self.goal_reached_dist,
+                self.collision_dist,
+                opponent_odom=opponent_odom,
+            )
             self.rew_buf[i] = torch.tensor(rew, dtype=self.rew_buf.dtype, device=self.rew_buf.device)
             
             # Check if episode exceeded max_episode_length (convert tensor to int for comparison)
@@ -695,7 +712,7 @@ class MoveBaseRobot:
                 print("Observation:",  np.array([dist_to_goal, theta, self.last_cmd[0], self.last_cmd[1]], dtype=np.float32))
             return obs
 
-    def compute_reward_and_done(self, action, goal_reached_dist, collision_dist):
+    def compute_reward_and_done(self, action, goal_reached_dist, collision_dist, opponent_odom=None):
         reward = 0.0
         done = False
         if self.odom is None:
@@ -707,9 +724,19 @@ class MoveBaseRobot:
         dy = self.goal_y - py
         dist_to_goal = math.sqrt(dx ** 2 + dy ** 2)
         min_scan = float(np.nan_to_num(np.min(self.scan), posinf=30.0, neginf=0.0))
+        scan_collision_dist = float(self.term_cfg.get("min_collision_range", collision_dist))
+        pairwise_collision_dist = float(self.term_cfg.get("pairwise_collision_dist", self.term_cfg.get("robot_collision_dist", 0.55)))
+        pairwise_collision = False
+        pairwise_dist = None
+        if opponent_odom is not None:
+            ox = opponent_odom.pose.pose.position.x
+            oy = opponent_odom.pose.pose.position.y
+            pairwise_dist = math.hypot(px - ox, py - oy)
+            pairwise_collision = pairwise_dist < pairwise_collision_dist
 
         goal_reached = dist_to_goal < goal_reached_dist
-        collision = min_scan < collision_dist
+        scan_collision = min_scan < scan_collision_dist
+        collision = scan_collision or pairwise_collision
 
         if goal_reached:
             reward = 100.0
@@ -729,8 +756,14 @@ class MoveBaseRobot:
                 self.past_distance = dist_to_goal
 
         if self.debug:
+            collision_note = []
+            if scan_collision:
+                collision_note.append(f"scan<{scan_collision_dist:.2f}")
+            if pairwise_collision and pairwise_dist is not None:
+                collision_note.append(f"robot_dist={pairwise_dist:.2f}<{pairwise_collision_dist:.2f}")
+            collision_text = ", ".join(collision_note) if collision_note else "none"
             rospy.loginfo(
-                f"dist={dist_to_goal:.2f} min_scan={min_scan:.2f}\n "
+                f"dist={dist_to_goal:.2f} min_scan={min_scan:.2f} collision={collision_text}\n "
                 f"cmd=({action[0]:.2f},{action[1]:.2f})\n "
                 f"reward={reward:.2f}\n"
                 f"R_v={action[0] / 2} R_w={- abs(action[1]) / 2}"

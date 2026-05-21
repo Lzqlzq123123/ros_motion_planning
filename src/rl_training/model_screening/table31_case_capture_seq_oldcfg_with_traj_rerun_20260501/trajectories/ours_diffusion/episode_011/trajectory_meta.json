@@ -1,0 +1,22 @@
+{
+  "robot1_mode": "movebase",
+  "opponent_mode": "diffusion",
+  "collided": false,
+  "reached_goal": true,
+  "timed_out": false,
+  "steps": 47,
+  "episode_reward": 95.32266267389059,
+  "min_ttc": 3.310504387207209,
+  "frechet_distance": 2.594282132813468,
+  "smoothness": 0.0001412463892920221,
+  "goal_x": -6.104360044281345,
+  "goal_y": -3.9868460126856484,
+  "goal_yaw": 0.14131171187048774,
+  "ego_x": -7.296428250578764,
+  "ego_y": -4.156429521544986,
+  "ego_yaw": 0.0223707444279575,
+  "adv_x": -4.85536384596748,
+  "adv_y": -3.198809387829711,
+  "adv_yaw": -1.6451511184808552,
+  "skipped": false
+}
